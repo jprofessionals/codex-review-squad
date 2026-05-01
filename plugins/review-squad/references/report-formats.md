@@ -19,9 +19,14 @@ Browser: [URL / not provided / not verified]
 
 ### Squad Results
 
-- `SEC` Security Reviewer, high, complete: [headline]
-- `API` API Design Reviewer, medium, complete: [headline]
-- `DATA` Data Model Reviewer, medium, complete: [headline]
+High priority:
+
+- `SEC` Security Reviewer, high effort, complete: [headline]
+- `DATA` Data Model Reviewer, high effort, complete: [headline]
+
+Standard priority:
+
+- `API` API Design Reviewer, medium effort, complete: [headline]
 
 ### Critical
 

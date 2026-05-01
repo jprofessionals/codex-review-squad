@@ -239,7 +239,8 @@ Codex plugins cannot currently define Claude Code-style custom visual panels in
 the chat UI. This plugin uses structured Markdown instead: lane IDs, panel
 cards, dispatch waves, progress updates, and a final squad scorecard. Final
 reports avoid wide Markdown tables because long file paths wrap poorly in
-Codex's terminal layout.
+Codex's terminal layout. Expert panels group lanes by priority first, then show
+subagent reasoning effort inside each lane card.
 
 Use the browser modes only when a running URL is available:
 

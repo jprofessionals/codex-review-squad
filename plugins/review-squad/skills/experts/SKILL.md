@@ -57,23 +57,34 @@ Scope: [important directories/files]
 Browser: [URL / not provided / unavailable]
 Mode: read-only audit
 
-### Suggested Expert Panel
+### High Priority Lanes
 
-`SEC` Security Reviewer, high
+`SEC` Security Reviewer
 
 - Scope: auth, secrets, trust boundaries
 - Why: [reason]
+- Effort: high
 
-`API` API Design Reviewer, medium
+`DATA` Data Model Reviewer
+
+- Scope: schema, migrations, constraints
+- Why: [reason]
+- Effort: high
+
+### Standard Priority Lanes
+
+`API` API Design Reviewer
 
 - Scope: routes, contracts, errors
 - Why: [reason]
+- Effort: medium
 
-### Optional Lanes
+### Candidate Lanes
 
-`OBS` Observability Reviewer, medium
+`OBS` Observability Reviewer
 
 - Why add it: [reason]
+- Effort: medium
 
 ### Approval
 
@@ -131,6 +142,16 @@ Set subagent reasoning effort intentionally:
 - Use `reasoning_effort: low` for narrow copy, social metadata, basic SEO, or
   other quick checklist reviewers when latency matters.
 
+In panel proposals, group lanes by review priority before dispatch:
+
+- `High Priority Lanes`: highest relevance to the user's goal or highest risk.
+- `Standard Priority Lanes`: still useful, but less central or lower risk.
+- `Candidate Lanes`: optional additions for the user to approve.
+
+Do not put priority and effort on the same line. The group communicates
+priority; the lane card's `Effort:` bullet communicates subagent reasoning
+effort.
+
 If the runtime limits the number of parallel subagents, dispatch reviewers in
 waves. Keep the approved panel intact, report which reviewers are running in
 each wave, and never let waiting reviewers edit files.
@@ -144,9 +165,11 @@ Approved lanes: [count]
 Runtime parallelism: [parallel limit if known, otherwise "runtime-managed"]
 
 Wave 1: [LANE, LANE, LANE]
+- Priority: high
 - Notes: [why these lanes run first]
 
 Wave 2: [LANE, LANE]
+- Priority: standard
 - Notes: [queued because of runtime parallelism]
 ```
 
