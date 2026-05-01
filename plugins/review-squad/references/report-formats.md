@@ -1,7 +1,11 @@
 # Report Formats
 
 Use these formats when consolidating Review Squad findings. Keep reports
-deduplicated, source-attributed, and ordered by impact.
+deduplicated, source-attributed, ordered by impact, and readable in narrow
+terminal/chat panes.
+
+Avoid wide Markdown tables for final reports. Long paths and suggested fixes
+wrap badly. Prefer compact headings, bullets, and short "finding cards".
 
 ## Experts
 
@@ -15,28 +19,41 @@ Browser: [URL / not provided / not verified]
 
 ### Squad Results
 
-| Lane | Reviewer | Effort | Status | Headline |
-| --- | --- | --- | --- | --- |
+- `SEC` Security Reviewer, high, complete: [headline]
+- `API` API Design Reviewer, medium, complete: [headline]
+- `DATA` Data Model Reviewer, medium, complete: [headline]
 
 ### Critical
 
-| # | Finding | Evidence | Source Lanes | Suggested Fix |
-| --- | --- | --- | --- | --- |
+`C-01` [Source lanes] [Finding title]
+
+- Evidence: [file:line or URL]
+- Impact: [why this blocks launch or creates serious risk]
+- Suggested fix: [concise action]
+
+If there are no critical findings, write: `No critical findings reported.`
 
 ### Important
 
-| # | Finding | Evidence | Source Lanes | Suggested Fix |
-| --- | --- | --- | --- | --- |
+`I-01` [Source lanes] [Finding title]
+
+- Evidence: [file:line or URL]
+- Impact: [user, security, reliability, delivery, or maintainability impact]
+- Suggested fix: [concise action]
 
 ### Minor
 
-| # | Finding | Evidence | Source Lanes | Suggested Fix |
-| --- | --- | --- | --- | --- |
+`M-01` [Source lanes] [Finding title]
+
+- Evidence: [file:line or URL]
+- Suggested fix: [concise action]
 
 ### Deferred Or Not Verified
 
-| Item | Source Lanes | Reason |
-| --- | --- | --- |
+`D-01` [Source lanes] [Item]
+
+- Reason: [what could not be verified and why]
+- Follow-up: [what would verify it]
 
 ### Recommended Next Move
 
@@ -60,13 +77,19 @@ Severity guidance:
 
 ### Confusion Matrix
 
-| Issue | Senior Dev | PM | Student | Business Owner | Retired Teacher | Grandparent |
-| --- | :---: | :---: | :---: | :---: | :---: | :---: |
+Use issue cards instead of a wide matrix:
+
+`N-01` [Issue]
+
+- Affected personas: [Senior Dev, PM, Student, ...]
+- Severity: [critical/important/minor]
+- Evidence: [screenshots or observed moments]
+- Suggested fix: [concise action]
 
 ### Recommendations
 
-| Priority | Issue | Who Was Confused | Suggested Fix |
-| --- | --- | --- | --- |
+1. [Issue]: [fix], affecting [personas].
+2. [Issue]: [fix], affecting [personas].
 
 ### What Worked
 
@@ -83,8 +106,9 @@ minor unless the issue blocks the main goal.
 
 ### Scorecard
 
-| # | Task | Persona | Result | Issues |
-| --- | --- | --- | --- | --- |
+- `PASS` [Task] - [Persona]: [headline]
+- `PARTIAL` [Task] - [Persona]: [headline]
+- `FAIL` [Task] - [Persona]: [headline]
 
 ### Result
 
@@ -92,13 +116,16 @@ minor unless the issue blocks the main goal.
 
 ### Blockers
 
-| Task | What Broke | Severity |
-| --- | --- | --- |
+`R-01` [Task]
+
+- Result: FAIL
+- What broke: [exact moment]
+- Severity: [critical/important/minor]
+- Suggested fix: [concise action]
 
 ### Friction
 
-| Task | What Was Frustrating |
-| --- | --- |
+- [Task]: [what was frustrating]
 
 ### What Worked
 
@@ -120,13 +147,15 @@ Use `PASS`, `PARTIAL`, or `FAIL`.
 
 ### Cross-Persona Consensus
 
-| Issue | Who Complained | Practical Fix |
-| --- | --- | --- |
+`W-01` [Issue]
+
+- Who complained: [personas]
+- Practical fix: [concise action]
 
 ### Practical Fixlist
 
-| # | Fix | Effort | Files Or Screens |
-| --- | --- | --- | --- |
+1. [Fix] - [effort] - [files/screens]
+2. [Fix] - [effort] - [files/screens]
 ```
 
 Keep the persona voice in the roast section and remove the theatrics from the

@@ -59,15 +59,21 @@ Mode: read-only audit
 
 ### Suggested Expert Panel
 
-| Lane | Expert | Effort | Scope | Why this reviewer matters |
-| --- | --- | --- | --- | --- |
-| SEC | Security Reviewer | high | auth, secrets, trust boundaries | [reason] |
-| API | API Design Reviewer | medium | routes, contracts, errors | [reason] |
+`SEC` Security Reviewer, high
+
+- Scope: auth, secrets, trust boundaries
+- Why: [reason]
+
+`API` API Design Reviewer, medium
+
+- Scope: routes, contracts, errors
+- Why: [reason]
 
 ### Optional Lanes
 
-| Lane | Expert | Effort | Why add it |
-| --- | --- | --- | --- |
+`OBS` Observability Reviewer, medium
+
+- Why add it: [reason]
 
 ### Approval
 
@@ -102,6 +108,7 @@ Return findings only. Rank each finding as CRITICAL, IMPORTANT, MINOR, or
 NOT VERIFIED. Include evidence with file paths, line numbers when available,
 screens or URLs when browser evidence exists, and a concise suggested fix.
 Do not include generic best practices unless they are tied to project evidence.
+Do not use wide Markdown tables; use short bullets or finding cards.
 
 Start your report with:
 Lane: [LANE]
@@ -136,8 +143,11 @@ Before dispatching, show:
 Approved lanes: [count]
 Runtime parallelism: [parallel limit if known, otherwise "runtime-managed"]
 
-| Wave | Lanes | Notes |
-| --- | --- | --- |
+Wave 1: [LANE, LANE, LANE]
+- Notes: [why these lanes run first]
+
+Wave 2: [LANE, LANE]
+- Notes: [queued because of runtime parallelism]
 ```
 
 While reviewers run, give short progress updates:
@@ -156,6 +166,16 @@ instead of silently dropping it.
 ## Consolidation Rules
 
 Use the `Experts` format from `report-formats.md`.
+
+Do not use wide Markdown tables in the final report. Use finding cards:
+
+```markdown
+`I-01` [SEC, REL] Short finding title
+
+- Evidence: path/to/file.kt:123; path/to/other.kt:45
+- Impact: one concise sentence
+- Suggested fix: one concise sentence
+```
 
 Findings must include:
 

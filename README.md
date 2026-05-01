@@ -237,7 +237,9 @@ making code changes.
 
 Codex plugins cannot currently define Claude Code-style custom visual panels in
 the chat UI. This plugin uses structured Markdown instead: lane IDs, panel
-tables, dispatch waves, progress updates, and a final squad scorecard.
+cards, dispatch waves, progress updates, and a final squad scorecard. Final
+reports avoid wide Markdown tables because long file paths wrap poorly in
+Codex's terminal layout.
 
 Use the browser modes only when a running URL is available:
 
