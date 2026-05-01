@@ -87,6 +87,18 @@ Do not include generic best practices unless they are tied to project evidence.
 Use parallel Codex subagents for independent reviewers. Assign each reviewer a
 single responsibility. Reviewers may read overlapping files, but none may write.
 
+Set subagent reasoning effort intentionally:
+
+- Use `reasoning_effort: medium` by default for expert reviewers.
+- Use `reasoning_effort: high` only for security, reliability, architecture,
+  data integrity, complex performance, or unusually large/ambiguous codebases.
+- Use `reasoning_effort: low` for narrow copy, social metadata, basic SEO, or
+  other quick checklist reviewers when latency matters.
+
+If the runtime limits the number of parallel subagents, dispatch reviewers in
+waves. Keep the approved panel intact, report which reviewers are running in
+each wave, and never let waiting reviewers edit files.
+
 When reviewers finish, skim for duplicates and conflicts. If two reviewers flag
 the same root cause, merge it into one consolidated row and list both sources.
 If a reviewer could not verify browser behavior, preserve that as `NOT VERIFIED`

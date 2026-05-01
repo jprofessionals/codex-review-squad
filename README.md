@@ -5,6 +5,7 @@ A Codex plugin that adapts the original Review Squad plugin created by
 
 This is a Codex port of 2389 Research's MIT-licensed Claude Code plugin:
 
+- Codex port repository: https://github.com/jprofessionals/codex-review-squad
 - Original Review Squad repository: https://github.com/2389-research/review-squad
 - Original plugin page: https://skills.2389.ai/plugins/review-squad/
 - Original copyright: Copyright (c) 2026 2389 Research, Inc.
@@ -224,6 +225,8 @@ For best results:
 
 - Keep panels small enough to finish: 4-8 experts or 4-6 browser personas.
 - Customize the proposed panel for your actual audience and stack.
+- Let `experts` use `medium` reasoning effort by default. Reserve `high` for
+  security, reliability, architecture, data integrity, or very complex reviews.
 - Give browser modes a specific URL and make sure the dev server is already up.
 - Give `regulars` explicit flows if you know which ones matter.
 - Treat `normies` as product clarity feedback, not a technical audit.
