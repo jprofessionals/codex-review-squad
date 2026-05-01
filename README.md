@@ -72,7 +72,7 @@ The marketplace file should contain:
         "path": "./plugins/review-squad"
       },
       "policy": {
-        "installation": "AVAILABLE",
+        "installation": "INSTALLED_BY_DEFAULT",
         "authentication": "ON_INSTALL"
       },
       "category": "Productivity"
@@ -114,12 +114,15 @@ Register that project as a local Codex marketplace:
 codex plugin marketplace add "$TARGET"
 ```
 
-Then start Codex in the target project:
+Then start a new Codex session in the target project:
 
 ```bash
 cd "$TARGET"
 codex
 ```
+
+Do not use `codex resume` for the first test after adding or upgrading the
+marketplace. Resumed sessions keep the skill/plugin list they were started with.
 
 Invoke the skills by name in your prompt, for example:
 
@@ -183,6 +186,42 @@ The validator checks:
 - Every skill has YAML frontmatter with `name` and `description`.
 - The plugin manifest references `./skills/` and `./.mcp.json`.
 - The marketplace references `./plugins/review-squad`.
+
+## Troubleshooting Installation
+
+If Codex says something like:
+
+```text
+The named skill is not installed here, so I recreated the documented panel...
+```
+
+then the skill was not loaded in that session. The review may still imitate the
+documented workflow, but it is not actually running the installed
+`review-squad:experts` skill.
+
+Fix it with:
+
+```bash
+codex plugin marketplace upgrade codex-review-squad
+```
+
+Then start a brand-new Codex session in the target repo. Do not resume an older
+session for this verification.
+
+If it still is not loaded, confirm the plugin is enabled in
+`~/.codex/config.toml`:
+
+```toml
+[plugins."review-squad@codex-review-squad"]
+enabled = true
+```
+
+You can inspect what the model will see with:
+
+```bash
+codex debug prompt-input "use review-squad:experts to review this repo" \
+  | rg "review-squad|experts"
+```
 
 ## Best Use
 
