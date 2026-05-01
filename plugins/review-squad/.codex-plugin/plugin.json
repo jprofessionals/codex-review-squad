@@ -1,0 +1,40 @@
+{
+  "name": "review-squad",
+  "version": "0.1.0",
+  "description": "Multi-perspective Codex review panels for project audits, first impressions, task flows, and polish passes.",
+  "author": {
+    "name": "2389 Research, Inc. and Codex adaptation contributors",
+    "url": "https://github.com/2389-research/review-squad"
+  },
+  "homepage": "https://skills.2389.ai/plugins/review-squad/",
+  "repository": "https://github.com/2389-research/review-squad",
+  "license": "MIT",
+  "keywords": [
+    "review",
+    "audit",
+    "subagents",
+    "playwright",
+    "persona"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Review Squad",
+    "shortDescription": "Dispatch focused review panels from multiple perspectives.",
+    "longDescription": "A Codex adaptation of 2389 Research's MIT-licensed Review Squad plugin. It provides expert audits, first-impression visitors, task-flow reviewers, and pedantic polish passes using Codex skills, subagents, and Playwright MCP when available.",
+    "developerName": "2389 Research / Codex adaptation",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Browser"
+    ],
+    "websiteURL": "https://skills.2389.ai/plugins/review-squad/",
+    "defaultPrompt": [
+      "Run review-squad:experts before launch.",
+      "Use review-squad:normies on my homepage.",
+      "Run review-squad:regulars on key flows."
+    ],
+    "brandColor": "#2563EB"
+  }
+}
