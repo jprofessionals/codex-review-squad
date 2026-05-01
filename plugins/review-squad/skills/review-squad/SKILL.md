@@ -16,6 +16,10 @@ Review Squad is a Codex adaptation of 2389 Research's MIT-licensed
 - `review-squad:regulars`: browser-based task completion smoke review.
 - `review-squad:well-actually`: nitpicky polish and pedantic feedback.
 
+All modes must work standalone. Do not require or delegate to other plugins or
+skills. If a mode needs a plan, report, browser preflight, or fixlist, produce it
+directly from this plugin's skill and reference files.
+
 ## Routing
 
 Choose the mode from the user's intent:

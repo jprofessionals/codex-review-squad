@@ -6,27 +6,41 @@ deduplicated, source-attributed, and ordered by impact.
 ## Experts
 
 ```markdown
-## Experts Review: [Project]
+## Review Squad: Experts - [Project]
+
+Status: complete
+Mode: read-only audit
+Scope: [directories/files reviewed]
+Browser: [URL / not provided / not verified]
+
+### Squad Results
+
+| Lane | Reviewer | Effort | Status | Headline |
+| --- | --- | --- | --- | --- |
 
 ### Critical
 
-| # | Finding | Evidence | Source | Suggested Fix |
+| # | Finding | Evidence | Source Lanes | Suggested Fix |
 | --- | --- | --- | --- | --- |
 
 ### Important
 
-| # | Finding | Evidence | Source | Suggested Fix |
+| # | Finding | Evidence | Source Lanes | Suggested Fix |
 | --- | --- | --- | --- | --- |
 
 ### Minor
 
-| # | Finding | Evidence | Source | Suggested Fix |
+| # | Finding | Evidence | Source Lanes | Suggested Fix |
 | --- | --- | --- | --- | --- |
 
 ### Deferred Or Not Verified
 
-| Item | Reason |
-| --- | --- |
+| Item | Source Lanes | Reason |
+| --- | --- | --- |
+
+### Recommended Next Move
+
+[One concise recommendation: proceed, harden first, or create a cleanup story.]
 
 ### Implementation Plan Offer
 

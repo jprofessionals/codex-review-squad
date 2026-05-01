@@ -1,6 +1,6 @@
 {
   "name": "review-squad",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Multi-perspective Codex review panels for project audits, first impressions, task flows, and polish passes.",
   "author": {
     "name": "JProfessionals",
@@ -21,7 +21,7 @@
   "interface": {
     "displayName": "Review Squad",
     "shortDescription": "Dispatch focused review panels from multiple perspectives.",
-    "longDescription": "A Codex adaptation of 2389 Research's MIT-licensed Review Squad plugin. Original: https://github.com/2389-research/review-squad. This port provides expert audits, first-impression visitors, task-flow reviewers, and pedantic polish passes using Codex skills, subagents, and Playwright MCP when available.",
+    "longDescription": "A standalone Codex adaptation of 2389 Research's MIT-licensed Review Squad plugin. Original: https://github.com/2389-research/review-squad. This port provides expert audits, first-impression visitors, task-flow reviewers, and pedantic polish passes using Codex skills, subagents, and Playwright MCP when available.",
     "developerName": "JProfessionals, based on 2389 Research",
     "category": "Productivity",
     "capabilities": [

@@ -14,6 +14,10 @@ This is a Codex port of 2389 Research's MIT-licensed Claude Code plugin:
 This repository keeps their core Review Squad concept and adapts it for Codex
 skills, Codex plugin manifests, Codex subagents, and Playwright MCP.
 
+Review Squad is standalone. It does not require any other Codex plugin. The
+browser-oriented modes use Playwright MCP when available and degrade clearly
+when it is not available.
+
 It provides these skills:
 
 - `review-squad:experts`
@@ -230,6 +234,10 @@ detects the project type, proposes a focused expert panel, waits for your
 approval or customization, dispatches read-only reviewers, and consolidates
 findings by severity. After the report, ask it for an implementation plan before
 making code changes.
+
+Codex plugins cannot currently define Claude Code-style custom visual panels in
+the chat UI. This plugin uses structured Markdown instead: lane IDs, panel
+tables, dispatch waves, progress updates, and a final squad scorecard.
 
 Use the browser modes only when a running URL is available:
 

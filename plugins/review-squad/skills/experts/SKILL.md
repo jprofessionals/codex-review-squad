@@ -11,6 +11,9 @@ assessment, or periodic project health checks.
 This is a read-only review workflow. Do not edit files during the review. After
 the report, offer to create an implementation plan before making fixes.
 
+This skill must work standalone. Do not depend on other plugins or skills. If a
+plan is needed after the report, write the plan directly in the current session.
+
 ## References
 
 Load only what you need:
@@ -28,6 +31,8 @@ Load only what you need:
    continue code review and mark rendered checks as not verified.
 3. Propose a default expert panel based on the detected project type. Include
    4-8 reviewers by default and suggest stack-specific additions or removals.
+   Use the panel proposal format below so the review feels like a coordinated
+   squad, not a loose list of agents.
 4. Ask the user to approve or customize the panel before dispatching reviewers.
 5. Dispatch approved reviewers in parallel using Codex subagents when available.
    If subagents are unavailable, state the limitation and run the reviews
@@ -39,19 +44,35 @@ Load only what you need:
 
 ## Panel Proposal
 
-Show the proposal in this compact format:
+Show the proposal in this format:
 
 ```markdown
-Detected project: [type], [stack], [important directories]
+## Review Squad: Experts
 
-Suggested expert panel:
-| Expert | Why this reviewer matters here |
-| --- | --- |
+Status: panel proposal
+Target: [project name]
+Detected project: [type]
+Stack: [stack]
+Scope: [important directories/files]
+Browser: [URL / not provided / unavailable]
+Mode: read-only audit
 
-Suggested optional additions:
-- [Reviewer] because [reason]
+### Suggested Expert Panel
 
-Approve this panel, or tell me what to add/remove/change.
+| Lane | Expert | Effort | Scope | Why this reviewer matters |
+| --- | --- | --- | --- | --- |
+| SEC | Security Reviewer | high | auth, secrets, trust boundaries | [reason] |
+| API | API Design Reviewer | medium | routes, contracts, errors | [reason] |
+
+### Optional Lanes
+
+| Lane | Expert | Effort | Why add it |
+| --- | --- | --- | --- |
+
+### Approval
+
+Reply `approve` to dispatch this panel, or tell me what to add, remove, rename,
+or reprioritize.
 ```
 
 ## Reviewer Prompt Template
@@ -59,7 +80,7 @@ Approve this panel, or tell me what to add/remove/change.
 Each subagent prompt must be concrete and bounded:
 
 ```text
-You are a [ROLE] reviewing a [PROJECT TYPE] project.
+You are the [LANE] lane: [ROLE] reviewing a [PROJECT TYPE] project.
 
 This is a read-only review. Do not edit files, do not run code-modifying
 commands, do not reformat files, and do not revert any changes.
@@ -69,6 +90,7 @@ Stack: [STACK SUMMARY]
 Important directories/files: [DIRECTORY HINTS]
 Running URL, if available: [URL OR "none"]
 Browser status: [available/unavailable/not checked]
+Assigned effort: [low/medium/high]
 
 Review focus:
 1. [Specific area and where to inspect]
@@ -80,12 +102,19 @@ Return findings only. Rank each finding as CRITICAL, IMPORTANT, MINOR, or
 NOT VERIFIED. Include evidence with file paths, line numbers when available,
 screens or URLs when browser evidence exists, and a concise suggested fix.
 Do not include generic best practices unless they are tied to project evidence.
+
+Start your report with:
+Lane: [LANE]
+Reviewer: [ROLE]
+Headline: [one sentence]
 ```
 
 ## Dispatch Guidance
 
 Use parallel Codex subagents for independent reviewers. Assign each reviewer a
 single responsibility. Reviewers may read overlapping files, but none may write.
+Give every reviewer a short lane ID, usually 3-5 uppercase letters, such as
+`SEC`, `API`, `DATA`, `REL`, `ARCH`, `TEST`, `A11Y`, `PERF`, `COPY`, or `OBS`.
 
 Set subagent reasoning effort intentionally:
 
@@ -98,6 +127,26 @@ Set subagent reasoning effort intentionally:
 If the runtime limits the number of parallel subagents, dispatch reviewers in
 waves. Keep the approved panel intact, report which reviewers are running in
 each wave, and never let waiting reviewers edit files.
+
+Before dispatching, show:
+
+```markdown
+## Review Squad: Dispatch
+
+Approved lanes: [count]
+Runtime parallelism: [parallel limit if known, otherwise "runtime-managed"]
+
+| Wave | Lanes | Notes |
+| --- | --- | --- |
+```
+
+While reviewers run, give short progress updates:
+
+```markdown
+Progress: [LANE] complete - [headline finding or "no major issue"]
+Waiting: [LANE, LANE]
+Running: [LANE, LANE]
+```
 
 When reviewers finish, skim for duplicates and conflicts. If two reviewers flag
 the same root cause, merge it into one consolidated row and list both sources.
