@@ -8,8 +8,10 @@ description: Run a production-ready multi-perspective project audit with Codex s
 Use this skill for pre-launch review, post-refactor review, inherited codebase
 assessment, or periodic project health checks.
 
-This is a read-only review workflow. Do not edit files during the review. After
-the report, offer to create an implementation plan before making fixes.
+This is a read-only source review workflow. Do not edit project source files
+during the review. Writing the paired report artifacts under
+`.review-squad/reports/` is required and is still considered part of the review.
+After the report, offer to create an implementation plan before making fixes.
 
 This skill must work standalone. Do not depend on other plugins or skills. If a
 plan is needed after the report, write the plan directly in the current session.
@@ -20,7 +22,7 @@ Load only what you need:
 
 - `../../references/panels.md` for project detection and default panels.
 - `../../references/browser-preflight.md` if a running URL is involved.
-- `../../references/report-formats.md` for consolidation.
+- `../../references/report-formats.md` for consolidation and report artifacts.
 
 ## Workflow
 
@@ -39,7 +41,11 @@ Load only what you need:
    sequentially in the current agent.
 6. Consolidate findings into one deduplicated, severity-ranked report with
    source attribution.
-7. Offer to turn the findings into an implementation plan. Do not start edits
+7. Write paired report artifacts using the artifact contract in
+   `report-formats.md`: `.review-squad/reports/<stem>.md` and
+   `.review-squad/reports/<stem>.json`.
+8. Present the Markdown findings in chat, include the JSON artifact path, and
+   offer to turn the findings into an implementation plan. Do not start edits
    until the user asks for implementation.
 
 ## Panel Proposal
@@ -207,9 +213,16 @@ Findings must include:
 - Evidence
 - Which reviewer found it
 - Suggested fix
+- Remediation classification
+- Decision flags
 
 Order by launch risk: critical security/data/availability issues first, then
 user-facing breakage, then SEO/a11y/performance, then polish.
+
+Always write the paired Markdown and JSON artifacts before the final response.
+The JSON artifact must conform to `review-report.schema.json`, include
+`findings: []` and `not_verified: []` when empty, and include `mode_data.type:
+"experts"`.
 
 After the report, ask whether the user wants an implementation plan. A good plan
 groups fixes by dependency and risk, with critical items first.

@@ -10,13 +10,15 @@ signup, checkout, search, subscribe, contact, pricing, docs, account, and
 similar task paths.
 
 This is not a source-code QA pass. Regulars must not read source code or project
-files. They navigate like users and report task outcomes.
+files. They navigate like users and report task outcomes. Writing the paired
+report artifacts under `.review-squad/reports/` is required and is still
+considered part of the review.
 
 ## References
 
 - `../../references/panels.md` for task examples.
 - `../../references/browser-preflight.md` for browser availability and fallback.
-- `../../references/report-formats.md` for scorecards.
+- `../../references/report-formats.md` for scorecards and report artifacts.
 
 ## Workflow
 
@@ -32,6 +34,10 @@ files. They navigate like users and report task outcomes.
 6. Run tasks sequentially because the browser session is shared.
 7. After each task, report `PASS`, `PARTIAL`, or `FAIL` plus the headline issue.
 8. Consolidate into a scorecard with blockers and friction.
+9. Write paired report artifacts using the artifact contract in
+   `report-formats.md`: `.review-squad/reports/<stem>.md` and
+   `.review-squad/reports/<stem>.json`.
+10. Present the Markdown findings in chat and include the JSON artifact path.
 
 ## Task Panel Format
 
@@ -79,3 +85,8 @@ Use the `Regulars` format from `report-formats.md`.
 
 Blockers are failed tasks. Treat a failed primary conversion flow as critical.
 Passed-but-painful flows go under friction.
+
+Always write the paired Markdown and JSON artifacts before the final response.
+The JSON artifact must conform to `review-report.schema.json`, include
+`findings: []` and `not_verified: []` when empty, and include `mode_data.type:
+"regulars"`.

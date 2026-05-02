@@ -20,6 +20,17 @@ All modes must work standalone. Do not require or delegate to other plugins or
 skills. If a mode needs a plan, report, browser preflight, or fixlist, produce it
 directly from this plugin's skill and reference files.
 
+Every completed mode writes paired report artifacts under
+`.review-squad/reports/` using the same filename stem:
+
+```text
+.review-squad/reports/<timestamp>-<mode>[-<label>...].md
+.review-squad/reports/<timestamp>-<mode>[-<label>...].json
+```
+
+The final chat response should stay human-readable Markdown and include the JSON
+artifact path.
+
 ## Routing
 
 Choose the mode from the user's intent:
