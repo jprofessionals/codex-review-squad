@@ -37,8 +37,9 @@ Load only what you need:
    squad, not a loose list of agents.
 4. Ask the user to approve or customize the panel before dispatching reviewers.
 5. Dispatch approved reviewers in parallel using Codex subagents when available.
-   If subagents are unavailable, state the limitation and run the reviews
-   sequentially in the current agent.
+   Use self-contained lane prompts by default and follow the subagent dispatch
+   constraint below. If subagents are unavailable, state the limitation and run
+   the reviews sequentially in the current agent.
 6. Consolidate findings into one deduplicated, severity-ranked report with
    source attribution.
 7. Write paired report artifacts using the artifact contract in
@@ -150,6 +151,38 @@ Set subagent reasoning effort intentionally:
   data integrity, complex performance, or unusually large/ambiguous codebases.
 - Use `reasoning_effort: low` for narrow copy, social metadata, basic SEO, or
   other quick checklist reviewers when latency matters.
+
+### Subagent Dispatch Constraint
+
+When spawning reviewer subagents, do not combine `fork_context: true` with
+explicit `agent_type`, `model`, or `reasoning_effort`. The subagent runtime
+rejects that combination because forked agents inherit agent type, model, and
+reasoning effort from the parent.
+
+Default Review Squad dispatch must use self-contained reviewer prompts with
+explicit reviewer settings and no `fork_context`:
+
+```text
+agent_type: explorer
+reasoning_effort: high|medium|low
+message: "You are the SEC lane..."
+```
+
+Use `fork_context: true` only when the reviewer truly needs the exact parent
+thread context. In that case, omit `agent_type`, `model`, and
+`reasoning_effort`:
+
+```text
+fork_context: true
+message: "You are the SEC lane..."
+```
+
+Preferred call shapes:
+
+- Lane-specific expert review: `agent_type`, `reasoning_effort`, `message`; no
+  `fork_context`.
+- Full-context forked review: `fork_context`, `message`; no explicit
+  `agent_type`, `model`, or `reasoning_effort`.
 
 In panel proposals, group lanes by review priority before dispatch:
 
