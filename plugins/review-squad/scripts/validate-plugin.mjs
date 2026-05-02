@@ -104,8 +104,19 @@ if (reportSchema) {
   if (reportSchema.$schema !== "https://json-schema.org/draft/2020-12/schema") {
     errors.push("review report schema must use JSON Schema draft 2020-12");
   }
-  if (reportSchema.properties?.schema_version?.const !== "1.0") {
-    errors.push('review report schema must define schema_version const "1.0"');
+  if (reportSchema.properties?.schema_version?.const !== "1.1") {
+    errors.push('review report schema must define schema_version const "1.1"');
+  }
+  for (const field of ["decision_summary", "findings", "not_verified", "mode_data"]) {
+    if (!reportSchema.required?.includes(field)) {
+      errors.push(`review report schema must require ${field}`);
+    }
+  }
+  const findingRequired = reportSchema.$defs?.finding?.required ?? [];
+  for (const field of ["impact", "human_gate_summary", "workflow", "bmad"]) {
+    if (!findingRequired.includes(field)) {
+      errors.push(`review report finding schema must require ${field}`);
+    }
   }
 }
 

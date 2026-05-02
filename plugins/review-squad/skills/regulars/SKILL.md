@@ -88,5 +88,7 @@ Passed-but-painful flows go under friction.
 
 Always write the paired Markdown and JSON artifacts before the final response.
 The JSON artifact must conform to `review-report.schema.json`, include
-`findings: []` and `not_verified: []` when empty, and include `mode_data.type:
-"regulars"`.
+`schema_version: "1.1"`, `findings: []`, `not_verified: []`,
+`decision_summary`, stable `review_context` fields, and `mode_data.type:
+"regulars"`. Findings must include structured impact, human gate summary,
+workflow flags, decision flags, and evidence detail using the schema fields.

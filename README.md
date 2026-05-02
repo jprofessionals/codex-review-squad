@@ -274,14 +274,31 @@ cannot determine a label confidently, it omits the label instead of guessing.
 
 The JSON report always includes:
 
+- `schema_version: "1.1"`
 - `findings: []`, even when no findings were found
 - `not_verified: []`, even when everything was verified
 - `mode_data` for the selected mode
+- `decision_summary` with patchable, decision-required, and BMAD-blocking
+  counts
+- Stable `review_context` fields, including `story` as `null` when unknown
 - `generator.name`, `generator.version`, and `generator.skill`
-- Per-finding severity, remediation, evidence, and decision flags
+- Per-finding severity, structured impact, remediation, evidence, decision
+  flags, workflow flags, and human gate summary
 
 Finding severities are only `critical`, `important`, and `minor`. Unverified
 checks belong in `not_verified[]` rather than as a severity.
+
+Evidence entries always include `kind`, `path`, `line`, `line_end`, `url`, and
+`detail`; fields that do not apply are `null`. Impact is structured as
+`runtime`, `architecture`, and `delivery`.
+
+When a finding requires a human decision, blocks BMAD, or has any decision flag,
+Review Squad adds a concrete command recommendation. If the story is unknown,
+it uses an explicit `STORY=<story>` placeholder. Example:
+
+```bash
+make story-run-decision STORY=1.2 RESUME_DECISION=stop_and_create_follow_up_story STATUS_UPDATE=review
+```
 
 ## Best Use
 

@@ -14,6 +14,7 @@
     "target",
     "review_context",
     "summary",
+    "decision_summary",
     "findings",
     "not_verified",
     "mode_data",
@@ -22,7 +23,7 @@
   "properties": {
     "schema_version": {
       "type": "string",
-      "const": "1.0"
+      "const": "1.1"
     },
     "report_id": {
       "type": "string",
@@ -110,7 +111,15 @@
     "review_context": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["labels"],
+      "required": [
+        "labels",
+        "branch",
+        "base_branch",
+        "pull_request",
+        "story",
+        "commit",
+        "working_tree_dirty"
+      ],
       "properties": {
         "labels": {
           "type": "array",
@@ -150,7 +159,8 @@
         "critical_count",
         "important_count",
         "minor_count",
-        "not_verified_count"
+        "not_verified_count",
+        "recommended_next_move"
       ],
       "properties": {
         "headline": {
@@ -175,6 +185,39 @@
         "not_verified_count": {
           "type": "integer",
           "minimum": 0
+        },
+        "recommended_next_move": {
+          "type": "string"
+        }
+      }
+    },
+    "decision_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "patchable_now_count",
+        "decision_required_count",
+        "blocks_bmad_count",
+        "recommended_bmad_commands"
+      ],
+      "properties": {
+        "patchable_now_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "decision_required_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "blocks_bmad_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "recommended_bmad_commands": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/bmad_command"
+          }
         }
       }
     },
@@ -263,8 +306,12 @@
         "evidence",
         "source",
         "suggested_fix",
+        "impact",
         "remediation",
         "decision_flags",
+        "human_gate_summary",
+        "workflow",
+        "bmad",
         "affected_files"
       ],
       "properties": {
@@ -296,6 +343,9 @@
         "suggested_fix": {
           "type": "string"
         },
+        "impact": {
+          "$ref": "#/$defs/impact"
+        },
         "remediation": {
           "type": "string",
           "enum": [
@@ -309,11 +359,144 @@
         "decision_flags": {
           "$ref": "#/$defs/decision_flags"
         },
+        "human_gate_summary": {
+          "$ref": "#/$defs/human_gate_summary"
+        },
+        "workflow": {
+          "$ref": "#/$defs/workflow"
+        },
+        "bmad": {
+          "$ref": "#/$defs/finding_bmad"
+        },
         "affected_files": {
           "type": "array",
           "items": {
             "type": "string"
           }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "workflow": {
+                "properties": {
+                  "decision_required": { "const": true }
+                },
+                "required": ["decision_required"]
+              }
+            },
+            "required": ["workflow"]
+          },
+          "then": {
+            "properties": {
+              "bmad": {
+                "properties": {
+                  "recommended_command": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "command_reason": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": ["recommended_command", "command_reason"]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "workflow": {
+                "properties": {
+                  "blocks_bmad": { "const": true }
+                },
+                "required": ["blocks_bmad"]
+              }
+            },
+            "required": ["workflow"]
+          },
+          "then": {
+            "properties": {
+              "bmad": {
+                "properties": {
+                  "recommended_command": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "command_reason": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": ["recommended_command", "command_reason"]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "decision_flags": {
+                "anyOf": [
+                  {
+                    "properties": {
+                      "adr_required": { "const": true }
+                    },
+                    "required": ["adr_required"]
+                  },
+                  {
+                    "properties": {
+                      "follow_up_story_required": { "const": true }
+                    },
+                    "required": ["follow_up_story_required"]
+                  },
+                  {
+                    "properties": {
+                      "scope_decision_required": { "const": true }
+                    },
+                    "required": ["scope_decision_required"]
+                  }
+                ]
+              }
+            },
+            "required": ["decision_flags"]
+          },
+          "then": {
+            "properties": {
+              "bmad": {
+                "properties": {
+                  "recommended_command": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "command_reason": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": ["recommended_command", "command_reason"]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "impact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runtime", "architecture", "delivery"],
+      "properties": {
+        "runtime": {
+          "type": "string"
+        },
+        "architecture": {
+          "type": "string"
+        },
+        "delivery": {
+          "type": "string"
         }
       }
     },
@@ -340,7 +523,7 @@
     "evidence": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["kind", "detail"],
+      "required": ["kind", "path", "line", "line_end", "url", "detail"],
       "properties": {
         "kind": {
           "type": "string",
@@ -370,6 +553,94 @@
         "url": {
           "type": ["string", "null"],
           "format": "uri"
+        }
+      }
+    },
+    "human_gate_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "why_human",
+        "decision_needed",
+        "consequence_if_ignored",
+        "recommended_resolution"
+      ],
+      "properties": {
+        "why_human": {
+          "type": "string"
+        },
+        "decision_needed": {
+          "type": "string"
+        },
+        "consequence_if_ignored": {
+          "type": "string"
+        },
+        "recommended_resolution": {
+          "type": "string",
+          "enum": [
+            "continue_same_story",
+            "follow_up_story",
+            "adr",
+            "non_actionable"
+          ]
+        }
+      }
+    },
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["patchable_now", "decision_required", "blocks_bmad"],
+      "properties": {
+        "patchable_now": {
+          "type": "boolean"
+        },
+        "decision_required": {
+          "type": "boolean"
+        },
+        "blocks_bmad": {
+          "type": "boolean"
+        }
+      }
+    },
+    "finding_bmad": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recommended_command", "command_reason"],
+      "properties": {
+        "recommended_command": {
+          "type": ["string", "null"]
+        },
+        "command_reason": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "bmad_command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["finding_id", "command", "reason"],
+      "properties": {
+        "finding_id": {
+          "type": "string"
+        },
+        "command": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "recommended_resolution": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "continue_same_story",
+            "follow_up_story",
+            "adr",
+            "non_actionable",
+            null
+          ]
         }
       }
     },

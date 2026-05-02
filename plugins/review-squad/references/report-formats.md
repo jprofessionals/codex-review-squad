@@ -53,22 +53,38 @@ is required because downstream tooling usually needs it.
 ## JSON Report
 
 The JSON artifact must conform to `review-report.schema.json` in this directory.
-Use `schema_version: "1.0"` until that schema changes incompatibly.
+Use `schema_version: "1.1"` until that schema changes incompatibly.
 
 Required conventions:
 
 - Always emit `findings: []`, even when there are no findings.
 - Always emit `not_verified: []`, even when everything was verified.
 - Always emit `mode_data` matching the selected mode.
+- Always emit `decision_summary`, even when every count is zero.
+- Always emit stable `review_context` fields: `labels`, `branch`,
+  `base_branch`, `pull_request`, `story`, `commit`, and
+  `working_tree_dirty`; use `null` when unknown.
+- Always emit `summary.recommended_next_move`.
 - Keep actionable severity separate from verification state. Finding severities
   are only `critical`, `important`, or `minor`; unverified checks belong in
   `not_verified[]`.
 - Include `generator.name`, `generator.version`, and `generator.skill`.
+- Include structured per-finding impact with `runtime`, `architecture`, and
+  `delivery` fields.
 - Include per-finding `remediation`: `patchable`, `needs_human`, `follow_up`,
   `informational`, or `not_verified`.
 - Include per-finding decision flags: `adr_required`,
   `follow_up_story_required`, and `scope_decision_required`.
-- Evidence line references may include `line` and `line_end`.
+- Include per-finding `human_gate_summary` explaining why a human is needed,
+  what decision is needed, the consequence of ignoring it, and the recommended
+  resolution.
+- Include per-finding workflow flags: `patchable_now`, `decision_required`, and
+  `blocks_bmad`.
+- For decision-required, BMAD-blocking, or decision-flagged findings, include a
+  concrete `bmad.recommended_command`. If the story is unknown, use an explicit
+  placeholder such as `STORY=<story>`.
+- Evidence must always include `kind`, `path`, `line`, `line_end`, `url`, and
+  `detail`; use `null` for fields that do not apply.
 - Use valid JSON only: no comments and no Markdown fences in the artifact file.
 
 ## Markdown Reports
@@ -98,13 +114,33 @@ Standard priority:
 
 - `API` API Design Reviewer, medium effort, complete: [headline]
 
+### BMAD Decision Section
+
+Patchable now: [N]
+Decision required: [N]
+Blocks BMAD: [N]
+
+`I-01` [Finding title]
+
+- Why human: [why an operator or product/architecture owner must decide]
+- Decision needed: [specific decision]
+- Consequence if ignored: [runtime, architecture, or delivery consequence]
+- Recommended resolution: [continue_same_story/follow_up_story/adr/non_actionable]
+- Recommended command: `make story-run-decision STORY=[story] RESUME_DECISION=[decision] STATUS_UPDATE=review ...`
+
+If no findings require a human decision, write:
+`No BMAD-blocking decisions reported.`
+
 ### Critical
 
 `C-01` [Source lanes] [Finding title]
 
-- Evidence: [file:line or URL]
-- Impact: [why this blocks launch or creates serious risk]
+- Evidence: [file:line-line_end or URL, plus detail]
+- Runtime impact: [runtime/user/system consequence]
+- Architecture impact: [architecture/design consequence]
+- Delivery impact: [story/scope/schedule consequence]
 - Suggested fix: [concise action]
+- Workflow: [patchable now / decision required / blocks BMAD]
 
 If there are no critical findings, write: `No critical findings reported.`
 
@@ -112,16 +148,20 @@ If there are no critical findings, write: `No critical findings reported.`
 
 `I-01` [Source lanes] [Finding title]
 
-- Evidence: [file:line or URL]
-- Impact: [user, security, reliability, delivery, or maintainability impact]
+- Evidence: [file:line-line_end or URL, plus detail]
+- Runtime impact: [runtime/user/system consequence]
+- Architecture impact: [architecture/design consequence]
+- Delivery impact: [story/scope/schedule consequence]
 - Suggested fix: [concise action]
+- Workflow: [patchable now / decision required / blocks BMAD]
 
 ### Minor
 
 `M-01` [Source lanes] [Finding title]
 
-- Evidence: [file:line or URL]
+- Evidence: [file:line-line_end or URL, plus detail]
 - Suggested fix: [concise action]
+- Workflow: [patchable now / decision required / blocks BMAD]
 
 ### Deferred Or Not Verified
 

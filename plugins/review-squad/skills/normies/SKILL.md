@@ -90,5 +90,7 @@ clarity, language, navigation, hierarchy, trust, and obvious next actions.
 
 Always write the paired Markdown and JSON artifacts before the final response.
 The JSON artifact must conform to `review-report.schema.json`, include
-`findings: []` and `not_verified: []` when empty, and include `mode_data.type:
-"normies"`.
+`schema_version: "1.1"`, `findings: []`, `not_verified: []`,
+`decision_summary`, stable `review_context` fields, and `mode_data.type:
+"normies"`. Findings must include structured impact, human gate summary,
+workflow flags, decision flags, and evidence detail using the schema fields.

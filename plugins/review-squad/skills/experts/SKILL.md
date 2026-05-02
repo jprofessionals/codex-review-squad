@@ -124,8 +124,11 @@ Review focus:
 Return findings only. Rank each finding as CRITICAL, IMPORTANT, MINOR, or
 NOT VERIFIED. Include evidence with file paths, line numbers when available,
 screens or URLs when browser evidence exists, and a concise suggested fix.
-Do not include generic best practices unless they are tied to project evidence.
-Do not use wide Markdown tables; use short bullets or finding cards.
+For verified findings, include runtime impact, architecture impact, delivery
+impact, whether it is patchable now, whether a human decision is required, and
+the consequence of ignoring it. Do not include generic best practices unless
+they are tied to project evidence. Do not use wide Markdown tables; use short
+bullets or finding cards.
 
 Start your report with:
 Lane: [LANE]
@@ -201,27 +204,47 @@ Do not use wide Markdown tables in the final report. Use finding cards:
 ```markdown
 `I-01` [SEC, REL] Short finding title
 
-- Evidence: path/to/file.kt:123; path/to/other.kt:45
-- Impact: one concise sentence
+- Evidence: path/to/file.kt:123-130 - detail; path/to/other.kt:45 - detail
+- Runtime impact: one concise sentence
+- Architecture impact: one concise sentence
+- Delivery impact: one concise sentence
 - Suggested fix: one concise sentence
+- Workflow: patchable now / decision required / blocks BMAD
 ```
 
 Findings must include:
 
 - Severity
 - Concrete issue
-- Evidence
+- Evidence with `kind`, `path`, `line`, `line_end`, `url`, and `detail` in the
+  JSON artifact
 - Which reviewer found it
 - Suggested fix
+- Structured impact: `runtime`, `architecture`, and `delivery`
 - Remediation classification
 - Decision flags
+- Human gate summary: why human, decision needed, consequence if ignored, and
+  recommended resolution
+- Workflow flags: `patchable_now`, `decision_required`, and `blocks_bmad`
+- BMAD command recommendation when a finding requires a decision, blocks BMAD,
+  or has any decision flag; use `STORY=<story>` if the story is unknown
 
 Order by launch risk: critical security/data/availability issues first, then
 user-facing breakage, then SEO/a11y/performance, then polish.
 
+Put a `BMAD Decision Section` near the top of the Markdown report. Separate
+patchable findings from decision-required findings. If a finding requires an
+operator decision, explain why it stops or does not stop BMAD and include a
+concrete command such as:
+
+```bash
+make story-run-decision STORY=1.2 RESUME_DECISION=stop_and_create_follow_up_story STATUS_UPDATE=review
+```
+
 Always write the paired Markdown and JSON artifacts before the final response.
 The JSON artifact must conform to `review-report.schema.json`, include
-`findings: []` and `not_verified: []` when empty, and include `mode_data.type:
+`schema_version: "1.1"`, `findings: []`, `not_verified: []`,
+`decision_summary`, stable `review_context` fields, and `mode_data.type:
 "experts"`.
 
 After the report, ask whether the user wants an implementation plan. A good plan
