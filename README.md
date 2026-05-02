@@ -29,6 +29,17 @@ Use it when you want several focused reviewers to inspect the same project from
 different perspectives: expert audit, first-time visitor impressions, real user
 task flows, or last-mile polish.
 
+Every completed Review Squad run writes paired report artifacts:
+
+```text
+.review-squad/reports/<timestamp>-<mode>[-<label>...].md
+.review-squad/reports/<timestamp>-<mode>[-<label>...].json
+```
+
+The chat response remains Markdown for humans and includes the JSON report path
+for automation. The Markdown artifact contains the full human report. The JSON
+artifact follows `plugins/review-squad/references/review-report.schema.json`.
+
 ## Requirements
 
 - Codex CLI with plugin marketplace support.
@@ -186,6 +197,7 @@ node plugins/review-squad/scripts/validate-plugin.mjs
 The validator checks:
 
 - Required files exist.
+- The structured report JSON schema exists and parses.
 - JSON manifests parse.
 - Every skill has YAML frontmatter with `name` and `description`.
 - The plugin manifest references `./skills/` and `./.mcp.json`.
@@ -226,6 +238,50 @@ You can inspect what the model will see with:
 codex debug prompt-input "use review-squad:experts to review this repo" \
   | rg "review-squad|experts"
 ```
+
+## Report Artifacts
+
+Review Squad always writes reports into the target repository:
+
+```text
+.review-squad/reports/
+```
+
+Each run creates a paired Markdown and JSON report with the same stem:
+
+```text
+20260502T083200Z-experts-story-1.15-pr-10-origin-main.md
+20260502T083200Z-experts-story-1.15-pr-10-origin-main.json
+```
+
+Filename stems use:
+
+- A compact UTC timestamp: `YYYYMMDDTHHMMSSZ`
+- The Review Squad mode: `experts`, `normies`, `regulars`, or `well-actually`
+- Optional filename-safe labels that identify what was reviewed
+
+Useful labels include story ids, PR numbers, base branches, current branches, or
+other explicit context from the prompt:
+
+```text
+story-1.15
+pr-10
+origin-main
+```
+
+Labels are sanitized to `A-Z`, `a-z`, `0-9`, `.`, `_`, and `-`. If Review Squad
+cannot determine a label confidently, it omits the label instead of guessing.
+
+The JSON report always includes:
+
+- `findings: []`, even when no findings were found
+- `not_verified: []`, even when everything was verified
+- `mode_data` for the selected mode
+- `generator.name`, `generator.version`, and `generator.skill`
+- Per-finding severity, remediation, evidence, and decision flags
+
+Finding severities are only `critical`, `important`, and `minor`. Unverified
+checks belong in `not_verified[]` rather than as a severity.
 
 ## Best Use
 

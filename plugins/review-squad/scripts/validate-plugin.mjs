@@ -73,6 +73,7 @@ const requiredFiles = [
   path.join(pluginRoot, "references", "panels.md"),
   path.join(pluginRoot, "references", "browser-preflight.md"),
   path.join(pluginRoot, "references", "report-formats.md"),
+  path.join(pluginRoot, "references", "review-report.schema.json"),
   path.join(pluginRoot, "scripts", "validate-plugin.mjs")
 ];
 
@@ -95,6 +96,18 @@ if (manifest) {
 }
 
 readJson(path.join(pluginRoot, ".mcp.json"), "plugin MCP config");
+const reportSchema = readJson(
+  path.join(pluginRoot, "references", "review-report.schema.json"),
+  "review report schema"
+);
+if (reportSchema) {
+  if (reportSchema.$schema !== "https://json-schema.org/draft/2020-12/schema") {
+    errors.push("review report schema must use JSON Schema draft 2020-12");
+  }
+  if (reportSchema.properties?.schema_version?.const !== "1.0") {
+    errors.push('review report schema must define schema_version const "1.0"');
+  }
+}
 
 const marketplacePath = path.join(repoRoot, ".agents", "plugins", "marketplace.json");
 const marketplace = readJson(marketplacePath, "marketplace");

@@ -9,14 +9,17 @@ Use this skill when the user wants the nitpicks that professional audits often
 skip: typography, grammar, standards, spacing, awkward UX, and questionable
 technical choices.
 
-This mode may be playful, but it must still be useful. Do not edit files during
-the review. Keep a practical fixlist after the in-character reports.
+This mode may be playful, but it must still be useful. Do not edit project
+source files during the review. Writing the paired report artifacts under
+`.review-squad/reports/` is required and is still considered part of the review.
+Keep a practical fixlist after the in-character reports.
 
 ## References
 
 - `../../references/panels.md` for default pedants and access rules.
 - `../../references/browser-preflight.md` for browser availability and fallback.
-- `../../references/report-formats.md` for the roast and fixlist format.
+- `../../references/report-formats.md` for the roast, fixlist format, and
+  report artifacts.
 
 ## Workflow
 
@@ -29,7 +32,11 @@ the review. Keep a practical fixlist after the in-character reports.
 6. If browser MCP is unavailable, say which visual checks are skipped. Run only
    useful source-access reviewers, such as standards or tech-choice reviewers,
    when the user still wants a partial review.
-7. Present in-character findings first, then a practical fixlist.
+7. Write paired report artifacts using the artifact contract in
+   `report-formats.md`: `.review-squad/reports/<stem>.md` and
+   `.review-squad/reports/<stem>.json`.
+8. Present in-character findings first, then a practical fixlist, and include
+   the JSON artifact path.
 
 ## Default Panel
 
@@ -83,3 +90,8 @@ Use the `Well Actually` format from `report-formats.md`.
 The first section can keep the persona voice. The practical fixlist must be
 plain, actionable, and ordered by effort. Do not let jokes obscure whether a fix
 is worth doing.
+
+Always write the paired Markdown and JSON artifacts before the final response.
+The JSON artifact must conform to `review-report.schema.json`, include
+`findings: []` and `not_verified: []` when empty, and include `mode_data.type:
+"well-actually"`.

@@ -1,0 +1,4 @@
+# Local workspace and tool state
+.mcp.json
+.serena/
+.timereg.toml

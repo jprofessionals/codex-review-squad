@@ -1,0 +1,622 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codex-review-squad.local/schemas/review-report.schema.json",
+  "title": "Codex Review Squad Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "report_id",
+    "mode",
+    "generated_at",
+    "generator",
+    "artifacts",
+    "target",
+    "review_context",
+    "summary",
+    "findings",
+    "not_verified",
+    "mode_data",
+    "sources"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "report_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._:-]+$",
+      "description": "Stable identifier for this generated report, normally the artifact stem."
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["experts", "normies", "regulars", "well-actually"]
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "skill"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "const": "codex-review-squad"
+        },
+        "version": {
+          "type": "string",
+          "description": "Plugin version from .codex-plugin/plugin.json when known."
+        },
+        "skill": {
+          "type": "string",
+          "enum": [
+            "review-squad:experts",
+            "review-squad:normies",
+            "review-squad:regulars",
+            "review-squad:well-actually"
+          ]
+        }
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stem", "markdown_path", "json_path"],
+      "properties": {
+        "stem": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9._-]+$"
+        },
+        "markdown_path": {
+          "type": "string"
+        },
+        "json_path": {
+          "type": "string"
+        }
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "repository",
+            "site",
+            "application",
+            "pull_request",
+            "branch",
+            "story",
+            "unknown"
+          ]
+        },
+        "path": {
+          "type": ["string", "null"]
+        },
+        "url": {
+          "type": ["string", "null"],
+          "format": "uri"
+        },
+        "name": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "review_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["labels"],
+      "properties": {
+        "labels": {
+          "type": "array",
+          "description": "Filename-safe identifiers such as story-1.15, pr-10, origin-main.",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._-]+$"
+          },
+          "uniqueItems": true
+        },
+        "branch": {
+          "type": ["string", "null"]
+        },
+        "base_branch": {
+          "type": ["string", "null"]
+        },
+        "pull_request": {
+          "type": ["string", "integer", "null"]
+        },
+        "story": {
+          "type": ["string", "null"]
+        },
+        "commit": {
+          "type": ["string", "null"]
+        },
+        "working_tree_dirty": {
+          "type": ["boolean", "null"]
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "headline",
+        "overall_status",
+        "critical_count",
+        "important_count",
+        "minor_count",
+        "not_verified_count"
+      ],
+      "properties": {
+        "headline": {
+          "type": "string"
+        },
+        "overall_status": {
+          "type": "string",
+          "enum": ["pass", "needs_attention", "blocked", "mixed"]
+        },
+        "critical_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "important_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "minor_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "not_verified_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/finding"
+      }
+    },
+    "not_verified": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/not_verified_item"
+      }
+    },
+    "mode_data": {
+      "oneOf": [
+        { "$ref": "#/$defs/experts_data" },
+        { "$ref": "#/$defs/normies_data" },
+        { "$ref": "#/$defs/regulars_data" },
+        { "$ref": "#/$defs/well_actually_data" }
+      ]
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/source"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "mode": { "const": "experts" } },
+        "required": ["mode"]
+      },
+      "then": {
+        "properties": {
+          "mode_data": { "$ref": "#/$defs/experts_data" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "mode": { "const": "normies" } },
+        "required": ["mode"]
+      },
+      "then": {
+        "properties": {
+          "mode_data": { "$ref": "#/$defs/normies_data" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "mode": { "const": "regulars" } },
+        "required": ["mode"]
+      },
+      "then": {
+        "properties": {
+          "mode_data": { "$ref": "#/$defs/regulars_data" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "mode": { "const": "well-actually" } },
+        "required": ["mode"]
+      },
+      "then": {
+        "properties": {
+          "mode_data": { "$ref": "#/$defs/well_actually_data" }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "severity",
+        "title",
+        "description",
+        "evidence",
+        "source",
+        "suggested_fix",
+        "remediation",
+        "decision_flags",
+        "affected_files"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["critical", "important", "minor"]
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidence"
+          }
+        },
+        "source": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "suggested_fix": {
+          "type": "string"
+        },
+        "remediation": {
+          "type": "string",
+          "enum": [
+            "patchable",
+            "needs_human",
+            "follow_up",
+            "informational",
+            "not_verified"
+          ]
+        },
+        "decision_flags": {
+          "$ref": "#/$defs/decision_flags"
+        },
+        "affected_files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "decision_flags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "adr_required",
+        "follow_up_story_required",
+        "scope_decision_required"
+      ],
+      "properties": {
+        "adr_required": {
+          "type": "boolean"
+        },
+        "follow_up_story_required": {
+          "type": "boolean"
+        },
+        "scope_decision_required": {
+          "type": "boolean"
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "detail"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "file",
+            "url",
+            "screenshot",
+            "browser_observation",
+            "command_output",
+            "reviewer_observation"
+          ]
+        },
+        "detail": {
+          "type": "string"
+        },
+        "path": {
+          "type": ["string", "null"]
+        },
+        "line": {
+          "type": ["integer", "null"],
+          "minimum": 1
+        },
+        "line_end": {
+          "type": ["integer", "null"],
+          "minimum": 1
+        },
+        "url": {
+          "type": ["string", "null"],
+          "format": "uri"
+        }
+      }
+    },
+    "not_verified_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["item", "reason", "source"],
+      "properties": {
+        "item": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "source": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["expert", "persona", "task", "current_agent", "tool"]
+        }
+      }
+    },
+    "experts_data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "panel", "implementation_plan_offer"],
+      "properties": {
+        "type": {
+          "const": "experts"
+        },
+        "panel": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "implementation_plan_offer": {
+          "type": "boolean"
+        }
+      }
+    },
+    "normies_data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "personas", "confusion_matrix", "recommendations", "what_worked"],
+      "properties": {
+        "type": {
+          "const": "normies"
+        },
+        "personas": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "confusion_matrix": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/recommendation"
+          }
+        },
+        "what_worked": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "regulars_data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "scorecard", "result_counts", "blockers", "friction", "what_worked"],
+      "properties": {
+        "type": {
+          "const": "regulars"
+        },
+        "scorecard": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/task_result"
+          }
+        },
+        "result_counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["pass", "partial", "fail"],
+          "properties": {
+            "pass": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "partial": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "fail": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "blockers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/recommendation"
+          }
+        },
+        "friction": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/recommendation"
+          }
+        },
+        "what_worked": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "well_actually_data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "roast_by_persona", "cross_persona_consensus", "practical_fixlist"],
+      "properties": {
+        "type": {
+          "const": "well-actually"
+        },
+        "roast_by_persona": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["persona", "findings"],
+            "properties": {
+              "persona": {
+                "type": "string"
+              },
+              "findings": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "cross_persona_consensus": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/recommendation"
+          }
+        },
+        "practical_fixlist": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/fixlist_item"
+          }
+        }
+      }
+    },
+    "recommendation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["issue", "suggested_fix"],
+      "properties": {
+        "priority": {
+          "type": ["string", "null"]
+        },
+        "issue": {
+          "type": "string"
+        },
+        "who_was_affected": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "suggested_fix": {
+          "type": "string"
+        }
+      }
+    },
+    "task_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["task", "persona", "result", "issues"],
+      "properties": {
+        "task": {
+          "type": "string"
+        },
+        "persona": {
+          "type": "string"
+        },
+        "result": {
+          "type": "string",
+          "enum": ["PASS", "PARTIAL", "FAIL"]
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "fixlist_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fix", "effort", "files_or_screens"],
+      "properties": {
+        "fix": {
+          "type": "string"
+        },
+        "effort": {
+          "type": "string"
+        },
+        "files_or_screens": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

@@ -8,13 +8,16 @@ description: Run sequential browser-based first-impression reviews by personas w
 Use this skill to answer: "Do first-time visitors understand this site?"
 
 This is not a code review. Normies must not read source code or project files.
-They are cold visitors using the rendered site only.
+They are cold visitors using the rendered site only. Writing the paired report
+artifacts under `.review-squad/reports/` is required and is still considered
+part of the review.
 
 ## References
 
 - `../../references/panels.md` for persona defaults.
 - `../../references/browser-preflight.md` for browser availability and fallback.
-- `../../references/report-formats.md` for the confusion matrix.
+- `../../references/report-formats.md` for the confusion matrix and report
+  artifacts.
 
 ## Workflow
 
@@ -28,6 +31,10 @@ They are cold visitors using the rendered site only.
 5. Run personas sequentially because the browser session is shared.
 6. After each persona, briefly report the key impression.
 7. Consolidate into a confusion matrix and prioritized recommendations.
+8. Write paired report artifacts using the artifact contract in
+   `report-formats.md`: `.review-squad/reports/<stem>.md` and
+   `.review-squad/reports/<stem>.json`.
+9. Present the Markdown findings in chat and include the JSON artifact path.
 
 ## Default Personas
 
@@ -80,3 +87,8 @@ Severity comes from breadth:
 
 Do not convert this into a technical audit. Recommendations should focus on
 clarity, language, navigation, hierarchy, trust, and obvious next actions.
+
+Always write the paired Markdown and JSON artifacts before the final response.
+The JSON artifact must conform to `review-report.schema.json`, include
+`findings: []` and `not_verified: []` when empty, and include `mode_data.type:
+"normies"`.
