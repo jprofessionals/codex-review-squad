@@ -1,5 +1,4 @@
 # Local workspace and tool state
-.agents/
 .mcp.json
 .serena/
 .timereg.toml
