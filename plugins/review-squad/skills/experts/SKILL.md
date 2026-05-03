@@ -33,8 +33,17 @@ Load only what you need:
    continue code review and mark rendered checks as not verified.
 3. Propose a default expert panel based on the detected project type. Include
    4-8 reviewers by default and suggest stack-specific additions or removals.
-   Use the panel proposal format below so the review feels like a coordinated
-   squad, not a loose list of agents.
+   Before asking for approval, scan the expert suggestion catalog in
+   `panels.md` for repository signals. Add strong matches to `Candidate Lanes`
+   unless they are already selected. If a relevant known expert is not selected
+   or listed as a candidate, name it under `Related Expert Suggestions` with
+   the detection signal and why the user might add it. The proposal should not
+   hide relevant expert lanes just because the default panel is kept small.
+   Mentioning a specialized concern inside a broad lane scope, such as putting
+   BMAD status checks under `TEST`, does not count as surfacing that specialized
+   expert; if the dedicated lane is relevant, name it separately. Use the panel
+   proposal format below so the review feels like a coordinated squad, not a
+   loose list of agents.
 4. Ask the user to approve or customize the panel before dispatching reviewers.
 5. Dispatch approved reviewers in parallel using Codex subagents when available.
    Use self-contained lane prompts by default and follow the subagent dispatch
@@ -91,6 +100,14 @@ Mode: read-only audit
 `OBS` Observability Reviewer
 
 - Why add it: [reason]
+- Effort: medium
+
+### Related Expert Suggestions
+
+`BMAD` BMAD Workflow Reviewer
+
+- Signal: [detected BMAD/story evidence, or omit this lane if no signal exists]
+- Why consider it: [reason this may be useful but was not selected by default]
 - Effort: medium
 
 ### Approval

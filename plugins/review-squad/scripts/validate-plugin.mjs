@@ -10,7 +10,6 @@ const pluginRoot = path.resolve(__dirname, "..");
 const repoRoot = path.resolve(pluginRoot, "..", "..");
 
 const errors = [];
-const warnings = [];
 const missing = new Set();
 
 function rel(file) {
@@ -159,20 +158,6 @@ for (const [directory, expectedName] of expectedSkills) {
   if (fm?.name && fm.name !== expectedName) {
     errors.push(`Skill ${rel(skillPath)} name must be "${expectedName}", got "${fm.name}"`);
   }
-}
-
-const agentsDir = path.join(repoRoot, ".agents");
-if (exists(agentsDir)) {
-  try {
-    fs.accessSync(agentsDir, fs.constants.W_OK);
-  } catch {
-    warnings.push(`Marketplace directory parent is not writable in this workspace: ${rel(agentsDir)}`);
-  }
-}
-
-if (warnings.length > 0) {
-  console.log("Warnings:");
-  for (const warning of warnings) console.log(`- ${warning}`);
 }
 
 if (errors.length > 0) {

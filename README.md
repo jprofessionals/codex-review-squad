@@ -308,6 +308,12 @@ approval or customization, dispatches read-only reviewers, and consolidates
 findings by severity. After the report, ask it for an implementation plan before
 making code changes.
 
+During panel selection, `experts` also checks for optional lane signals such as
+BMAD/story workflow files, release automation, dependency/license risk, developer
+experience changes, and broad architecture shifts. Strong matches appear as
+candidate lanes; weaker matches appear as related expert suggestions so you know
+which additional reviewers are available before approving the panel.
+
 Codex plugins cannot currently define Claude Code-style custom visual panels in
 the chat UI. This plugin uses structured Markdown instead: lane IDs, panel
 cards, dispatch waves, progress updates, and a final squad scorecard. Final
