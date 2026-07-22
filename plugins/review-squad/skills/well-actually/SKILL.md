@@ -17,6 +17,8 @@ Keep a practical fixlist after the in-character reports.
 ## References
 
 - `../../references/panels.md` for default pedants and access rules.
+- `../../references/dispatch-policy.md` for autonomous versus approval-required
+  panel dispatch.
 - `../../references/browser-preflight.md` for browser availability and fallback.
 - `../../references/report-formats.md` for the roast, fixlist format, and
   report artifacts.
@@ -26,7 +28,9 @@ Keep a practical fixlist after the in-character reports.
 1. Identify the target site/project and URL if available.
 2. Run browser preflight for visual/browser personas.
 3. Present the default pedant panel and suggest project-specific additions.
-4. Ask the user to approve or customize the panel.
+4. Determine and present the dispatch mode using `dispatch-policy.md`. Continue
+   immediately when the panel is auto-approved; pause only when approval is
+   required.
 5. Run browser-using personas sequentially. Code-only personas may run without a
    browser if their access rules allow it.
 6. If browser MCP is unavailable, say which visual checks are skipped. Run only
@@ -36,7 +40,9 @@ Keep a practical fixlist after the in-character reports.
    `report-formats.md`: `.review-squad/reports/<stem>.md` and
    `.review-squad/reports/<stem>.json`.
 8. Present in-character findings first, then a practical fixlist, and include
-   the JSON artifact path.
+   the JSON artifact path. Preserve the post-review decision gate in
+   `dispatch-policy.md` for findings that require a Product Owner or other human
+   decision.
 
 ## Default Panel
 

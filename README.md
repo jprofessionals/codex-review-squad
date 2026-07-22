@@ -303,10 +303,16 @@ make story-run-decision STORY=1.2 RESUME_DECISION=stop_and_create_follow_up_stor
 ## Best Use
 
 Start with `review-squad:experts` for launch readiness or codebase risk. It
-detects the project type, proposes a focused expert panel, waits for your
-approval or customization, dispatches read-only reviewers, and consolidates
-findings by severity. After the report, ask it for an implementation plan before
-making code changes.
+detects the project type, proposes a focused expert panel, shows its dispatch
+decision, and automatically starts a clearly scoped read-only review when the
+panel stays within the standard safety and resource envelope. It pauses for
+approval when scope, cost, access, irreversible actions, or human-owned
+decisions require it, then consolidates findings by severity.
+
+All modes show their proposed panel before dispatch. Auto-approved panels
+continue immediately; approval-required panels state the exact reason for the
+pause. Findings that need a Product Owner or another human decision remain a
+post-review control point and are not silently resolved by the squad.
 
 During panel selection, `experts` also checks for optional lane signals such as
 BMAD/story workflow files, release automation, dependency/license risk, developer

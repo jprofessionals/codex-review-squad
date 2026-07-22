@@ -70,6 +70,7 @@ const requiredFiles = [
   path.join(pluginRoot, "LICENSE"),
   path.join(pluginRoot, "NOTICE.md"),
   path.join(pluginRoot, "references", "panels.md"),
+  path.join(pluginRoot, "references", "dispatch-policy.md"),
   path.join(pluginRoot, "references", "browser-preflight.md"),
   path.join(pluginRoot, "references", "report-formats.md"),
   path.join(pluginRoot, "references", "review-report.schema.json"),
@@ -152,11 +153,38 @@ const expectedSkills = [
   ["well-actually", "well-actually"]
 ];
 
+const dispatchPolicyPath = path.join(
+  pluginRoot,
+  "references",
+  "dispatch-policy.md"
+);
+if (requireFile(dispatchPolicyPath)) {
+  const dispatchPolicy = fs.readFileSync(dispatchPolicyPath, "utf8");
+  for (const status of [
+    "Status: panel proposal — auto-approved",
+    "Status: panel proposal — approval required"
+  ]) {
+    if (!dispatchPolicy.includes(status)) {
+      errors.push(`Dispatch policy is missing status format: ${status}`);
+    }
+  }
+}
+
 for (const [directory, expectedName] of expectedSkills) {
   const skillPath = path.join(pluginRoot, "skills", directory, "SKILL.md");
   const fm = readFrontmatter(skillPath);
   if (fm?.name && fm.name !== expectedName) {
     errors.push(`Skill ${rel(skillPath)} name must be "${expectedName}", got "${fm.name}"`);
+  }
+
+  if (directory !== "review-squad" && exists(skillPath)) {
+    const skillText = fs.readFileSync(skillPath, "utf8");
+    if (!skillText.includes("../../references/dispatch-policy.md")) {
+      errors.push(`Skill ${rel(skillPath)} must load dispatch-policy.md`);
+    }
+    if (skillText.includes("Ask the user to approve or customize the panel.")) {
+      errors.push(`Skill ${rel(skillPath)} still requires unconditional approval`);
+    }
   }
 }
 

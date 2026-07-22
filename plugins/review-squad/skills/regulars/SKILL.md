@@ -17,6 +17,8 @@ considered part of the review.
 ## References
 
 - `../../references/panels.md` for task examples.
+- `../../references/dispatch-policy.md` for autonomous versus approval-required
+  panel dispatch.
 - `../../references/browser-preflight.md` for browser availability and fallback.
 - `../../references/report-formats.md` for scorecards and report artifacts.
 
@@ -30,7 +32,10 @@ considered part of the review.
    that task completion needs browser access. Offer to draft the task panel
    while waiting for browser access.
 4. Present a task panel with personas, goals, and one unhappy path per task.
-5. Ask the user to approve or customize the panel.
+5. Determine and present the dispatch mode using `dispatch-policy.md`. Continue
+   immediately when the panel is auto-approved; pause when approval is required,
+   including when a task may write production data or cause an irreversible
+   external action.
 6. Run tasks sequentially because the browser session is shared.
 7. After each task, report `PASS`, `PARTIAL`, or `FAIL` plus the headline issue.
 8. Consolidate into a scorecard with blockers and friction.
@@ -38,6 +43,8 @@ considered part of the review.
    `report-formats.md`: `.review-squad/reports/<stem>.md` and
    `.review-squad/reports/<stem>.json`.
 10. Present the Markdown findings in chat and include the JSON artifact path.
+    Preserve the post-review decision gate in `dispatch-policy.md` for findings
+    that require a Product Owner or other human decision.
 
 ## Task Panel Format
 

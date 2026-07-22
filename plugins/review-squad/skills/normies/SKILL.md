@@ -15,6 +15,8 @@ part of the review.
 ## References
 
 - `../../references/panels.md` for persona defaults.
+- `../../references/dispatch-policy.md` for autonomous versus approval-required
+  panel dispatch.
 - `../../references/browser-preflight.md` for browser availability and fallback.
 - `../../references/report-formats.md` for the confusion matrix and report
   artifacts.
@@ -27,14 +29,18 @@ part of the review.
    that cold visitor review needs browser access. Offer to proceed only from
    screenshots or a browser transcript supplied by the user.
 3. Present the default persona panel and suggest audience-specific additions.
-4. Ask the user to approve or customize the panel.
-5. Run personas sequentially because the browser session is shared.
+4. Determine and present the dispatch mode using `dispatch-policy.md`. Continue
+   immediately when the panel is auto-approved; pause only when approval is
+   required.
+5. Run the selected personas sequentially because the browser session is shared.
 6. After each persona, briefly report the key impression.
 7. Consolidate into a confusion matrix and prioritized recommendations.
 8. Write paired report artifacts using the artifact contract in
    `report-formats.md`: `.review-squad/reports/<stem>.md` and
    `.review-squad/reports/<stem>.json`.
 9. Present the Markdown findings in chat and include the JSON artifact path.
+   Preserve the post-review decision gate in `dispatch-policy.md` for findings
+   that require a Product Owner or other human decision.
 
 ## Default Personas
 

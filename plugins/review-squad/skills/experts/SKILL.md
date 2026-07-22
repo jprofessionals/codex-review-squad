@@ -1,6 +1,6 @@
 ---
 name: experts
-description: Run a production-ready multi-perspective project audit with Codex subagents, project-type detection, user-approved expert panels, and a consolidated severity-ranked report.
+description: Run a production-ready multi-perspective project audit with Codex subagents, project-type detection, risk-aware expert panel dispatch, and a consolidated severity-ranked report.
 ---
 
 # Experts
@@ -21,6 +21,8 @@ plan is needed after the report, write the plan directly in the current session.
 Load only what you need:
 
 - `../../references/panels.md` for project detection and default panels.
+- `../../references/dispatch-policy.md` for autonomous versus approval-required
+  panel dispatch.
 - `../../references/browser-preflight.md` if a running URL is involved.
 - `../../references/report-formats.md` for consolidation and report artifacts.
 
@@ -33,7 +35,7 @@ Load only what you need:
    continue code review and mark rendered checks as not verified.
 3. Propose a default expert panel based on the detected project type. Include
    4-8 reviewers by default and suggest stack-specific additions or removals.
-   Before asking for approval, scan the expert suggestion catalog in
+   Before deciding the dispatch mode, scan the expert suggestion catalog in
    `panels.md` for repository signals. Add strong matches to `Candidate Lanes`
    unless they are already selected. If a relevant known expert is not selected
    or listed as a candidate, name it under `Related Expert Suggestions` with
@@ -44,19 +46,26 @@ Load only what you need:
    expert; if the dedicated lane is relevant, name it separately. Use the panel
    proposal format below so the review feels like a coordinated squad, not a
    loose list of agents.
-4. Ask the user to approve or customize the panel before dispatching reviewers.
-5. Dispatch approved reviewers in parallel using Codex subagents when available.
+4. Determine the dispatch mode using `dispatch-policy.md`. Auto-dispatch only
+   when every autonomous-dispatch condition is met; otherwise require explicit
+   approval from the appropriate decision owner.
+5. Always present the proposed panel and dispatch decision for transparency.
+   For an auto-approved panel, continue immediately without asking for a reply.
+   For an approval-required panel, state the specific reason and pause.
+6. Dispatch the selected reviewers in parallel using Codex subagents when available.
    Use self-contained lane prompts by default and follow the subagent dispatch
    constraint below. If subagents are unavailable, state the limitation and run
    the reviews sequentially in the current agent.
-6. Consolidate findings into one deduplicated, severity-ranked report with
+7. Consolidate findings into one deduplicated, severity-ranked report with
    source attribution.
-7. Write paired report artifacts using the artifact contract in
+8. Write paired report artifacts using the artifact contract in
    `report-formats.md`: `.review-squad/reports/<stem>.md` and
    `.review-squad/reports/<stem>.json`.
-8. Present the Markdown findings in chat, include the JSON artifact path, and
-   offer to turn the findings into an implementation plan. Do not start edits
-   until the user asks for implementation.
+9. Present the Markdown findings in chat and include the JSON artifact path.
+   If no finding needs a human decision, offer to turn the findings into an
+   implementation plan. If a finding needs a Product Owner or other human
+   decision, preserve the post-review gate in `dispatch-policy.md`. Do not start
+   edits until the user asks for implementation.
 
 ## Panel Proposal
 
@@ -65,7 +74,7 @@ Show the proposal in this format:
 ```markdown
 ## Review Squad: Experts
 
-Status: panel proposal
+Status: panel proposal — [auto-approved / approval required]
 Target: [project name]
 Detected project: [type]
 Stack: [stack]
@@ -110,10 +119,13 @@ Mode: read-only audit
 - Why consider it: [reason this may be useful but was not selected by default]
 - Effort: medium
 
-### Approval
+### Dispatch Decision
 
-Reply `approve` to dispatch this panel, or tell me what to add, remove, rename,
-or reprioritize.
+[Use the autonomous or approval-required decision format from
+`dispatch-policy.md`.]
+
+If approval is required, reply `approve` or customize the panel.
+If the panel is auto-approved, review dispatch continues immediately.
 ```
 
 ## Reviewer Prompt Template
@@ -205,14 +217,14 @@ In panel proposals, group lanes by review priority before dispatch:
 
 - `High Priority Lanes`: highest relevance to the user's goal or highest risk.
 - `Standard Priority Lanes`: still useful, but less central or lower risk.
-- `Candidate Lanes`: optional additions for the user to approve.
+- `Candidate Lanes`: optional additions that require selection before dispatch.
 
 Do not put priority and effort on the same line. The group communicates
 priority; the lane card's `Effort:` bullet communicates subagent reasoning
 effort.
 
 If the runtime limits the number of parallel subagents, dispatch reviewers in
-waves. Keep the approved panel intact, report which reviewers are running in
+waves. Keep the selected panel intact, report which reviewers are running in
 each wave, and never let waiting reviewers edit files.
 
 Before dispatching, show:
@@ -220,7 +232,7 @@ Before dispatching, show:
 ```markdown
 ## Review Squad: Dispatch
 
-Approved lanes: [count]
+Selected lanes: [count]
 Runtime parallelism: [parallel limit if known, otherwise "runtime-managed"]
 
 Wave 1: [LANE, LANE, LANE]
