@@ -237,6 +237,22 @@ codex plugin marketplace add owner/codex-review-squad
 codex plugin marketplace add https://github.com/owner/codex-review-squad.git
 ```
 
+## Standalone Runtime Dependencies
+
+The installed plugin does not depend on an ancestor `node_modules`. The root
+`devDependencies` are direct build inputs: Ajv validates JSON reports,
+ajv-formats supplies standard JSON Schema format checks, YAML parses YAML
+project manifests, and esbuild produces the standalone runtime bundle.
+
+esbuild also bundles the transitive packages required by those libraries. Keep
+transitive packages out of `package.json` unless Review Squad imports them
+directly. The generated
+[`runtime-dependencies.json`](plugins/review-squad/scripts/runtime/runtime-dependencies.json)
+is the exact machine-readable inventory of code included in the bundle, while
+[`THIRD_PARTY_NOTICES.md`](plugins/review-squad/THIRD_PARTY_NOTICES.md) and the
+plugin-local `licenses/` directory carry the corresponding attribution and
+license texts.
+
 ## Validation
 
 The plugin validator is standalone: it resolves every input from the plugin
