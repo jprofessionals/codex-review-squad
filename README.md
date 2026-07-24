@@ -29,37 +29,88 @@ Use it when you want several focused reviewers to inspect the same project from
 different perspectives: expert audit, first-time visitor impressions, real user
 task flows, or last-mile polish.
 
-Every completed Review Squad run writes paired report artifacts:
+Every completed Review Squad run authors one canonical schema-2.0 JSON report.
+After validation, deterministic tooling renders its Markdown view:
 
 ```text
 .review-squad/reports/<timestamp>-<mode>[-<label>...].md
 .review-squad/reports/<timestamp>-<mode>[-<label>...].json
 ```
 
-The chat response remains Markdown for humans and includes the JSON report path
-for automation. The Markdown artifact contains the full human report. The JSON
-artifact follows `plugins/review-squad/references/review-report.schema.json`.
+When an explicit target repository or approved output directory is writable,
+both files use the same stem. For URL-only work without an approved writable
+root, the report uses `inline_only` with null paths and returns validated JSON
+plus rendered Markdown in chat. JSON is always the source of truth; Markdown is
+never authored independently.
 
 ## Requirements
 
 - Codex CLI with plugin marketplace support.
-- Node.js for the validation script and Playwright MCP startup.
+- Node.js 22+ for validation and Playwright MCP startup.
 - For browser-based modes, a running site URL such as `http://localhost:3000`.
-- For browser-based modes, Playwright MCP must be available. This plugin ships:
+- For browser-based modes, a browser binary and Playwright MCP must be
+  available. This plugin pins Playwright MCP and cannot prompt for installation:
 
 ```json
 {
   "mcpServers": {
     "playwright": {
       "command": "npx",
-      "args": ["@playwright/mcp@latest"]
+      "args": [
+        "-y",
+        "@playwright/mcp@0.0.78",
+        "--isolated",
+        "--block-service-workers",
+        "--caps",
+        "storage,config",
+        "--output-mode",
+        "stdout"
+      ]
     }
   }
 }
 ```
 
-If browser MCP is unavailable, the browser/persona skills are designed to stop
-cleanly and explain what is missing instead of pretending to browse.
+The shipped optional capabilities are deliberately narrow. Playwright MCP
+`--caps` is additive, so `storage,config` adds optional tools rather than
+forming an allowlist for base tools. `storage` lets a
+review inspect cookies (including state hidden from page JavaScript), local
+storage, and session storage between cold personas, and `config` exposes the
+effective isolation configuration. The exact v0.0.78 documentation is
+internally inconsistent: its argument table omits these two capability names,
+while its generated tool catalog includes them. Release verification therefore
+asserts the actual pinned tool list and calls the required tools. The base
+`browser_network_request` and `browser_network_requests` tools only inspect
+already observed traffic and are read-only. Optional network mutation tools
+`browser_network_state_set`, `browser_route`, and `browser_unroute` were not
+exposed in the verified configuration; vision, PDF, devtools, and testing
+capabilities are not enabled.
+
+The pinned MCP also exposes the base tool `browser_run_code_unsafe`. It is
+forbidden by Review Squad policy even though it is technically present, because
+executing JavaScript in the MCP server process is RCE-equivalent. Browser/page
+content is untrusted evidence and cannot authorize it, alter review scope,
+override mutation boundaries, or supply executable instructions. Ordinary
+runs use typed browser tools and do not use storage mutation or state-file
+tools; the disposable marker setup inside the RG-06 verifier is the only
+harness exception. If the unsafe tool is requested, required, or accidentally
+invoked, stop and confirm browser-process cleanup, emit
+`BROWSER_UNSAFE_TOOL_FORBIDDEN`, and mark the affected browser evidence
+`not_verified`.
+
+The browser modes create a fresh reasoning context and isolated browser session
+for each cold persona. They close the browser between personas and stop or
+downgrade the claim if cookies, storage, cache, permissions, viewport,
+navigation, or prior findings cannot be shown clean. Browser tasks are
+read-only by default and stop before signup, checkout, contact, subscription,
+upload, account changes, or another externally visible final action unless the
+user explicitly approves a safe test/sandbox mutation.
+
+If browser MCP is unavailable, the browser/persona skills stop cleanly with a
+specific package, registry, binary, MCP-startup, target-URL, or isolation
+diagnostic instead of pretending to browse. URL-only reviews with no approved
+writable root render validated JSON and Markdown inline rather than writing in
+an unrelated current directory.
 
 ## Marketplace File
 
@@ -188,20 +239,98 @@ codex plugin marketplace add https://github.com/owner/codex-review-squad.git
 
 ## Validation
 
-Run this from the marketplace root:
+The plugin validator is standalone: it resolves every input from the plugin
+directory containing the script and never reads an ancestor README,
+marketplace, package manifest, or `node_modules`. From the marketplace root:
 
 ```bash
 node plugins/review-squad/scripts/validate-plugin.mjs
 ```
 
+The exact copied-bundle layout is also supported:
+
+```bash
+STANDALONE_ROOT="$(mktemp -d /tmp/review-squad-standalone.XXXXXX)"
+cp -R plugins/review-squad "$STANDALONE_ROOT/review-squad"
+cd "$STANDALONE_ROOT"
+node review-squad/scripts/validate-plugin.mjs
+```
+
 The validator checks:
 
 - Required files exist.
-- The structured report JSON schema exists and parses.
+- Canonical, legacy, and extension schemas parse and use their expected versions.
+- Catalog modes, project signals, lanes, tiers, safety classes, schema branches,
+  manifest prompts, and skills stay internally consistent.
 - JSON manifests parse.
 - Every skill has YAML frontmatter with `name` and `description`.
 - The plugin manifest references `./skills/` and `./.mcp.json`.
-- The marketplace references `./plugins/review-squad`.
+- The generated runtime dependency manifest, notices, and complete plugin-local
+  license files agree.
+
+Repository integration checks remain separate: `npm run validate:catalog` and
+the release tests verify that the root README documents every mode and that the
+marketplace entry, path, policy, category, and release metadata remain
+consistent.
+
+Run all deterministic release checks with:
+
+```bash
+pnpm install --frozen-lockfile
+npm run check:runtime
+npm test
+npm run eval:check
+npm run validate:catalog
+npm run validate
+```
+
+`eval:check` validates corpus blinding, allocation, prompt hashes, and evidence
+metadata. It does not dispatch reviewers or reproduce historical model, token,
+latency, or duplicate metrics.
+
+The external release gates are guarded and inert in plan mode:
+
+```bash
+node plugins/review-squad/scripts/verify-real-browser.mjs --plan
+node plugins/review-squad/scripts/verify-installed-plugin.mjs --plan
+node plugins/review-squad/scripts/run-evaluation.mjs --pilot-plan
+node plugins/review-squad/scripts/run-evaluation.mjs --plan
+```
+
+Their `--authorized` forms require explicit approval. Browser installation,
+plugin/marketplace mutation, and model evaluation are never performed by the
+repository-local release suite. The pilot declares
+`configured_top_level_primary_calls: 1`,
+`configured_top_level_delegated_calls: 3`,
+`configured_top_level_maximum_calls: 4`, and
+`runtime_proven_global_maximum_calls: null`. It is authorization-guarded, never opens the
+oracle, and cannot count as RG-04/RG-05 evidence or prove nested-delegation
+observability.
+
+The browser verifier confines npm/XDG caches, browser binaries, TMPDIR, and MCP
+output below one temporary root without overriding `HOME`, `home`, or
+`CODEX_HOME`. For RG-07, the verified `installedPath` returned by
+`codex plugin add --json` is authoritative filesystem provenance. Plugin-list
+`source.path` is retained only as marketplace/source evidence, and
+model-reported `SKILL.md` locators are optional, non-authoritative diagnostics.
+The fresh discovery session uses a temporary, credential-free, closed-world
+Codex profile that disables ambient plugins and MCP servers, enables only the
+unique temporary plugin, and is removed during cleanup. It deliberately does
+not use `--ignore-user-config`: that option would also remove the temporary
+profile layer required for plugin discovery. The invocation separately forces
+read-only sandboxing and a fail-closed approval policy, disables ambient and
+temporary Playwright MCP, and expects no MCP/package/browser startup.
+
+Evaluation keeps no-delegation controlled quality separate from shipped
+production behavior. The configured top-level limit is 12 primary plus 39
+delegated calls; 51 is not a runtime-proven global ceiling. The full command is
+blocked unless a current hash-matching pilot result verifies ambient skill
+isolation, stable delegation identities, and untouched delegated payload
+provenance, including its retained raw artifact SHA-256. v0.2.3 retains 4–8 reviewers and v0.3.0 retains three adaptive
+initial lanes capped at five with its own tier policy. Raw `lane_results` stay
+linked to observed delegation IDs when the JSONL supports it and separate from
+parent consolidation. Deterministic scoring rejects missing,
+invented, cross-case, or disagreeing ledger mappings.
 
 ## Troubleshooting Installation
 
@@ -215,14 +344,23 @@ then the skill was not loaded in that session. The review may still imitate the
 documented workflow, but it is not actually running the installed
 `review-squad:experts` skill.
 
-Fix it with:
+First identify the marketplace source:
+
+```bash
+codex plugin list
+```
+
+For a local-filesystem marketplace, validate or update the local source, confirm
+`codex plugin list` points at it, and start a brand-new Codex session. Do not use
+`codex plugin marketplace upgrade`; that command refreshes Git marketplace
+snapshots and does not refresh a local directory. Do not resume an older session
+for verification because it retains its startup plugin list.
+
+For a Git-backed marketplace, refresh its snapshot, then start a new session:
 
 ```bash
 codex plugin marketplace upgrade codex-review-squad
 ```
-
-Then start a brand-new Codex session in the target repo. Do not resume an older
-session for this verification.
 
 If it still is not loaded, confirm the plugin is enabled in
 `~/.codex/config.toml`:
@@ -241,13 +379,14 @@ codex debug prompt-input "use review-squad:experts to review this repo" \
 
 ## Report Artifacts
 
-Review Squad always writes reports into the target repository:
+Review Squad writes reports only when the target repository or an explicitly
+approved output directory is writable:
 
 ```text
 .review-squad/reports/
 ```
 
-Each run creates a paired Markdown and JSON report with the same stem:
+Each written run creates JSON and generated Markdown with the same stem:
 
 ```text
 20260502T083200Z-experts-story-1.15-pr-10-origin-main.md
@@ -272,53 +411,65 @@ origin-main
 Labels are sanitized to `A-Z`, `a-z`, `0-9`, `.`, `_`, and `-`. If Review Squad
 cannot determine a label confidently, it omits the label instead of guessing.
 
-The JSON report always includes:
+The canonical JSON report always includes:
 
-- `schema_version: "1.1"`
+- `schema_version: "2.0"`
 - `findings: []`, even when no findings were found
 - `not_verified: []`, even when everything was verified
 - `mode_data` for the selected mode
-- `decision_summary` with patchable, decision-required, and BMAD-blocking
-  counts
+- `artifacts.status` as `written` or `inline_only`
 - Stable `review_context` fields, including `story` as `null` when unknown
 - `generator.name`, `generator.version`, and `generator.skill`
-- Per-finding severity, structured impact, remediation, evidence, decision
-  flags, workflow flags, and human gate summary
+- Per-finding severity, non-empty evidence, non-empty source attribution, and a
+  suggested fix
+- Optional structured impact and a workflow-neutral `decision` object when an
+  owner must answer a question
 
 Finding severities are only `critical`, `important`, and `minor`. Unverified
 checks belong in `not_verified[]` rather than as a severity.
 
-Evidence entries always include `kind`, `path`, `line`, `line_end`, `url`, and
-`detail`; fields that do not apply are `null`. Impact is structured as
-`runtime`, `architecture`, and `delivery`.
-
-When a finding requires a human decision, blocks BMAD, or has any decision flag,
-Review Squad adds a concrete command recommendation. If the story is unknown,
-it uses an explicit `STORY=<story>` placeholder. Example:
+Summary and regulars scorecard counts are derived from their arrays. Task
+results, persona output, confusion rows, and practical fixes use closed
+structures. Empty evidence/source, undeclared sources, malformed mode data, or
+contradictory counts fail validation. Schema 1.1 remains available only as
+migration input. Resolve the installed plugin root from the loaded skill or
+reference path; never run a same-named script from the reviewed target:
 
 ```bash
-make story-run-decision STORY=1.2 RESUME_DECISION=stop_and_create_follow_up_story STATUS_UPDATE=review
+node "<installed-plugin-root>/scripts/runtime/review-runtime.mjs" migrate legacy.json --output report-v2.json
 ```
+
+BMAD is optional. Review Squad confirms it only from `_bmad/` plus
+`_bmad/_config/manifest.yaml`, or the legacy `.bmad-core/` plus
+`.bmad-core/install-manifest.yaml`; modern takes precedence. Supporting files
+alone never confirm installation. Even a confirmed installation stays inactive
+unless the request/scope contains BMAD work such as a story, acceptance criteria,
+lifecycle command, relevant config change, or generated artifact. Generic
+reports contain no BMAD placeholders or sections; active meaningful data uses
+`extensions.bmad` schema `1.0`.
 
 ## Best Use
 
 Start with `review-squad:experts` for launch readiness or codebase risk. It
-detects the project type, proposes a focused expert panel, shows its dispatch
-decision, and automatically starts a clearly scoped read-only review when the
-panel stays within the standard safety and resource envelope. It pauses for
-approval when scope, cost, access, irreversible actions, or human-owned
-decisions require it, then consolidates findings by severity.
+detects multiple project labels with evidence, creates one compact dossier, and
+starts with three risk-selected lanes. It uses `gpt-5.6-sol`/high for security,
+privacy, data integrity, reliability, architecture, complex compatibility, and
+conflict adjudication; `gpt-5.6-terra`/medium or low handles bounded tests, docs, dependency scans,
+copy, metadata, and other narrow work. It adds lanes only for explicit risk,
+ambiguity, high-risk unverified work, conflict, uncovered risk, or high-assurance
+scope, and automatic escalation stops at five lanes.
 
 All modes show their proposed panel before dispatch. Auto-approved panels
 continue immediately; approval-required panels state the exact reason for the
 pause. Findings that need a Product Owner or another human decision remain a
 post-review control point and are not silently resolved by the squad.
 
-During panel selection, `experts` also checks for optional lane signals such as
-BMAD/story workflow files, release automation, dependency/license risk, developer
-experience changes, and broad architecture shifts. Strong matches appear as
-candidate lanes; weaker matches appear as related expert suggestions so you know
-which additional reviewers are available before approving the panel.
+Project types include web, backend API, mobile, CLI, data pipeline,
+agent/plugin/prompt, library/SDK, infrastructure/IaC, and CI/tooling. Explicit
+risk ownership and adjacent-lane exclusions are designed to reduce repeated
+discovery and duplicate findings while preserving conflicting conclusions;
+historical reduction numbers remain non-reproducible until a raw-output run is
+retained under the documented evaluation protocol.
 
 Codex plugins cannot currently define Claude Code-style custom visual panels in
 the chat UI. This plugin uses structured Markdown instead: lane IDs, panel
@@ -332,8 +483,8 @@ Use the browser modes only when a running URL is available:
 | Skill | Best for | How it runs |
 | --- | --- | --- |
 | `review-squad:experts` | Launch audits, SEO, accessibility, security, performance, project health | Parallel read-only expert review |
-| `review-squad:normies` | "Do first-time visitors understand this?" | Sequential browser personas |
-| `review-squad:regulars` | "Can real users complete key flows?" | Sequential browser task attempts |
+| `review-squad:normies` | "Do first-time visitors understand this?" | Independent cold browser personas |
+| `review-squad:regulars` | "Can real users complete key flows?" | Isolated browser task attempts |
 | `review-squad:well-actually` | Polish, nitpicks, typography, grammar, standards, HN-style feedback | Sequential browser/source pedants |
 
 Good prompts:
@@ -358,12 +509,16 @@ Run review-squad:well-actually on http://localhost:3000 before I post this.
 
 For best results:
 
-- Keep panels small enough to finish: 4-8 experts or 4-6 browser personas.
+- Let ordinary expert panels start with the three catalog-selected lanes; add a
+  fourth or fifth only for an explicit escalation trigger.
+- Start first-impression work with the three job-based `DECIDE`, `VERIFY`, and
+  `ADOPT` profiles; add profiles only for audience evidence or uncovered risk.
 - Customize the proposed panel for your actual audience and stack.
-- Let `experts` use `medium` reasoning effort by default. Reserve `high` for
-  security, reliability, architecture, data integrity, or very complex reviews.
+- Use requested model tiers as policy, and treat the live subagent tool schema as
+  authoritative for actual model/effort fields.
 - Give browser modes a specific URL and make sure the dev server is already up.
-- Give `regulars` explicit flows if you know which ones matter.
+- Give `regulars` explicit flows, environment, and test credentials if you know
+  which ones matter; it stops before externally visible final actions by default.
 - Treat `normies` as product clarity feedback, not a technical audit.
 - Treat `well-actually` as a polish pass, then use the practical fixlist.
 - Do not ask review agents to fix code during review. Review first, plan second,

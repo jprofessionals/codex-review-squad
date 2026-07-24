@@ -1,0 +1,77 @@
+{
+  "schema_version": "3.0",
+  "historical_runs": {
+    "v0.2.3": {
+      "status": "not_reproducible",
+      "missing": ["exact prompt or hash", "exact reviewer allocation", "raw reviewer outputs", "monotonic start/end timestamps", "observed model and effort"]
+    },
+    "v0.3.0-wp02": {
+      "status": "not_reproducible",
+      "missing": ["exact prompt or hash", "exact reviewer allocation", "raw reviewer outputs", "monotonic start/end timestamps", "observed model and effort"]
+    },
+    "multi-lane-duplicate-comparison": {
+      "status": "not_reproducible",
+      "missing": ["raw lane outputs", "finding-to-root normalization ledger", "exact prompts or hashes", "monotonic start/end timestamps", "observed model and effort"]
+    }
+  },
+  "future_protocol": {
+    "evaluation_skill": "review-squad:experts",
+    "subject_manifest": {"file": "subjects-v1.json", "sha256": "22e8c27f4ba9259f39b04c3f77baa192c0834a0ddc524a4749e67b1ca0625cda"},
+    "baseline_commit": "f4ca1b80a9f165feb0d94dbcb2a2f45a279b2b25",
+    "wrappers": {
+      "controlled_quality": {"file": "reviewer-prompt-v2.md", "sha256": "bfce1e3b3c58603acf4f958b4974ccb66102546451a82bfd02e45f628e8bb019"},
+      "production_behavior": {"file": "production-review-prompt-v2.md", "sha256": "38344eeba924e26ec5b6afa1b83ee0794e3654b90562f63a112e7796f57acbdb"},
+      "independent_scoring": {"file": "scorer-prompt-v2.md", "sha256": "91928825ae42719fca26c6946e123cbeb1085ad341730e21e5450917e6d28fc2"},
+      "pilot": {"file": "pilot-prompt-v1.md", "sha256": "9f19c4f4e0884a0f3d3e1d73a766a820b30706e41691a0dbb0fceb6f9d3f1259"}
+    },
+    "corpus": {"file": "corpus.json", "sha256": "189b8aa6361ae333c5fb8e7ca1e209c8c5a147c8a32cfca1354de1aed5c1dabf"},
+    "allocation": {"file": "allocation-v1.json", "sha256": "b54b3602d155bd269af5fbcb67788a31bc051e60eb75ff9494052f8e28010274"},
+    "requested_runtime": {"primary_model": "gpt-5.6-sol", "primary_reasoning_effort": "high", "sandbox": "read-only", "ephemeral": true, "ignore_user_config": true, "ambient_plugin_overrides": ["plugins.\"review-squad@codex-review-squad\".enabled=false", "plugins.\"review-squad@codex-review-squad\".mcp_servers.playwright.enabled=false"]},
+    "production_contracts": {
+      "v0.2.3": {
+        "minimum_lanes": 4,
+        "maximum_lanes": 8,
+        "dispatch": "shipped default panel of 4-8 reviewers",
+        "tier_policy": "shipped v0.2.3 effort policy; medium by default and high/low only where its instructions require"
+      },
+      "v0.3.0": {
+        "minimum_lanes": 3,
+        "maximum_lanes": 5,
+        "dispatch": "three evidence-selected initial lanes with evidence-based escalation capped at five",
+        "tier_policy": "shipped v0.3.0 Sol/high, Terra/medium, and Terra/low lane policy"
+      }
+    },
+    "run_matrix": {
+      "controlled_quality": {"primary_calls": 4, "delegated_calls": 0, "description": "two blinded five-case allocations per subject with the same primary model/effort and no delegation"},
+      "production_behavior_v0.2.3": {"primary_calls": 3, "maximum_delegated_calls": 24, "description": "three ordinary samples using the shipped 4-8 reviewer contract"},
+      "production_behavior_v0.3.0": {"primary_calls": 3, "maximum_delegated_calls": 15, "description": "three ordinary samples using three initial adaptive lanes capped at five"},
+      "independent_scoring": {"primary_calls": 2, "delegated_calls": 0},
+      "total_primary_calls": 12,
+      "production_behavior_maximum_total_calls": 45,
+      "maximum_total_delegated_calls": 39,
+      "configured_top_level_maximum_calls": 51,
+      "runtime_proven_global_maximum_calls": null,
+      "global_ceiling_status": "not_verified; the ordinary pilot does not deliberately exercise nested delegation and cannot prove a runtime global ceiling",
+      "optional_disagreement_adjudication": {"separate_authorization": true, "maximum_additional_primary_calls": 1, "maximum_protocol_calls_if_authorized": 52}
+    },
+    "pilot": {
+      "release_evidence": false,
+      "oracle_opened": false,
+      "configured_top_level_primary_calls": 1,
+      "configured_top_level_delegated_calls": 3,
+      "configured_top_level_maximum_calls": 4,
+      "runtime_proven_global_maximum_calls": null,
+      "purpose": ["JSONL shape", "three stable unique delegation identities", "one-to-one lane mapping", "untouched raw delegated payload equality", "retained raw delegation artifact and SHA-256", "ambient Review Squad isolation", "structured final parsing", "identity-linked usage capture", "bounded shutdown"]
+    },
+    "full_run_prerequisite": "The --authorized command requires --pilot-evidence pointing to a pilot result whose protocol fingerprint matches current inputs, whose ambient isolation, exactly three unique delegation identities, one-to-one mapping, and untouched raw delegated payload provenance are verified, and whose retained raw delegation artifact remains inside the pilot evidence directory with its declared SHA-256.",
+    "reviewer_inputs": "Each call receives a unique scratch cwd with only its exact target artifacts; subject files and allocated controlled cases are supplied in the prompt. Invocation-local config disables review-squad@codex-review-squad and its Playwright MCP, and every response must report the system Available Skills inventory status and ambient Review Squad locators. Other subjects, prior outputs, evidence, scorer inputs, and expectations are not supplied or named through that cwd. The OS sandbox is not claimed to make arbitrary absolute repository paths unreadable. expectations.json is opened only after review outputs are sealed and never in pilot mode.",
+    "raw_outputs": "Retain exact effective argv/hash, prompt/hash, schema, Codex JSONL, untouched final response, stderr, delegation events, and partial diagnostics for every call.",
+    "timing": "Record process.hrtime.bigint monotonic start/end/duration plus UTC wall start/end around every Codex call.",
+    "tokens": "Read input, cached-input, output, and reasoning-output fields independently from turn.completed.usage. Independently exposed delegated usage is complete only when every usage record carries a unique delegation_call_id and the identity set exactly matches observed delegations; reordered identity-linked records are valid, while anonymous, duplicate, or missing identities are not_verified. Missing fields are not_verified; never invent total tokens or prices.",
+    "scoring": "Seal raw review JSONL/finals before opening expectations. Require one case-allowed ledger row per phase/call/case/finding identity, compare both ledgers exactly, and compute arithmetic only in deterministic code.",
+    "duplicate_metric": "Map raw production lane findings to roots only after stable unique delegation identities, exact parent raw_delegated_response equality with retained JSONL output, and raw_findings equality with findings extracted from that output are verified. Retain the raw delegation artifact and hash and keep parent consolidation separate. Parent restatement, missing payload, changed payload, unextractable findings, or scorer disagreement leaves duplicate reduction not_verified.",
+    "quality_metrics": "Controlled-quality recall, unsupported critical findings, evidence validity, and severity agreement are reported separately from production behavior.",
+    "production_metrics": "Production latency, field-level token usage, and raw-lane duplicate instances are reported separately by subject with sample size and variance.",
+    "statistical_limit": "Three production samples per subject provide descriptive evidence only; do not generalize beyond the fixed corpus."
+  }
+}

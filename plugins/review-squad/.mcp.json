@@ -3,7 +3,14 @@
     "playwright": {
       "command": "npx",
       "args": [
-        "@playwright/mcp@latest"
+        "-y",
+        "@playwright/mcp@0.0.78",
+        "--isolated",
+        "--block-service-workers",
+        "--caps",
+        "storage,config",
+        "--output-mode",
+        "stdout"
       ]
     }
   }

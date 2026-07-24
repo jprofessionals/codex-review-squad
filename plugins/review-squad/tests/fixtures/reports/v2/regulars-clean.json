@@ -1,0 +1,15 @@
+{
+  "schema_version": "2.0",
+  "report_id": "regulars-clean",
+  "mode": "regulars",
+  "generated_at": "2026-07-22T00:00:00Z",
+  "generator": {"name": "codex-review-squad", "version": "0.3.0", "skill": "review-squad:regulars"},
+  "target": {"kind": "site", "path": "/tmp/example", "url": "http://127.0.0.1:3000", "name": "Example"},
+  "review_context": {"labels": [], "branch": null, "base_branch": null, "pull_request": null, "story": null, "commit": null, "working_tree_dirty": null},
+  "summary": {"headline": "The task completed without observed friction.", "overall_status": "pass", "critical_count": 0, "important_count": 0, "minor_count": 0, "not_verified_count": 0, "recommended_next_move": "Retain the current flow."},
+  "findings": [],
+  "not_verified": [],
+  "mode_data": {"type": "regulars", "scorecard": [{"task": "Find documentation", "result": "pass", "detail": "The documentation link was visible and opened."}], "result_counts": {"pass": 1, "partial": 0, "fail": 0}, "blockers": [], "friction": [], "what_worked": ["Documentation was visible."]},
+  "sources": [{"name": "DOCS-TASK", "type": "task"}],
+  "artifacts": {"status": "written", "stem": "regulars-clean", "json_path": ".review-squad/reports/regulars-clean.json", "markdown_path": ".review-squad/reports/regulars-clean.md"}
+}

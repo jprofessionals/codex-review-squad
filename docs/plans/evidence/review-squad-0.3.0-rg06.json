@@ -1,0 +1,379 @@
+{
+  "schema_version": "2.0",
+  "status": "passed",
+  "generated_at": "2026-07-23T10:39:30.904Z",
+  "package": "@playwright/mcp@0.0.78",
+  "install_cli": [
+    "npx",
+    "-y",
+    "@playwright/mcp@0.0.78",
+    "install-browser"
+  ],
+  "released_args": [
+    "-y",
+    "@playwright/mcp@0.0.78",
+    "--isolated",
+    "--block-service-workers",
+    "--caps",
+    "storage,config",
+    "--output-mode",
+    "stdout"
+  ],
+  "temp_root": "/tmp/review-squad-browser-dADADu",
+  "checks": {
+    "install_browser_cli": "passed",
+    "released_arguments_initialized": "passed",
+    "required_tools_exposed": "passed",
+    "config_inspection": "passed",
+    "storage_inspection": "passed",
+    "isolation_positive_controls": "passed",
+    "isolation_negative_controls": "passed",
+    "navigation": "passed",
+    "sequential_process_isolation": "passed",
+    "stop_before_external_write": "passed",
+    "target_post_count": 0
+  },
+  "stderr": [],
+  "cleanup": {
+    "server_closed": true,
+    "temporary_root_removed": true,
+    "commands": [],
+    "sessions": [
+      {
+        "pid": 654638,
+        "pgid": 654638,
+        "process_group_supported": true,
+        "stdin_close": {
+          "attempted": true,
+          "status": "closed",
+          "error": null
+        },
+        "graceful_wait_ms": 5000,
+        "term_wait_ms": 5000,
+        "kill_wait_ms": 5000,
+        "signal_attempts": [],
+        "sigterm_sent": false,
+        "sigkill_sent": false,
+        "child_exit_confirmed": true,
+        "process_group_exit_confirmed": true,
+        "exit_confirmed": true,
+        "exit_code": 0,
+        "exit_signal": null,
+        "leaked_process": null
+      },
+      {
+        "pid": 655240,
+        "pgid": 655240,
+        "process_group_supported": true,
+        "stdin_close": {
+          "attempted": true,
+          "status": "closed",
+          "error": null
+        },
+        "graceful_wait_ms": 5000,
+        "term_wait_ms": 5000,
+        "kill_wait_ms": 5000,
+        "signal_attempts": [],
+        "sigterm_sent": false,
+        "sigkill_sent": false,
+        "child_exit_confirmed": true,
+        "process_group_exit_confirmed": true,
+        "exit_confirmed": true,
+        "exit_code": 0,
+        "exit_signal": null,
+        "leaked_process": null
+      }
+    ]
+  },
+  "install": {
+    "command": [
+      "npx",
+      "-y",
+      "@playwright/mcp@0.0.78",
+      "install-browser"
+    ],
+    "code": 0,
+    "status": "success_with_warning",
+    "stderr_class": "success_with_warning",
+    "stderr": "╔═══════════════════════════════════════════════════════════════════════════════╗\n║ WARNING: It looks like you are running 'npx playwright install' without first ║\n║ installing your project's dependencies.                                       ║\n║                                                                               ║\n║ To avoid unexpected behavior, please install your dependencies first, and     ║\n║ then run Playwright's install command:                                        ║\n║                                                                               ║\n║     npm install                                                               ║\n║     npx playwright install                                                    ║\n║                                                                               ║\n║ If your project does not yet depend on Playwright, first install the          ║\n║ applicable npm package (most commonly @playwright/test), and                  ║\n║ then run Playwright's install command to download the browsers:               ║\n║                                                                               ║\n║     npm install @playwright/test                                              ║\n║     npx playwright install                                                    ║\n║                                                                               ║\n╚═══════════════════════════════════════════════════════════════════════════════╝\nnpm notice\nnpm notice New major version of npm available! 10.9.8 -> 12.0.1\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.1\nnpm notice To update run: npm install -g npm@12.0.1\nnpm notice\n"
+  },
+  "isolation_controls": {
+    "valid": true,
+    "missing_positive_controls": [],
+    "leaked_negative_controls": [],
+    "protocol_errors": [],
+    "unconfirmed_processes": []
+  },
+  "sessions": [
+    {
+      "server_info": {
+        "name": "Playwright",
+        "version": "1.62.0-alpha-1783623505000"
+      },
+      "tools": [
+        "browser_click",
+        "browser_close",
+        "browser_console_messages",
+        "browser_cookie_clear",
+        "browser_cookie_delete",
+        "browser_cookie_get",
+        "browser_cookie_list",
+        "browser_cookie_set",
+        "browser_drag",
+        "browser_drop",
+        "browser_evaluate",
+        "browser_file_upload",
+        "browser_fill_form",
+        "browser_find",
+        "browser_get_config",
+        "browser_handle_dialog",
+        "browser_hover",
+        "browser_localstorage_clear",
+        "browser_localstorage_delete",
+        "browser_localstorage_get",
+        "browser_localstorage_list",
+        "browser_localstorage_set",
+        "browser_navigate",
+        "browser_navigate_back",
+        "browser_network_request",
+        "browser_network_requests",
+        "browser_press_key",
+        "browser_resize",
+        "browser_run_code_unsafe",
+        "browser_select_option",
+        "browser_sessionstorage_clear",
+        "browser_sessionstorage_delete",
+        "browser_sessionstorage_get",
+        "browser_sessionstorage_list",
+        "browser_sessionstorage_set",
+        "browser_set_storage_state",
+        "browser_snapshot",
+        "browser_storage_state",
+        "browser_tabs",
+        "browser_take_screenshot",
+        "browser_type",
+        "browser_wait_for"
+      ],
+      "config_text": "### Result\n{\n  \"browser\": {\n    \"launchOptions\": {\n      \"headless\": true,\n      \"chromiumSandbox\": false,\n      \"channel\": \"chrome\",\n      \"args\": [\n        \"--disable-blink-features=AutomationControlled\"\n      ]\n    },\n    \"contextOptions\": {\n      \"serviceWorkers\": \"block\",\n      \"viewport\": {\n        \"width\": 1280,\n        \"height\": 720\n      }\n    },\n    \"isolated\": true,\n    \"browserName\": \"chromium\"\n  },\n  \"timeouts\": {\n    \"action\": 5000,\n    \"navigation\": 60000,\n    \"expect\": 5000\n  },\n  \"console\": {},\n  \"network\": {},\n  \"server\": {},\n  \"snapshot\": {},\n  \"capabilities\": [\n    \"storage\",\n    \"config\"\n  ],\n  \"outputDir\": \"/tmp/review-squad-browser-dADADu/mcp-output\"\n}",
+      "config": {
+        "browser": {
+          "launchOptions": {
+            "headless": true,
+            "chromiumSandbox": false,
+            "channel": "chrome",
+            "args": [
+              "--disable-blink-features=AutomationControlled"
+            ]
+          },
+          "contextOptions": {
+            "serviceWorkers": "block",
+            "viewport": {
+              "width": 1280,
+              "height": 720
+            }
+          },
+          "isolated": true,
+          "browserName": "chromium"
+        },
+        "timeouts": {
+          "action": 5000,
+          "navigation": 60000,
+          "expect": 5000
+        },
+        "console": {},
+        "network": {},
+        "server": {},
+        "snapshot": {},
+        "capabilities": [
+          "storage",
+          "config"
+        ],
+        "outputDir": "/tmp/review-squad-browser-dADADu/mcp-output"
+      },
+      "config_validation": {
+        "valid": true,
+        "service_worker_representation": "browser.contextOptions.serviceWorkers=block"
+      },
+      "navigation_started": true,
+      "storage": {
+        "cookies": {
+          "content": [
+            {
+              "type": "text",
+              "text": "### Result\nreview_squad=planted-secret (domain: 127.0.0.1, path: /)\n### Ran Playwright code\n```js\nawait page.context().cookies();\n```"
+            }
+          ]
+        },
+        "local": {
+          "content": [
+            {
+              "type": "text",
+              "text": "### Result\nreview_squad=planted-secret\n### Ran Playwright code\n```js\nawait page.localStorage.items();\n```"
+            }
+          ]
+        },
+        "session": {
+          "content": [
+            {
+              "type": "text",
+              "text": "### Result\nreview_squad=planted-secret\n### Ran Playwright code\n```js\nawait page.sessionStorage.items();\n```"
+            }
+          ]
+        }
+      },
+      "evaluation": {
+        "content": [
+          {
+            "type": "text",
+            "text": "### Result\n{\n  \"cookie\": \"review_squad=planted-secret\",\n  \"local\": \"planted-secret\",\n  \"session\": \"planted-secret\"\n}\n### Ran Playwright code\n```js\nawait page.evaluate('() => ({cookie: document.cookie, local: localStorage.getItem(\\'review_squad\\'), session: sessionStorage.getItem(\\'review_squad\\')})');\n```"
+          }
+        ]
+      },
+      "test_only_args": [
+        "--headless",
+        "--output-dir",
+        "/tmp/review-squad-browser-dADADu/mcp-output"
+      ],
+      "protocol_errors": [],
+      "stderr_class": "none",
+      "stderr": ""
+    },
+    {
+      "server_info": {
+        "name": "Playwright",
+        "version": "1.62.0-alpha-1783623505000"
+      },
+      "tools": [
+        "browser_click",
+        "browser_close",
+        "browser_console_messages",
+        "browser_cookie_clear",
+        "browser_cookie_delete",
+        "browser_cookie_get",
+        "browser_cookie_list",
+        "browser_cookie_set",
+        "browser_drag",
+        "browser_drop",
+        "browser_evaluate",
+        "browser_file_upload",
+        "browser_fill_form",
+        "browser_find",
+        "browser_get_config",
+        "browser_handle_dialog",
+        "browser_hover",
+        "browser_localstorage_clear",
+        "browser_localstorage_delete",
+        "browser_localstorage_get",
+        "browser_localstorage_list",
+        "browser_localstorage_set",
+        "browser_navigate",
+        "browser_navigate_back",
+        "browser_network_request",
+        "browser_network_requests",
+        "browser_press_key",
+        "browser_resize",
+        "browser_run_code_unsafe",
+        "browser_select_option",
+        "browser_sessionstorage_clear",
+        "browser_sessionstorage_delete",
+        "browser_sessionstorage_get",
+        "browser_sessionstorage_list",
+        "browser_sessionstorage_set",
+        "browser_set_storage_state",
+        "browser_snapshot",
+        "browser_storage_state",
+        "browser_tabs",
+        "browser_take_screenshot",
+        "browser_type",
+        "browser_wait_for"
+      ],
+      "config_text": "### Result\n{\n  \"browser\": {\n    \"launchOptions\": {\n      \"headless\": true,\n      \"chromiumSandbox\": false,\n      \"channel\": \"chrome\",\n      \"args\": [\n        \"--disable-blink-features=AutomationControlled\"\n      ]\n    },\n    \"contextOptions\": {\n      \"serviceWorkers\": \"block\",\n      \"viewport\": {\n        \"width\": 1280,\n        \"height\": 720\n      }\n    },\n    \"isolated\": true,\n    \"browserName\": \"chromium\"\n  },\n  \"timeouts\": {\n    \"action\": 5000,\n    \"navigation\": 60000,\n    \"expect\": 5000\n  },\n  \"console\": {},\n  \"network\": {},\n  \"server\": {},\n  \"snapshot\": {},\n  \"capabilities\": [\n    \"storage\",\n    \"config\"\n  ],\n  \"outputDir\": \"/tmp/review-squad-browser-dADADu/mcp-output\"\n}",
+      "config": {
+        "browser": {
+          "launchOptions": {
+            "headless": true,
+            "chromiumSandbox": false,
+            "channel": "chrome",
+            "args": [
+              "--disable-blink-features=AutomationControlled"
+            ]
+          },
+          "contextOptions": {
+            "serviceWorkers": "block",
+            "viewport": {
+              "width": 1280,
+              "height": 720
+            }
+          },
+          "isolated": true,
+          "browserName": "chromium"
+        },
+        "timeouts": {
+          "action": 5000,
+          "navigation": 60000,
+          "expect": 5000
+        },
+        "console": {},
+        "network": {},
+        "server": {},
+        "snapshot": {},
+        "capabilities": [
+          "storage",
+          "config"
+        ],
+        "outputDir": "/tmp/review-squad-browser-dADADu/mcp-output"
+      },
+      "config_validation": {
+        "valid": true,
+        "service_worker_representation": "browser.contextOptions.serviceWorkers=block"
+      },
+      "navigation_started": true,
+      "storage": {
+        "cookies": {
+          "content": [
+            {
+              "type": "text",
+              "text": "### Result\nNo cookies found\n### Ran Playwright code\n```js\nawait page.context().cookies();\n```"
+            }
+          ]
+        },
+        "local": {
+          "content": [
+            {
+              "type": "text",
+              "text": "### Result\nNo localStorage items found\n### Ran Playwright code\n```js\nawait page.localStorage.items();\n```"
+            }
+          ]
+        },
+        "session": {
+          "content": [
+            {
+              "type": "text",
+              "text": "### Result\nNo sessionStorage items found\n### Ran Playwright code\n```js\nawait page.sessionStorage.items();\n```"
+            }
+          ]
+        }
+      },
+      "evaluation": {
+        "content": [
+          {
+            "type": "text",
+            "text": "### Result\n{\n  \"cookie\": \"\",\n  \"local\": null,\n  \"session\": null\n}\n### Ran Playwright code\n```js\nawait page.evaluate('() => ({cookie: document.cookie, local: localStorage.getItem(\\'review_squad\\'), session: sessionStorage.getItem(\\'review_squad\\')})');\n```"
+          }
+        ]
+      },
+      "test_only_args": [
+        "--headless",
+        "--output-dir",
+        "/tmp/review-squad-browser-dADADu/mcp-output"
+      ],
+      "protocol_errors": [],
+      "stderr_class": "none",
+      "stderr": ""
+    }
+  ],
+  "loopback": {
+    "navigation_started": true,
+    "target_post_count": 0
+  }
+}

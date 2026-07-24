@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "evaluation_skill": "review-squad:experts",
+  "subjects": {
+    "v0.2.3": {
+      "source": {"kind": "git_commit", "commit": "f4ca1b80a9f165feb0d94dbcb2a2f45a279b2b25", "required_manifest_name": "review-squad", "required_manifest_version": "0.2.3"},
+      "files": {
+        "plugins/review-squad/.codex-plugin/plugin.json": "a73ff30f9d2c29f041561fe7278f44d960173bef15c8e5eb0886fbab1c8d8549",
+        "plugins/review-squad/skills/experts/SKILL.md": "8f271f17df459ce4a1e2c872e68282dfb00228672518e78bb0efbfd44a4594e3",
+        "plugins/review-squad/references/panels.md": "b2affa6ae7dd91d9556bf12043392fa56eead74c9c0d4ff3d7615752b7567e5e",
+        "plugins/review-squad/references/dispatch-policy.md": "ce9f9aa7fb2f8ac546220812f37e5f47f60d9e2c660f52e8dfdfc677340a3d8c",
+        "plugins/review-squad/references/report-formats.md": "f662aca3b224c265fde0ab7774f593ed41c7f818f67fd91bee5cc17017fadef4",
+        "plugins/review-squad/references/browser-preflight.md": "6ea74d8a3034bd0296ab9a3df88852f9b5ba4482a42089f5df139e85b27ddde9"
+      }
+    },
+    "v0.3.0": {
+      "source": {"kind": "worktree", "required_manifest_name": "review-squad", "required_manifest_version": "0.3.0"},
+      "files": {
+        "plugins/review-squad/.codex-plugin/plugin.json": "167d6e82dba6b035e15c91792e408ae681fc5926791be9fc6cccca271d34cf88",
+        "plugins/review-squad/skills/experts/SKILL.md": "da922f9b159f21ec85fbc02d2ff1dd8573281ffe4d27fd320fa289a7db6a8175",
+        "plugins/review-squad/references/review-catalog.json": "0b1f67c8246bd76848610f85ac42facb55f8e0d7ed5b71a0d19f9d51442bcdf1",
+        "plugins/review-squad/references/panels.md": "f273e09ec2a5bc0f4d0cd577274e0e96ebb04b4489996afa0bac92474e80054f",
+        "plugins/review-squad/references/dispatch-policy.md": "2e322e5e469fbefba08a995f74f8d42bf91e5c9d3c4b54fcef1783a8b0a5f139",
+        "plugins/review-squad/references/report-formats.md": "68fdb403fb817adc4e1b6a107d3a923e10b595a3f320c6a575d9e0c3ccfdc83e",
+        "plugins/review-squad/references/browser-preflight.md": "193963ecf2e1f8e82d76cd28a556467e02c70ee9b38a3a4e4df71c911dbe098a",
+        "plugins/review-squad/references/bmad-detection.md": "0b39c606ac23af5be7243bf7f71e4d66b51e018f0f65d0245d8a559bd2242528"
+      }
+    }
+  }
+}

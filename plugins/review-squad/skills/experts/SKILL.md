@@ -1,313 +1,134 @@
 ---
 name: experts
-description: Run a production-ready multi-perspective project audit with Codex subagents, project-type detection, risk-aware expert panel dispatch, and a consolidated severity-ranked report.
+description: Run a production-ready multi-perspective project audit with Codex subagents, multi-label project detection, risk-adaptive lane dispatch, and a canonical evidence-backed report.
 ---
 
 # Experts
 
-Use this skill for pre-launch review, post-refactor review, inherited codebase
-assessment, or periodic project health checks.
-
-This is a read-only source review workflow. Do not edit project source files
-during the review. Writing the paired report artifacts under
-`.review-squad/reports/` is required and is still considered part of the review.
-After the report, offer to create an implementation plan before making fixes.
-
-This skill must work standalone. Do not depend on other plugins or skills. If a
-plan is needed after the report, write the plan directly in the current session.
+Run a read-only source review for launch readiness, refactors, inherited systems,
+or periodic health checks. Do not edit project files. Report artifacts are the
+only review writes. Offer an implementation plan after reporting; do not fix
+findings without a new user request.
 
 ## References
 
-Load only what you need:
+Load only what applies:
 
-- `../../references/panels.md` for project detection and default panels.
-- `../../references/dispatch-policy.md` for autonomous versus approval-required
-  panel dispatch.
-- `../../references/browser-preflight.md` if a running URL is involved.
-- `../../references/report-formats.md` for consolidation and report artifacts.
+- `../../references/review-catalog.json`: canonical project signals, lanes,
+  tiers, safety classes, modes, and severity.
+- `../../references/panels.md`: persona/task profiles and access boundaries.
+- `../../references/dispatch-policy.md`: approval and escalation boundaries.
+- `../../references/report-formats.md`: JSON validation and Markdown rendering.
+- `../../references/browser-preflight.md`: reviews with a running URL.
+- `../../references/bmad-detection.md`: only for recognized BMAD signals or
+  explicit BMAD scope.
 
 ## Workflow
 
-1. Inspect the repository with fast read-only commands (`rg --files`, manifest
-   reads, config reads, targeted source reads). Identify project type, stack,
-   likely user-facing surface, and important directories.
-2. If the user provided a URL, run browser preflight. If browser MCP is missing,
-   continue code review and mark rendered checks as not verified.
-3. Propose a default expert panel based on the detected project type. Include
-   4-8 reviewers by default and suggest stack-specific additions or removals.
-   Before deciding the dispatch mode, scan the expert suggestion catalog in
-   `panels.md` for repository signals. Add strong matches to `Candidate Lanes`
-   unless they are already selected. If a relevant known expert is not selected
-   or listed as a candidate, name it under `Related Expert Suggestions` with
-   the detection signal and why the user might add it. The proposal should not
-   hide relevant expert lanes just because the default panel is kept small.
-   Mentioning a specialized concern inside a broad lane scope, such as putting
-   BMAD status checks under `TEST`, does not count as surfacing that specialized
-   expert; if the dedicated lane is relevant, name it separately. Use the panel
-   proposal format below so the review feels like a coordinated squad, not a
-   loose list of agents.
-4. Determine the dispatch mode using `dispatch-policy.md`. Auto-dispatch only
-   when every autonomous-dispatch condition is met; otherwise require explicit
-   approval from the appropriate decision owner.
-5. Always present the proposed panel and dispatch decision for transparency.
-   For an auto-approved panel, continue immediately without asking for a reply.
-   For an approval-required panel, state the specific reason and pause.
-6. Dispatch the selected reviewers in parallel using Codex subagents when available.
-   Use self-contained lane prompts by default and follow the subagent dispatch
-   constraint below. If subagents are unavailable, state the limitation and run
-   the reviews sequentially in the current agent.
-7. Consolidate findings into one deduplicated, severity-ranked report with
-   source attribution.
-8. Write paired report artifacts using the artifact contract in
-   `report-formats.md`: `.review-squad/reports/<stem>.md` and
-   `.review-squad/reports/<stem>.json`.
-9. Present the Markdown findings in chat and include the JSON artifact path.
-   If no finding needs a human decision, offer to turn the findings into an
-   implementation plan. If a finding needs a Product Owner or other human
-   decision, preserve the post-review gate in `dispatch-policy.md`. Do not start
-   edits until the user asks for implementation.
+1. Inspect the requested scope with fast read-only commands. Detect zero or more
+   project labels with confidence and concrete file evidence. Disclose a generic
+   fallback when evidence is insufficient.
+2. Produce one compact parent dossier: scope, labels, stack/change context, risk
+   signals, important files, test commands, exclusions, and explicit risk
+   ownership for each selected lane. Do not make every reviewer rediscover the
+   repository.
+3. Select exactly three initial lanes from catalog evidence and the user goal.
+   Prefer independent risk coverage over overlapping titles.
+4. Show the panel and approval decision. Continue only when
+   `dispatch-policy.md` permits automatic dispatch.
+5. Dispatch isolated, read-only lane prompts containing only the relevant
+   dossier slice. Withhold other reviewers' findings until consolidation.
+6. Escalate only for high risk, ambiguous scope, high-risk `not_verified`,
+   material conflicts, newly exposed risk, or explicit high-assurance scope.
+   Automatic escalation stops at five well-justified read-only lanes.
+7. Consolidate without manufacturing consensus. Merge duplicate root causes,
+   preserve material disagreement/confidence, and keep unverified claims out of
+   verified findings.
+8. Follow `report-formats.md`: author and validate schema-2.0 JSON, then render
+   Markdown deterministically. Respect `written` and `inline_only` artifacts.
 
-## Panel Proposal
-
-Show the proposal in this format:
+## Panel proposal
 
 ```markdown
 ## Review Squad: Experts
 
 Status: panel proposal — [auto-approved / approval required]
-Target: [project name]
-Detected project: [type]
-Stack: [stack]
-Scope: [important directories/files]
-Browser: [URL / not provided / unavailable]
-Mode: read-only audit
+Target: [project]
+Detected labels: [label (confidence, evidence)]
+Scope: [bounded scope]
+Artifact mode: [written / inline_only]
 
-### High Priority Lanes
+### Initial lanes
 
-`SEC` Security Reviewer
+`[LANE]` [Name]
 
-- Scope: auth, secrets, trust boundaries
-- Why: [reason]
-- Effort: high
+- Why: [goal/risk evidence]
+- Scope: [bounded responsibility]
+- Tier: [frontier / balanced / fast]
+- Requested: [model and effort]
 
-`DATA` Data Model Reviewer
+### Escalation candidates
 
-- Scope: schema, migrations, constraints
-- Why: [reason]
-- Effort: high
+- [lane only when a named trigger occurs]
 
-### Standard Priority Lanes
+### Dispatch decision
 
-`API` API Design Reviewer
-
-- Scope: routes, contracts, errors
-- Why: [reason]
-- Effort: medium
-
-### Candidate Lanes
-
-`OBS` Observability Reviewer
-
-- Why add it: [reason]
-- Effort: medium
-
-### Related Expert Suggestions
-
-`BMAD` BMAD Workflow Reviewer
-
-- Signal: [detected BMAD/story evidence, or omit this lane if no signal exists]
-- Why consider it: [reason this may be useful but was not selected by default]
-- Effort: medium
-
-### Dispatch Decision
-
-[Use the autonomous or approval-required decision format from
-`dispatch-policy.md`.]
-
-If approval is required, reply `approve` or customize the panel.
-If the panel is auto-approved, review dispatch continues immediately.
+[Status and reasons from dispatch-policy.md]
 ```
 
-## Reviewer Prompt Template
+## Model and runtime policy
 
-Each subagent prompt must be concrete and bounded:
+- Use Sol/high frontier lanes for security, privacy, data integrity,
+  reliability, architecture, complex compatibility, and conflict adjudication.
+- Use Terra/medium for bounded tests, docs, developer experience, dependency
+  inventory, and read-heavy scans. Use Terra/low for copy, metadata, and narrow
+  checklists.
+- Treat the live subagent tool schema as authoritative. Only pass model or
+  effort settings when that schema supports them and the lane justifies them.
+- Record requested tier and settings. Record actual model/effort when exposed;
+  otherwise record them as unknown.
 
-```text
-You are the [LANE] lane: [ROLE] reviewing a [PROJECT TYPE] project.
-
-This is a read-only review. Do not edit files, do not run code-modifying
-commands, do not reformat files, and do not revert any changes.
-
-Project path: [ABSOLUTE PATH]
-Stack: [STACK SUMMARY]
-Important directories/files: [DIRECTORY HINTS]
-Running URL, if available: [URL OR "none"]
-Browser status: [available/unavailable/not checked]
-Assigned effort: [low/medium/high]
-
-Review focus:
-1. [Specific area and where to inspect]
-2. [Specific area and where to inspect]
-...
-8. [Specific area and where to inspect]
-
-Return findings only. Rank each finding as CRITICAL, IMPORTANT, MINOR, or
-NOT VERIFIED. Include evidence with file paths, line numbers when available,
-screens or URLs when browser evidence exists, and a concise suggested fix.
-For verified findings, include runtime impact, architecture impact, delivery
-impact, whether it is patchable now, whether a human decision is required, and
-the consequence of ignoring it. Do not include generic best practices unless
-they are tied to project evidence. Do not use wide Markdown tables; use short
-bullets or finding cards.
-
-Start your report with:
-Lane: [LANE]
-Reviewer: [ROLE]
-Headline: [one sentence]
-```
-
-## Dispatch Guidance
-
-Use parallel Codex subagents for independent reviewers. Assign each reviewer a
-single responsibility. Reviewers may read overlapping files, but none may write.
-Give every reviewer a short lane ID, usually 3-5 uppercase letters, such as
-`SEC`, `API`, `DATA`, `REL`, `ARCH`, `TEST`, `A11Y`, `PERF`, `COPY`, or `OBS`.
-
-Set subagent reasoning effort intentionally:
-
-- Use `reasoning_effort: medium` by default for expert reviewers.
-- Use `reasoning_effort: high` only for security, reliability, architecture,
-  data integrity, complex performance, or unusually large/ambiguous codebases.
-- Use `reasoning_effort: low` for narrow copy, social metadata, basic SEO, or
-  other quick checklist reviewers when latency matters.
-
-### Subagent Dispatch Constraint
-
-When spawning reviewer subagents, do not combine `fork_context: true` with
-explicit `agent_type`, `model`, or `reasoning_effort`. The subagent runtime
-rejects that combination because forked agents inherit agent type, model, and
-reasoning effort from the parent.
-
-Default Review Squad dispatch must use self-contained reviewer prompts with
-explicit reviewer settings and no `fork_context`:
+For the runtime current when this skill was released, a subordinate example is:
 
 ```text
-agent_type: explorer
-reasoning_effort: high|medium|low
+task_name: "review_sec"
 message: "You are the SEC lane..."
+fork_turns: "none"
 ```
 
-Use `fork_context: true` only when the reviewer truly needs the exact parent
-thread context. In that case, omit `agent_type`, `model`, and
-`reasoning_effort`:
+If the live schema differs, follow it instead of this example. Use a fork only
+when exact parent context is essential; isolated self-contained prompts are the
+default.
+
+## Lane prompt
 
 ```text
-fork_context: true
-message: "You are the SEC lane..."
+You are the [LANE] lane reviewing [PROJECT LABELS].
+
+Read only. Do not edit, reformat, revert, publish, or mutate external state.
+Responsibility: [one bounded risk area]
+Dossier: [lane-relevant scope, risks, files, tests, exclusions]
+Owned risks: [risks this lane decides]
+Adjacent lane ownership: [risk -> other lane]
+
+Return only:
+- lane, role, and one-sentence headline
+- verified findings with critical/important/minor severity
+- concrete file/URL evidence and source attribution
+- suggested fix and confidence
+- not_verified items with reason and follow-up
+
+Do not infer missing evidence, repeat general repository discovery, or reframe
+an adjacent lane's finding. Report a cross-cutting root only when it materially
+affects your owned risk and state why it is not a duplicate.
 ```
 
-Preferred call shapes:
+## Consolidation
 
-- Lane-specific expert review: `agent_type`, `reasoning_effort`, `message`; no
-  `fork_context`.
-- Full-context forked review: `fork_context`, `message`; no explicit
-  `agent_type`, `model`, or `reasoning_effort`.
+Apply the catalog severity factors: goal blockage, breadth, recoverability,
+risk if ignored, and confidence/evidence. A critical finding requires concrete
+high-impact evidence. Order findings by launch risk, preserve sources, and use a
+workflow-neutral `decision` object only when an owner must answer a question.
 
-In panel proposals, group lanes by review priority before dispatch:
-
-- `High Priority Lanes`: highest relevance to the user's goal or highest risk.
-- `Standard Priority Lanes`: still useful, but less central or lower risk.
-- `Candidate Lanes`: optional additions that require selection before dispatch.
-
-Do not put priority and effort on the same line. The group communicates
-priority; the lane card's `Effort:` bullet communicates subagent reasoning
-effort.
-
-If the runtime limits the number of parallel subagents, dispatch reviewers in
-waves. Keep the selected panel intact, report which reviewers are running in
-each wave, and never let waiting reviewers edit files.
-
-Before dispatching, show:
-
-```markdown
-## Review Squad: Dispatch
-
-Selected lanes: [count]
-Runtime parallelism: [parallel limit if known, otherwise "runtime-managed"]
-
-Wave 1: [LANE, LANE, LANE]
-- Priority: high
-- Notes: [why these lanes run first]
-
-Wave 2: [LANE, LANE]
-- Priority: standard
-- Notes: [queued because of runtime parallelism]
-```
-
-While reviewers run, give short progress updates:
-
-```markdown
-Progress: [LANE] complete - [headline finding or "no major issue"]
-Waiting: [LANE, LANE]
-Running: [LANE, LANE]
-```
-
-When reviewers finish, skim for duplicates and conflicts. If two reviewers flag
-the same root cause, merge it into one consolidated row and list both sources.
-If a reviewer could not verify browser behavior, preserve that as `NOT VERIFIED`
-instead of silently dropping it.
-
-## Consolidation Rules
-
-Use the `Experts` format from `report-formats.md`.
-
-Do not use wide Markdown tables in the final report. Use finding cards:
-
-```markdown
-`I-01` [SEC, REL] Short finding title
-
-- Evidence: path/to/file.kt:123-130 - detail; path/to/other.kt:45 - detail
-- Runtime impact: one concise sentence
-- Architecture impact: one concise sentence
-- Delivery impact: one concise sentence
-- Suggested fix: one concise sentence
-- Workflow: patchable now / decision required / blocks BMAD
-```
-
-Findings must include:
-
-- Severity
-- Concrete issue
-- Evidence with `kind`, `path`, `line`, `line_end`, `url`, and `detail` in the
-  JSON artifact
-- Which reviewer found it
-- Suggested fix
-- Structured impact: `runtime`, `architecture`, and `delivery`
-- Remediation classification
-- Decision flags
-- Human gate summary: why human, decision needed, consequence if ignored, and
-  recommended resolution
-- Workflow flags: `patchable_now`, `decision_required`, and `blocks_bmad`
-- BMAD command recommendation when a finding requires a decision, blocks BMAD,
-  or has any decision flag; use `STORY=<story>` if the story is unknown
-
-Order by launch risk: critical security/data/availability issues first, then
-user-facing breakage, then SEO/a11y/performance, then polish.
-
-Put a `BMAD Decision Section` near the top of the Markdown report. Separate
-patchable findings from decision-required findings. If a finding requires an
-operator decision, explain why it stops or does not stop BMAD and include a
-concrete command such as:
-
-```bash
-make story-run-decision STORY=1.2 RESUME_DECISION=stop_and_create_follow_up_story STATUS_UPDATE=review
-```
-
-Always write the paired Markdown and JSON artifacts before the final response.
-The JSON artifact must conform to `review-report.schema.json`, include
-`schema_version: "1.1"`, `findings: []`, `not_verified: []`,
-`decision_summary`, stable `review_context` fields, and `mode_data.type:
-"experts"`.
-
-After the report, ask whether the user wants an implementation plan. A good plan
-groups fixes by dependency and risk, with critical items first.
+After the rendered report, ask whether the user wants a dependency-ordered
+implementation plan.

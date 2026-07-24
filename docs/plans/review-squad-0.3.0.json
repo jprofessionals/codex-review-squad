@@ -1,0 +1,744 @@
+{
+  "plan_schema_version": "1.0",
+  "canonical": true,
+  "plan_id": "review-squad-0.3.0",
+  "status": "approved_for_implementation",
+  "created_at": "2026-07-22",
+  "release": {
+    "plugin": "review-squad",
+    "from_version": "0.2.3",
+    "to_version": "0.3.0",
+    "semver_rationale": "The release intentionally changes the canonical report contract, internal architecture, dispatch behavior, and browser isolation guarantees. A minor version is appropriate while the plugin remains pre-1.0."
+  },
+  "objective": "Improve Review Squad's review quality, runtime compatibility, reproducibility, and token efficiency for current Codex and GPT-5.6 runtimes while preserving a small, understandable plugin.",
+  "sources": [
+    {
+      "type": "audit_json",
+      "path": "docs/plans/evidence/review-squad-0.2.3-audit.json",
+      "role": "Structured audit evidence and finding inventory"
+    },
+    {
+      "type": "repository",
+      "path": "plugins/review-squad",
+      "role": "Version 0.2.3 implementation baseline"
+    }
+  ],
+  "execution_policy": {
+    "technical_lead": {
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "high",
+      "role": "Own architecture, sequence work, review every patch, integrate, and decide whether release gates pass."
+    },
+    "max_active_sessions": 3,
+    "max_concurrent_writers": 1,
+    "parallel_read_only_sessions": 2,
+    "rules": [
+      "Read the applicable AGENTS.md and skill instructions before acting.",
+      "Preserve unrelated and pre-existing working-tree changes.",
+      "Implement work packages in dependency order and do not broaden their scope speculatively.",
+      "Use the live subagent tool schema as authoritative; do not invent or preserve obsolete call fields.",
+      "Delegate only bounded work with explicit file ownership, acceptance criteria, and a required handoff summary.",
+      "Do not run overlapping write sessions against shared skill or reference files.",
+      "Do not publish, push, tag, or modify external systems without separate authorization.",
+      "Record deviations from this plan in the implementation handoff with evidence and rationale."
+    ]
+  },
+  "approved_decisions": [
+    {
+      "id": "D-001",
+      "decision": "JSON is the canonical report representation.",
+      "implications": [
+        "A completed review authors and validates one JSON report.",
+        "Human-readable Markdown is generated deterministically from the validated JSON rather than authored independently.",
+        "Chat output may be a concise rendering, but it must not become a second source of truth."
+      ]
+    },
+    {
+      "id": "D-002",
+      "decision": "Version the canonical report contract as schema 2.0 in release 0.3.0.",
+      "implications": [
+        "Preserve the 1.1 schema and representative fixtures for migration tests.",
+        "The 0.3.0 writer emits only schema 2.0.",
+        "Provide a deterministic 1.1-to-2.0 migration path or a precise incompatibility diagnostic for every legacy field that cannot be migrated losslessly."
+      ]
+    },
+    {
+      "id": "D-003",
+      "decision": "BMAD is an optional, versioned extension and must not be required by the core report schema or generic review prompts.",
+      "implications": [
+        "Use an optional top-level extensions object.",
+        "Use extensions.bmad.schema_version with initial extension version 1.0 when BMAD data is emitted.",
+        "Keep the core decision representation workflow-neutral.",
+        "Do not show BMAD sections, commands, or null placeholders in non-BMAD reports."
+      ]
+    },
+    {
+      "id": "D-004",
+      "decision": "BMAD detection requires a recognized root plus a valid manifest; secondary signals never establish installation on their own.",
+      "implications": [
+        "Prefer a valid modern _bmad installation over a valid legacy .bmad-core installation.",
+        "Treat malformed or unreadable manifests as unconfirmed and surface a diagnostic without activating the extension.",
+        "Do not adapt to undocumented installations that Review Squad cannot identify deterministically."
+      ]
+    },
+    {
+      "id": "D-005",
+      "decision": "Project detection, mode definitions, reviewer lanes, and model tiers must be driven from compact structured catalogs rather than repeated prose registries.",
+      "implications": [
+        "Support multi-label project detection.",
+        "Keep SKILL.md files focused on mode-specific behavior and progressive loading.",
+        "Validate catalog, schema, skills, manifest, and README consistency deterministically."
+      ]
+    },
+    {
+      "id": "D-006",
+      "decision": "Expert dispatch starts small and escalates from evidence.",
+      "implications": [
+        "Start ordinary expert reviews with three evidence-selected lanes.",
+        "Use a compact parent-produced dossier to reduce repeated repository discovery.",
+        "Add lanes, stronger models, or higher reasoning only for detected risk, ambiguity, conflicting results, or explicit high-assurance scope.",
+        "Preserve an approval gate for material scope, cost, access, or external-state changes."
+      ]
+    },
+    {
+      "id": "D-007",
+      "decision": "Browser personas must be independent in reasoning and browser state, and browser tasks stop before external writes by default.",
+      "implications": [
+        "Do not call a persona cold if it can inherit cookies, storage, navigation history, prior findings, or source-aware conclusions.",
+        "Every task records environment, credentials policy, allowed mutations, and a final-action stop boundary.",
+        "Explicit approval is required before submission, purchase, signup, contact, subscription, or another irreversible or externally visible mutation."
+      ]
+    },
+    {
+      "id": "D-008",
+      "decision": "TOON is not canonical and is not a release requirement for 0.3.0.",
+      "implications": [
+        "A TOON representation may be added later only as a derived format.",
+        "Do not ship it unless a lossless round-trip test passes and a repeatable benchmark demonstrates a material token benefit without reducing reliability.",
+        "JSON remains the interchange and migration boundary."
+      ]
+    }
+  ],
+  "target_architecture": {
+    "principles": [
+      "One canonical data object per review",
+      "Deterministic validation and rendering",
+      "Workflow-neutral core with optional versioned extensions",
+      "Structured catalogs for repeated mappings",
+      "Lean mode skills with progressive disclosure",
+      "Risk-adaptive dispatch with measured escalation",
+      "Browser isolation and mutation safety by construction"
+    ],
+    "recommended_components": [
+      {
+        "component": "core_report_schema",
+        "path": "plugins/review-squad/references/review-report.schema.json",
+        "responsibility": "Canonical schema 2.0 contract without BMAD-specific required fields"
+      },
+      {
+        "component": "legacy_report_schema",
+        "path": "plugins/review-squad/references/schemas/review-report.v1.1.schema.json",
+        "responsibility": "Frozen compatibility input for fixtures and migration"
+      },
+      {
+        "component": "bmad_extension_schema",
+        "path": "plugins/review-squad/references/extensions/bmad/review-report-bmad.v1.schema.json",
+        "responsibility": "Optional BMAD extension contract version 1.0"
+      },
+      {
+        "component": "review_catalog",
+        "path": "plugins/review-squad/references/review-catalog.json",
+        "responsibility": "Canonical modes, project signals, lane metadata, safety class, and model tier mappings"
+      },
+      {
+        "component": "report_validator",
+        "path": "plugins/review-squad/scripts/validate-report.mjs",
+        "responsibility": "Schema and semantic validation with actionable diagnostics"
+      },
+      {
+        "component": "report_renderer",
+        "path": "plugins/review-squad/scripts/render-report.mjs",
+        "responsibility": "Deterministic Markdown rendering from validated schema 2.0 JSON"
+      },
+      {
+        "component": "legacy_migrator",
+        "path": "plugins/review-squad/scripts/migrate-report.mjs",
+        "responsibility": "Deterministic 1.1-to-2.0 conversion"
+      },
+      {
+        "component": "detectors",
+        "path": "plugins/review-squad/scripts/lib/detection.mjs",
+        "responsibility": "Project and BMAD signal evaluation shared by validation fixtures and documented runtime behavior"
+      },
+      {
+        "component": "test_corpus",
+        "path": "plugins/review-squad/tests",
+        "responsibility": "Deterministic contract tests, fixtures, golden Markdown, and bounded behavioral eval definitions"
+      }
+    ],
+    "implementation_freedom": "Paths may be adjusted by the technical lead when the existing repository structure makes a smaller design possible, but component responsibilities, canonical boundaries, and acceptance criteria must remain intact."
+  },
+  "core_report_contract": {
+    "schema_version": "2.0",
+    "required_top_level_concepts": [
+      "schema_version",
+      "report_id",
+      "mode",
+      "generated_at",
+      "generator",
+      "target",
+      "review_context",
+      "summary",
+      "findings",
+      "not_verified",
+      "mode_data",
+      "sources",
+      "artifacts"
+    ],
+    "optional_top_level_concepts": [
+      "extensions"
+    ],
+    "invariants": [
+      "findings and not_verified are always arrays, including for clean reviews.",
+      "Every verified finding has at least one non-empty evidence entry and at least one source lane or persona.",
+      "Finding severities are critical, important, or minor; verification state is not a severity.",
+      "Summary counts equal values derived from findings and not_verified.",
+      "Artifact status explicitly distinguishes written files from inline-only output.",
+      "A generic optional decision object may identify owner, question, consequence, and recommendation without naming BMAD.",
+      "Mode-specific data is selected by mode and validated against the canonical mode catalog.",
+      "Unknown extension keys do not change the meaning of core fields; known extensions validate independently.",
+      "Markdown output is reproducible from JSON and contains no facts absent from the JSON."
+    ],
+    "migration_policy": [
+      "Retain representative valid and invalid 1.1 fixtures.",
+      "Map workflow-neutral facts to core 2.0 fields.",
+      "Map BMAD-specific fields to extensions.bmad only when they contain meaningful data.",
+      "Drop null or negative BMAD boilerplate rather than recreating it in core 2.0.",
+      "Fail with a field-level diagnostic when a non-empty legacy value has no safe mapping.",
+      "Prove idempotence for already migrated 2.0 input or reject it clearly as not a 1.1 source."
+    ]
+  },
+  "bmad_detection_contract": {
+    "states": [
+      "absent",
+      "installed_inactive",
+      "active"
+    ],
+    "modern": {
+      "root": "_bmad/",
+      "manifest": "_bmad/_config/manifest.yaml"
+    },
+    "legacy": {
+      "root": ".bmad-core/",
+      "manifest": ".bmad-core/install-manifest.yaml"
+    },
+    "confirmation_rule": "A candidate installation is confirmed only when its recognized top-level root exists and its expected manifest is readable, parseable as a mapping, and contains recognizable installation or module metadata. The manifest is the source of truth for version, channel, sha, and installed modules when those values are present.",
+    "precedence": [
+      "A confirmed modern installation is selected first.",
+      "A confirmed legacy installation is selected only when no confirmed modern installation exists.",
+      "When both are confirmed, select modern and record legacy as residue in BMAD extension diagnostics only when the extension is active."
+    ],
+    "supporting_signals": [
+      "_bmad/config.toml",
+      "_bmad/config.user.toml",
+      "_bmad/<module>/config.yaml",
+      "_bmad/core/ and module directories such as bmm/, bmb/, and cis/",
+      "_bmad-output/ and its generated artifacts",
+      ".claude/commands/BMad/",
+      ".cursor/commands/",
+      ".windsurf/skills/"
+    ],
+    "supporting_signal_rule": "Supporting signals may increase confidence or establish current relevance, but they never confirm installation without the recognized root-and-manifest pair.",
+    "activation_rule": "Mark an installation active for the current review only when BMAD is explicitly requested or the review scope contains a story identifier, acceptance criteria, lifecycle command, relevant BMAD configuration change, or in-scope generated BMAD artifact. Installation alone may surface a candidate lane but must not force BMAD report content.",
+    "behavior_by_state": {
+      "absent": "Run the workflow-neutral core only and omit BMAD prompts, lanes, fields, sections, and commands.",
+      "installed_inactive": "The panel may disclose a BMAD candidate lane with its signal, but do not select it automatically or emit the extension without task relevance.",
+      "active": "Allow a BMAD lane and emit extensions.bmad only when the run produces meaningful BMAD lifecycle or decision data."
+    },
+    "failure_behavior": "Malformed manifests produce a concise not-confirmed diagnostic and do not activate BMAD. Do not guess a version or installed module."
+  },
+  "dispatch_contract": {
+    "project_types": [
+      "web",
+      "backend_api",
+      "mobile",
+      "cli",
+      "data_pipeline",
+      "agent_plugin_prompt",
+      "library_sdk",
+      "infrastructure_iac",
+      "ci_tooling"
+    ],
+    "detection": [
+      "Return zero or more project labels with confidence and concrete repository evidence.",
+      "Choose lanes from risk signals and the user's goal, not from a single primary product label.",
+      "Use a generic fallback lane set when signals are insufficient and disclose the uncertainty."
+    ],
+    "initial_panel": {
+      "default_lane_count": 3,
+      "selection": "Choose the three lanes with the strongest combination of user-goal relevance, detected risk, and expected independent signal.",
+      "dossier": "Produce one compact repository dossier containing scope, stack, change context, risk signals, important files, test commands, and explicit exclusions. Pass only lane-relevant parts to each reviewer."
+    },
+    "escalation": {
+      "triggers": [
+        "security, privacy, data-integrity, reliability, or compliance risk",
+        "large or ambiguous scope",
+        "a reviewer reports not_verified on a high-risk area",
+        "reviewer conclusions conflict materially",
+        "the initial lanes expose a distinct uncovered risk",
+        "the user explicitly requests launch, compliance, or high-assurance depth"
+      ],
+      "auto_dispatch_limit": "Up to five strongly justified read-only lanes when all safety and cost conditions pass.",
+      "approval_boundary": "Six or more lanes, material scope expansion, private/external access, mutations, or materially different panel alternatives require approval."
+    },
+    "model_policy": [
+      {
+        "tier": "frontier",
+        "preferred_model": "gpt-5.6-sol",
+        "default_effort": "high",
+        "use_for": [
+          "security",
+          "privacy",
+          "data integrity",
+          "reliability",
+          "architecture",
+          "complex compatibility",
+          "conflict adjudication"
+        ]
+      },
+      {
+        "tier": "balanced",
+        "preferred_model": "gpt-5.6-terra",
+        "default_effort": "medium",
+        "use_for": [
+          "bounded test review",
+          "documentation",
+          "developer experience",
+          "dependency inventory",
+          "read-heavy scans"
+        ]
+      },
+      {
+        "tier": "fast",
+        "preferred_model": "gpt-5.6-terra",
+        "default_effort": "low",
+        "use_for": [
+          "copy",
+          "metadata",
+          "narrow deterministic checklists"
+        ]
+      }
+    ],
+    "runtime_compatibility": [
+      "Treat the callable tool schema exposed in the current session as authoritative.",
+      "For the currently reviewed runtime, use task_name, message, and fork_turns and omit obsolete fork_context and agent_type fields.",
+      "Only pin model or reasoning settings when the live schema supports them and the lane policy justifies the added cost.",
+      "Use isolated, self-contained prompts for normal lanes; fork parent context only when the exact parent context is essential.",
+      "Record actual model and effort when the runtime exposes them; otherwise record requested tier and unknown actual values."
+    ]
+  },
+  "severity_contract": {
+    "canonical_factors": [
+      "degree of goal blockage",
+      "affected audience or system breadth",
+      "recoverability",
+      "risk if ignored",
+      "confidence and evidence quality"
+    ],
+    "rules": [
+      "Persona complaint counts may support breadth but must not determine severity alone.",
+      "Persona-specific jokes, red pens, upvotes, or labels are presentation metadata only.",
+      "A critical finding requires concrete high-impact evidence; unsupported critical findings fail the eval gate.",
+      "Preserve disagreements and confidence instead of manufacturing consensus."
+    ]
+  },
+  "browser_contract": {
+    "reproducibility": [
+      "Pin one tested @playwright/mcp version in the released plugin configuration.",
+      "Use non-interactive package execution and document Node, npm, network/cache, and browser-binary prerequisites.",
+      "Record the tested MCP version in release validation evidence.",
+      "Differentiate missing package, registry/network failure, missing browser binary, MCP startup failure, and target URL failure."
+    ],
+    "persona_isolation": [
+      "Run each cold persona in a fresh reasoning context with no previous persona findings.",
+      "Give each persona a clean browser context or prove that cookies, local storage, session storage, cache, permissions, viewport, and navigation state were reset.",
+      "Do not claim independent cold observations when the runtime cannot guarantee or verify isolation.",
+      "Run cold browser modes before source-aware modes in a combined Review Squad request."
+    ],
+    "mutation_safety": [
+      "Default every browser task to read-only exploration and stop before the final externally visible action.",
+      "Task panels must include target environment, account/credential policy, allowed mutations, forbidden actions, and exact stop boundary.",
+      "Signup, checkout, subscribe, contact, account changes, uploads, and destructive actions require explicit approval before crossing the boundary.",
+      "Use sandbox or test environments where available and report cleanup requirements for every approved mutation."
+    ],
+    "artifact_root_resolution": [
+      "Use the explicit target repository when it is writable.",
+      "Otherwise use an explicit user-approved output directory.",
+      "For URL-only work with no appropriate writable root, return validated JSON and rendered Markdown inline and set artifact status to inline_only with null paths.",
+      "Display the selected artifact mode during preflight instead of silently writing into an unrelated current directory."
+    ]
+  },
+  "work_packages": [
+    {
+      "id": "WP-00",
+      "name": "Baseline and deterministic validation foundation",
+      "owner_profile": {
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "high"
+      },
+      "depends_on": [],
+      "findings": [
+        "I-02",
+        "D-02"
+      ],
+      "goals": [
+        "Capture the 0.2.3 behavioral and artifact baseline before production prompts change.",
+        "Create deterministic tests that later packages can extend.",
+        "Make failures specific enough for a lead to diagnose without reading raw agent traces."
+      ],
+      "tasks": [
+        "Create a minimal Node-based test entrypoint using repository-appropriate dependency policy.",
+        "Add valid and invalid report fixtures for schema 1.1, including empty evidence, mismatched counts, invalid modes, invalid severity, and malformed BMAD fields.",
+        "Add routing, approval, project-signal, BMAD-detection, browser-degradation, and external-write boundary fixture definitions without changing production behavior yet.",
+        "Create a compact behavioral eval corpus containing clean controls and seeded critical, important, and minor defects across plugin/agent, web, backend, library, and infrastructure surfaces.",
+        "Record the exact v0.2.3 baseline commands and known expected failures for obsolete dispatch, weak report semantics, and shared browser state.",
+        "Keep model-run evals separate from deterministic CI so normal validation remains predictable and inexpensive."
+      ],
+      "acceptance_criteria": [
+        "Existing plugin validation still passes.",
+        "The new deterministic suite passes against its baseline expectations.",
+        "Each audit finding targeted by later work has at least one failing or characterization fixture.",
+        "The eval corpus does not reveal the expected answer to review agents beyond the project artifacts themselves.",
+        "No released skill, schema, dispatch, or browser behavior changes in this package."
+      ],
+      "handoff": "Return files changed, commands run, baseline results, fixture inventory, known limitations, and the exact green command required before WP-01 starts."
+    },
+    {
+      "id": "WP-01",
+      "name": "Canonical report pipeline and optional BMAD extension",
+      "owner_profile": {
+        "model": "gpt-5.6-sol",
+        "reasoning_effort": "high"
+      },
+      "depends_on": [
+        "WP-00"
+      ],
+      "findings": [
+        "I-03",
+        "M-02",
+        "M-03"
+      ],
+      "goals": [
+        "Replace dual-authored artifacts with validated JSON plus deterministic Markdown rendering.",
+        "Simplify the core report while preserving meaningful decisions and mode-specific evidence.",
+        "Move BMAD completely out of required core fields and generic prompts."
+      ],
+      "tasks": [
+        "Freeze the current 1.1 schema under a versioned legacy path and implement schema 2.0 at the canonical schema path.",
+        "Implement schema and semantic validation, including non-empty evidence/source, derived count consistency, mode-data consistency, extension validation, and artifact-state invariants.",
+        "Implement deterministic Markdown rendering and golden tests for every mode, clean reports, not-verified reports, generic human decisions, and BMAD-active reports.",
+        "Implement the 1.1-to-2.0 migrator with success and explicit failure fixtures.",
+        "Implement BMAD detection states and extension activation exactly as defined by bmad_detection_contract.",
+        "Add modern, legacy, dual-install, malformed-manifest, supporting-signals-only, installed-inactive, and active BMAD fixtures.",
+        "Replace repeated report-authoring rules in every SKILL.md with a short shared JSON-author-validate-render workflow reference.",
+        "Support inline_only artifacts for URL-only reviews with no approved writable root."
+      ],
+      "acceptance_criteria": [
+        "Every valid schema 2.0 fixture validates and every invalid fixture fails with the expected diagnostic.",
+        "No verified finding can validate with empty evidence or empty source attribution.",
+        "Markdown golden output is byte-stable for the same canonical JSON input.",
+        "Core schema and generic report output contain no required BMAD field or section.",
+        "All BMAD detection precedence and activation fixtures pass.",
+        "A representative 1.1 report migrates to valid 2.0 JSON and renders without independently authored facts.",
+        "All five skills remain valid and each is materially shorter or contains less duplicated reporting prose than 0.2.3."
+      ],
+      "handoff": "Return the final schema decisions, migration limitations, renderer behavior, BMAD fixture matrix, commands run, and any approved deviation from the recommended component paths."
+    },
+    {
+      "id": "WP-02",
+      "name": "Adaptive project detection, dispatch, model policy, and prompt calibration",
+      "owner_profile": {
+        "model": "gpt-5.6-sol",
+        "reasoning_effort": "high"
+      },
+      "depends_on": [
+        "WP-01"
+      ],
+      "findings": [
+        "I-01",
+        "I-04",
+        "I-05",
+        "M-01",
+        "M-02"
+      ],
+      "goals": [
+        "Make current subagent dispatch valid without tightly coupling prose to one private call shape.",
+        "Reduce ordinary expert fan-out and repeated discovery while preserving or improving defect recall.",
+        "Cover agent/plugin/prompt, library/SDK, data, infrastructure, and CI repositories as first-class multi-label types.",
+        "Use one canonical severity system across all modes."
+      ],
+      "tasks": [
+        "Create the canonical structured review catalog for modes, project signals, lanes, model tiers, and safety classifications.",
+        "Implement or document a deterministic multi-label detector that returns evidence and confidence and is covered by fixtures.",
+        "Replace the fixed 4-8 default with three initial evidence-selected lanes and the escalation contract.",
+        "Create the compact parent dossier contract and keep lane prompts bounded to their assigned risks.",
+        "Replace obsolete fork_context and agent_type pseudo-API guidance with semantic instructions and a current task_name/message/fork_turns example explicitly subordinated to the live tool schema.",
+        "Apply the Sol/Terra tier policy with runtime fallback and record requested versus actual settings where available.",
+        "Define job-to-be-done personas with domain knowledge, device/access constraints, goal, and success criteria rather than demographic stereotypes alone.",
+        "Apply the canonical severity factors to normies, regulars, and well-actually; retain playful scales only as optional presentation metadata.",
+        "Change combined-mode order so cold browser work precedes source-aware review when cold first impressions are requested."
+      ],
+      "acceptance_criteria": [
+        "No production instruction uses fork_context or agent_type as current callable fields.",
+        "Routing and approval fixtures reach 100 percent expected decisions.",
+        "Every supported project type has positive and negative detection fixtures and multi-label repositories retain all material labels.",
+        "A small ordinary audit dispatches three lanes; high-risk fixtures escalate to the correct lane/model tier.",
+        "Clean controls do not gain unsupported critical findings.",
+        "Seeded critical and important recall does not regress from the recorded 0.2.3 baseline.",
+        "Median duplicate findings and repeated dossier content are lower than the baseline on the bounded eval corpus.",
+        "Catalog consistency validation fails when a mode, lane, schema branch, manifest prompt, or documented mode is missing or duplicated."
+      ],
+      "handoff": "Return catalog structure, detection matrix, dispatch decisions, model-tier behavior, before/after prompt size, eval deltas, and unresolved runtime-schema uncertainty."
+    },
+    {
+      "id": "WP-03",
+      "name": "Browser isolation, mutation safety, and reproducibility",
+      "owner_profile": {
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "high"
+      },
+      "depends_on": [
+        "WP-02"
+      ],
+      "findings": [
+        "I-06",
+        "I-07",
+        "I-08",
+        "M-03",
+        "D-01"
+      ],
+      "goals": [
+        "Make browser reviews reproducible enough to diagnose and compare.",
+        "Make cold personas genuinely independent or explicitly decline that claim.",
+        "Prevent nominally read-only reviews from creating external state without approval."
+      ],
+      "tasks": [
+        "Select and pin an exact tested @playwright/mcp version; use non-interactive startup and the strongest supported isolation mode.",
+        "Keep release configuration, README examples, preflight diagnostics, and smoke tests on the same MCP version.",
+        "Implement persona reasoning isolation and browser-state reset or fresh-context behavior with verification checks between personas.",
+        "Replace the shared-session requirement with an isolation contract and honest fallback when the runtime cannot guarantee it.",
+        "Add environment, credentials, allowed-mutation, forbidden-action, and stop-boundary fields to regulars task panels and prompts.",
+        "Default signup, checkout, contact, subscribe, upload, and account-change flows to stop before final submission.",
+        "Implement deterministic artifact-root resolution and inline_only fallback.",
+        "Add disposable smoke tests for warm startup, cold cache or first launch, cached offline startup where supported, missing browser binary, blocked registry, MCP startup failure, and unreachable target URL.",
+        "Document which browser tests are deterministic release gates and which remain broader post-0.3.0 field tests."
+      ],
+      "acceptance_criteria": [
+        "Released MCP configuration has no @latest dependency and cannot prompt for package installation.",
+        "A cold persona cannot observe prior persona cookies, storage, navigation, viewport, permissions, or findings in the isolation fixture.",
+        "When isolation cannot be established, the run stops or downgrades its claim explicitly rather than labeling the result cold and independent.",
+        "Mutation-boundary fixtures never submit externally visible actions without explicit approval.",
+        "Browser preflight produces distinct actionable diagnostics for each tested failure class.",
+        "URL-only review behavior never silently writes into an unrelated repository.",
+        "Normies, regulars, and well-actually smoke runs produce valid schema 2.0 JSON and renderer-generated Markdown."
+      ],
+      "handoff": "Return the exact pinned MCP version and rationale, isolation evidence, safety fixture results, supported offline behavior, diagnostics matrix, and deferred real-world Playwright scenarios."
+    },
+    {
+      "id": "WP-04",
+      "name": "Documentation, packaging, and 0.3.0 release integration",
+      "owner_profile": {
+        "model": "gpt-5.6-sol",
+        "reasoning_effort": "high"
+      },
+      "depends_on": [
+        "WP-03"
+      ],
+      "findings": [
+        "M-04"
+      ],
+      "goals": [
+        "Make the public contract, install paths, upgrade behavior, and release version consistent with the implementation.",
+        "Validate the plugin using current plugin and skill authoring rules."
+      ],
+      "tasks": [
+        "Update README for schema 2.0, canonical JSON, generated Markdown, adaptive panels, model tiers, BMAD detection/extension behavior, browser pinning, isolation, mutation boundaries, and inline-only artifacts.",
+        "Split local-filesystem marketplace troubleshooting from Git marketplace refresh instructions.",
+        "Update plugin metadata and generator version to 0.3.0 only after prior work packages pass.",
+        "Validate plugin manifest, marketplace metadata, every skill frontmatter/body, structured catalogs, schemas, fixtures, and script help/error behavior.",
+        "Use the plugin cachebuster and reinstall flow only for local testing; do not commit a cachebuster suffix as the 0.3.0 release version.",
+        "Start a fresh Codex thread after reinstall for installed-plugin smoke tests.",
+        "Do not publish, push, or create a tag without explicit authorization."
+      ],
+      "acceptance_criteria": [
+        "The committed plugin manifest version is exactly 0.3.0.",
+        "README examples match released files and do not use @latest.",
+        "Local marketplace instructions use plugin list plus a fresh session; Git marketplace refresh is described only for Git sources.",
+        "Plugin validation and all five skill validations pass.",
+        "A fresh installed-plugin session exposes the expected five skills and current prompts.",
+        "No stale 1.1 writer requirement, mandatory BMAD section, obsolete dispatch field, fixed 4-8 default, or shared cold-browser claim remains outside explicitly preserved legacy fixtures."
+      ],
+      "handoff": "Return the final validation commands and outputs, installed-plugin smoke evidence, version inventory, documentation consistency check, and any release action intentionally left for the user."
+    },
+    {
+      "id": "WP-05",
+      "name": "Independent quality and release-gate review",
+      "owner_profile": {
+        "model": "gpt-5.6-sol",
+        "reasoning_effort": "high"
+      },
+      "depends_on": [
+        "WP-04"
+      ],
+      "findings": [
+        "I-02",
+        "D-02"
+      ],
+      "goals": [
+        "Verify implementation against the canonical plan and original audit without inheriting the implementer's conclusions.",
+        "Decide whether 0.3.0 is ready for broader normies and Playwright field testing."
+      ],
+      "tasks": [
+        "Review the final diff, canonical plan, raw fixtures, test outputs, and generated artifacts.",
+        "Run deterministic validation from a clean checkout or clean worktree.",
+        "Repeat the bounded model eval on the same corpus and compare recall, unsupported findings, evidence validity, duplicate rate, tokens where observable, latency, and variance.",
+        "Run the minimum browser smoke matrix in a disposable environment.",
+        "Report release blockers separately from acceptable post-release field-test risks.",
+        "Verify every audit finding and approved decision has evidence of closure or an explicit, user-approved deferment."
+      ],
+      "acceptance_criteria": [
+        "All deterministic release gates pass from a clean environment.",
+        "Verified findings always carry valid evidence and source attribution.",
+        "There are zero unsupported critical findings on clean controls.",
+        "Seeded critical and important recall does not regress from 0.2.3.",
+        "Median token use and wall time improve for ordinary reviews, or any exception is quantified and justified by a measurable quality gain.",
+        "Browser smoke tests establish the stated isolation and mutation-safety claims.",
+        "The reviewer issues a clear ready, ready_with_field_test_risk, or not_ready verdict."
+      ],
+      "handoff": "Return a severity-ranked independent report, command evidence, metric comparison, uncovered risks, and one explicit release verdict. Do not implement fixes in the review session."
+    }
+  ],
+  "finding_coverage": {
+    "I-01": [
+      "WP-02"
+    ],
+    "I-02": [
+      "WP-00",
+      "WP-05"
+    ],
+    "I-03": [
+      "WP-01"
+    ],
+    "I-04": [
+      "WP-02"
+    ],
+    "I-05": [
+      "WP-02"
+    ],
+    "I-06": [
+      "WP-03"
+    ],
+    "I-07": [
+      "WP-03"
+    ],
+    "I-08": [
+      "WP-03"
+    ],
+    "M-01": [
+      "WP-02"
+    ],
+    "M-02": [
+      "WP-01",
+      "WP-02"
+    ],
+    "M-03": [
+      "WP-01",
+      "WP-03"
+    ],
+    "M-04": [
+      "WP-04"
+    ],
+    "D-01": [
+      "WP-03",
+      "WP-05"
+    ],
+    "D-02": [
+      "WP-00",
+      "WP-05"
+    ]
+  },
+  "release_gates": [
+    {
+      "id": "RG-01",
+      "gate": "Plugin and skill structure",
+      "pass_condition": "Current plugin validation and all skill validations pass."
+    },
+    {
+      "id": "RG-02",
+      "gate": "Report contract",
+      "pass_condition": "All schema, semantic, migration, renderer, and extension fixtures pass."
+    },
+    {
+      "id": "RG-03",
+      "gate": "Routing and safety",
+      "pass_condition": "All routing, approval, BMAD activation, artifact-root, and external-write fixtures produce the expected decision."
+    },
+    {
+      "id": "RG-04",
+      "gate": "Quality",
+      "pass_condition": "No regression in seeded critical or important recall, zero unsupported critical findings on clean controls, and no verified finding without valid evidence."
+    },
+    {
+      "id": "RG-05",
+      "gate": "Cost and latency",
+      "pass_condition": "Ordinary-review median token use and wall time improve against the 0.2.3 baseline, or a measured quality improvement justifies and documents the exception."
+    },
+    {
+      "id": "RG-06",
+      "gate": "Browser release boundary",
+      "pass_condition": "Pinned startup, isolation, failure diagnostics, artifact handling, and mutation-stop smoke tests pass in the documented supported environment."
+    },
+    {
+      "id": "RG-07",
+      "gate": "Installed plugin",
+      "pass_condition": "A cachebuster reinstall followed by a fresh thread loads version 0.3.0 behavior and all expected skills; the committed manifest remains exactly 0.3.0."
+    },
+    {
+      "id": "RG-08",
+      "gate": "Independent verdict",
+      "pass_condition": "WP-05 returns ready or ready_with_field_test_risk with no unresolved critical or important implementation defect."
+    }
+  ],
+  "post_release_validation": {
+    "purpose": "Broaden real-world Playwright and persona coverage after the 0.3.0 architectural release without weakening its minimum release gates.",
+    "expected_versioning": {
+      "bug_fixes_and_compatible_refinements": "0.3.x patch releases",
+      "new_backward_incompatible_contract_or_material_feature": "0.4.0 or later minor release"
+    },
+    "field_tests": [
+      "Normies across public sites, authenticated test sites, desktop, and mobile viewports",
+      "Regulars against sandboxed signup, checkout, subscribe, search, and contact flows",
+      "Playwright first launch, cached offline launch, browser installation variants, and runtime updates",
+      "Cross-platform Node/npm behavior where contributors can reproduce it",
+      "Repeated runs to measure persona independence, result variance, tokens, and latency"
+    ],
+    "triage_rule": "Record field-test failures as reproducible fixtures before changing prompts or contracts. Prefer narrow 0.3.x fixes and keep schema 2.0 compatible throughout the patch line."
+  },
+  "non_goals": [
+    "Publishing, pushing, tagging, or releasing the plugin as part of handoff preparation",
+    "Making TOON canonical",
+    "Supporting arbitrary BMAD installations without a recognized root and valid manifest",
+    "Adding new Review Squad modes unrelated to the audited gaps",
+    "Creating a large framework when small JSON catalogs, references, and Node scripts suffice",
+    "Guaranteeing every Playwright environment before the planned post-release field-test program"
+  ],
+  "definition_of_done": [
+    "All work packages and release gates have recorded evidence.",
+    "The committed plugin version is 0.3.0 and the installed smoke test uses a fresh session.",
+    "JSON schema 2.0 is the only canonical writer output and Markdown is generated from it.",
+    "BMAD is absent from generic reports and activates only under the approved detection and relevance rules.",
+    "Dispatch is current, adaptive, multi-label, and measurably more efficient without recall regression.",
+    "Browser claims are backed by isolation and mutation-safety tests.",
+    "An independent Sol/high review returns an explicit acceptable release verdict."
+  ]
+}

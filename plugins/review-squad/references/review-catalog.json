@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0",
+  "modes": [
+    {"id": "experts", "skill": "review-squad:experts", "access": "source", "safety_class": "local_read_only"},
+    {"id": "normies", "skill": "review-squad:normies", "access": "cold_browser", "safety_class": "public_browser_read"},
+    {"id": "regulars", "skill": "review-squad:regulars", "access": "browser_task", "safety_class": "public_browser_read"},
+    {"id": "well-actually", "skill": "review-squad:well-actually", "access": "mixed", "safety_class": "local_read_only"}
+  ],
+  "project_types": [
+    {"id": "web", "threshold": 2, "signals": [{"path": "index.html", "weight": 2}, {"path": "src/App.tsx", "weight": 2}, {"glob": "**/*.tsx", "weight": 1}, {"prefix": "app/", "weight": 1}, {"prefix": "pages/", "weight": 1}, {"path": "vite.config.ts", "weight": 2}, {"path": "next.config.js", "weight": 2}]},
+    {"id": "backend_api", "threshold": 2, "signals": [{"path": "server.mjs", "weight": 2}, {"path": "pom.xml", "weight": 1}, {"prefix": "src/main/java/", "weight": 1}, {"prefix": "routes/", "weight": 2}, {"glob": "**/openapi.yaml", "weight": 2}]},
+    {"id": "mobile", "threshold": 2, "signals": [{"path": "pubspec.yaml", "weight": 2}, {"prefix": "ios/", "weight": 1}, {"prefix": "android/", "weight": 1}, {"glob": "**/*.xcodeproj", "weight": 2}]},
+    {"id": "cli", "threshold": 2, "signals": [{"path": "src/main.rs", "weight": 2}, {"prefix": "bin/", "weight": 2}, {"glob": "**/commands/*.ts", "weight": 1}, {"path": "cli.py", "weight": 2}]},
+    {"id": "data_pipeline", "threshold": 2, "signals": [{"path": "dbt_project.yml", "weight": 2}, {"prefix": "dags/", "weight": 2}, {"prefix": "pipelines/", "weight": 2}, {"glob": "**/airflow.cfg", "weight": 2}]},
+    {"id": "agent_plugin_prompt", "threshold": 2, "signals": [{"path": ".codex-plugin/plugin.json", "weight": 3}, {"glob": "**/SKILL.md", "weight": 2}, {"path": ".mcp.json", "weight": 2}, {"prefix": "prompts/", "weight": 2}]},
+    {"id": "library_sdk", "threshold": 2, "signals": [{"path": "src/index.ts", "weight": 1}, {"path": "index.d.ts", "weight": 1}, {"prefix": "types/", "weight": 1}, {"glob": "**/lib.rs", "weight": 2}, {"glob": "**/py.typed", "weight": 2}]},
+    {"id": "infrastructure_iac", "threshold": 2, "signals": [{"glob": "**/*.tf", "weight": 2}, {"glob": "**/Chart.yaml", "weight": 2}, {"prefix": "ansible/", "weight": 2}, {"prefix": "k8s/", "weight": 2}]},
+    {"id": "ci_tooling", "threshold": 2, "signals": [{"prefix": ".github/workflows/", "weight": 2}, {"path": "action.yml", "weight": 2}, {"path": "action.yaml", "weight": 2}, {"path": ".gitlab-ci.yml", "weight": 2}, {"path": "Jenkinsfile", "weight": 2}]}
+  ],
+  "model_tiers": [
+    {"id": "frontier", "preferred_model": "gpt-5.6-sol", "reasoning_effort": "high", "uses": ["security", "privacy", "data_integrity", "reliability", "architecture", "complex_compatibility", "conflict_adjudication"]},
+    {"id": "balanced", "preferred_model": "gpt-5.6-terra", "reasoning_effort": "medium", "uses": ["bounded_test_review", "documentation", "developer_experience", "dependency_inventory", "read_heavy_scan"]},
+    {"id": "fast", "preferred_model": "gpt-5.6-terra", "reasoning_effort": "low", "uses": ["copy", "metadata", "narrow_checklist"]}
+  ],
+  "safety_classes": [
+    {"id": "local_read_only", "approval": "auto"},
+    {"id": "public_browser_read", "approval": "auto_when_user_supplied_target"},
+    {"id": "private_access", "approval": "required"},
+    {"id": "external_write", "approval": "required"},
+    {"id": "destructive", "approval": "required"},
+    {"id": "high_cost", "approval": "required_at_six_lanes"}
+  ],
+  "lanes": [
+    {"id": "SEC", "name": "Security and Privacy", "tier": "frontier", "projects": ["web", "backend_api", "mobile", "data_pipeline", "agent_plugin_prompt", "library_sdk", "infrastructure_iac", "ci_tooling"], "risks": ["security", "privacy", "auth", "secret", "injection"], "safety_class": "local_read_only"},
+    {"id": "REL", "name": "Reliability", "tier": "frontier", "projects": ["backend_api", "mobile", "data_pipeline", "library_sdk", "infrastructure_iac", "ci_tooling"], "risks": ["reliability", "availability", "concurrency", "failure"], "safety_class": "local_read_only"},
+    {"id": "ARCH", "name": "Architecture and Compatibility", "tier": "frontier", "projects": ["backend_api", "agent_plugin_prompt", "library_sdk", "infrastructure_iac"], "risks": ["architecture", "compatibility", "migration", "contract"], "safety_class": "local_read_only"},
+    {"id": "DATA", "name": "Data Integrity", "tier": "frontier", "projects": ["backend_api", "data_pipeline", "infrastructure_iac"], "risks": ["data", "schema", "migration", "integrity"], "safety_class": "local_read_only"},
+    {"id": "PROMPT", "name": "Agent and Prompt Contract", "tier": "frontier", "projects": ["agent_plugin_prompt"], "risks": ["prompt", "agent", "tool", "dispatch"], "safety_class": "local_read_only"},
+    {"id": "API", "name": "API and Public Contract", "tier": "frontier", "projects": ["backend_api", "library_sdk"], "risks": ["api", "contract", "compatibility"], "safety_class": "local_read_only"},
+    {"id": "A11Y", "name": "Accessibility", "tier": "balanced", "projects": ["web", "mobile"], "risks": ["accessibility", "keyboard", "screen_reader"], "safety_class": "public_browser_read"},
+    {"id": "UX", "name": "User Experience", "tier": "balanced", "projects": ["web", "mobile", "cli"], "risks": ["usability", "flow", "navigation"], "safety_class": "public_browser_read"},
+    {"id": "TEST", "name": "Tests and Quality", "tier": "balanced", "projects": ["web", "backend_api", "mobile", "cli", "data_pipeline", "agent_plugin_prompt", "library_sdk", "infrastructure_iac", "ci_tooling"], "risks": ["test", "quality", "regression"], "safety_class": "local_read_only"},
+    {"id": "DX", "name": "Developer Experience", "tier": "balanced", "projects": ["cli", "agent_plugin_prompt", "library_sdk", "ci_tooling"], "risks": ["documentation", "developer_experience", "install", "dependency"], "safety_class": "local_read_only"},
+    {"id": "INFRA", "name": "Infrastructure", "tier": "frontier", "projects": ["infrastructure_iac", "ci_tooling"], "risks": ["infrastructure", "deployment", "permission", "network"], "safety_class": "local_read_only"},
+    {"id": "COPY", "name": "Copy and Metadata", "tier": "fast", "projects": ["web", "mobile", "cli", "agent_plugin_prompt"], "risks": ["copy", "metadata", "grammar"], "safety_class": "local_read_only"}
+  ],
+  "severity": {
+    "values": ["critical", "important", "minor"],
+    "factors": ["goal_blockage", "breadth", "recoverability", "risk_if_ignored", "confidence_and_evidence"],
+    "unsupported_critical_policy": "reject"
+  },
+  "dispatch": {
+    "ordinary_initial_lanes": 3,
+    "auto_dispatch_limit": 5,
+    "approval_lane_count": 6,
+    "escalation_triggers": ["high_risk", "ambiguous_scope", "high_risk_not_verified", "material_conflict", "uncovered_risk", "explicit_high_assurance"]
+  }
+}

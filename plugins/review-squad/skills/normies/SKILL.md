@@ -6,97 +6,56 @@ description: Run sequential browser-based first-impression reviews by personas w
 # Normies
 
 Use this skill to answer: "Do first-time visitors understand this site?"
-
-This is not a code review. Normies must not read source code or project files.
-They are cold visitors using the rendered site only. Writing the paired report
-artifacts under `.review-squad/reports/` is required and is still considered
-part of the review.
+Normies are cold visitors of the rendered site only: never read source or
+project files.
 
 ## References
 
-- `../../references/panels.md` for persona defaults.
-- `../../references/dispatch-policy.md` for autonomous versus approval-required
-  panel dispatch.
-- `../../references/browser-preflight.md` for browser availability and fallback.
-- `../../references/report-formats.md` for the confusion matrix and report
-  artifacts.
+- `../../references/panels.md` for personas.
+- `../../references/review-catalog.json` for mode and severity.
+- `../../references/dispatch-policy.md` for panel approval.
+- `../../references/browser-preflight.md` for browser, isolation, and fallback.
+- `../../references/report-formats.md` for JSON and Markdown.
 
 ## Workflow
 
-1. Get the target URL. If none is provided, ask for it or offer to start the
-   local dev server when appropriate.
-2. Run browser preflight. If Playwright MCP is unavailable, stop and explain
-   that cold visitor review needs browser access. Offer to proceed only from
-   screenshots or a browser transcript supplied by the user.
-3. Present the default persona panel and suggest audience-specific additions.
-4. Determine and present the dispatch mode using `dispatch-policy.md`. Continue
-   immediately when the panel is auto-approved; pause only when approval is
-   required.
-5. Run the selected personas sequentially because the browser session is shared.
-6. After each persona, briefly report the key impression.
-7. Consolidate into a confusion matrix and prioritized recommendations.
-8. Write paired report artifacts using the artifact contract in
-   `report-formats.md`: `.review-squad/reports/<stem>.md` and
-   `.review-squad/reports/<stem>.json`.
-9. Present the Markdown findings in chat and include the JSON artifact path.
-   Preserve the post-review decision gate in `dispatch-policy.md` for findings
-   that require a Product Owner or other human decision.
+1. Get the target URL; ask for it or offer the in-scope local server if absent.
+2. Run browser preflight. If it fails, stop and offer only user-provided
+   screenshots or a browser transcript.
+3. Start with `DECIDE`, `VERIFY`, and `ADOPT` from `panels.md`; add a profile
+   only for concrete audience evidence or uncovered risk.
+4. Apply `dispatch-policy.md`.
+5. For each persona, use the preflight isolation contract: fresh reasoning
+   context, fresh isolated browser session, then close and verify it before the
+   next persona. If this fails, stop or explicitly downgrade the cold claim.
+6. Briefly report each impression, consolidate a confusion matrix, then author,
+   validate, and render schema-2.0 JSON. Use `inline_only` without an approved
+   writable root.
 
-## Default Personas
-
-Use 4-6 personas unless the user requests more:
-
-- Senior developer: expert, impatient, skeptical of vague claims.
-- Product manager: goal-oriented, wants value and audience fit quickly.
-- College student: visual scanner, low patience, mobile-first habits.
-- Small business owner: practical, busy, wants pricing/contact/proof.
-- Retired teacher: careful reader, lower technical vocabulary.
-- Grandparent: minimal web assumptions, easily blocked by icons or jargon.
-
-## Persona Prompt Template
+## Persona prompt
 
 ```text
-You are [NAME], a [AGE]-year-old [DESCRIPTION].
-[Two sentences about browsing behavior and patience.]
-You have never seen this site before and know nothing about it.
+Job: [DECIDE / VERIFY / ADOPT / justified custom job]
+Knowledge: [low / moderate / high]
+Device/access: [explicit]
+Goal and success criteria: [observable]
+You have not seen this site or prior findings.
 
-Do not read source code or project files. You are a visitor, not a developer.
-Use browser MCP tools to visit: [URL]
+Do not read source or project files. Visit: [URL]
+Viewport: [WIDTHxHEIGHT]
+Isolation: fresh reasoning and isolated session; no inherited cookies, storage,
+cache, permissions, navigation, viewport, or findings.
 
-Your experience:
-1. Open the URL and take a screenshot.
-2. In the first [TIME LIMIT], answer: What is this site about?
-3. Try to find [persona-relevant thing].
-4. Navigate naturally. Take screenshots at major moments.
-5. Note every moment of confusion, hesitation, or jargon.
-6. Stop when you would give up in real life.
+1. Screenshot first load.
+2. Within [TIME LIMIT], say what this site is about.
+3. Find [persona-relevant thing], navigating naturally.
+4. Screenshot major moments; note confusion, hesitation, jargon, and give-up.
 
-Report in character:
-- First Impression
-- What I Think This Site Is About
-- Where I Got Confused
-- Where I Gave Up
-- What I Could Not Find
-- Words I Did Not Understand
-- What I Liked
+Report: first impression; understanding; confusion; give-up; missing items;
+unknown words; what worked.
 ```
 
-## Consolidation
-
-Use the `Normies` format from `report-formats.md`.
-
-Severity comes from breadth:
-
-- 5-6 personas affected: critical
-- 3-4 personas affected: important
-- 1-2 personas affected: minor unless it blocks the primary call to action
-
-Do not convert this into a technical audit. Recommendations should focus on
-clarity, language, navigation, hierarchy, trust, and obvious next actions.
-
-Always write the paired Markdown and JSON artifacts before the final response.
-The JSON artifact must conform to `review-report.schema.json`, include
-`schema_version: "1.1"`, `findings: []`, `not_verified: []`,
-`decision_summary`, stable `review_context` fields, and `mode_data.type:
-"normies"`. Findings must include structured impact, human gate summary,
-workflow flags, decision flags, and evidence detail using the schema fields.
+Use catalog severity: goal blockage, breadth, recoverability, risk, confidence,
+and evidence. Persona count supports breadth but never determines severity.
+Keep recommendations about clarity, hierarchy, trust, language, navigation, and
+obvious next actions. Author canonical JSON only; the renderer produces Markdown.

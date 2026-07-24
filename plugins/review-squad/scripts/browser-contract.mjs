@@ -1,0 +1,205 @@
+import assert from "node:assert/strict";
+
+export const PLAYWRIGHT_MCP_VERSION = "0.0.78";
+
+export const PLAYWRIGHT_MCP_ARGS = [
+  "-y",
+  `@playwright/mcp@${PLAYWRIGHT_MCP_VERSION}`,
+  "--isolated",
+  "--block-service-workers",
+  "--caps",
+  "storage,config",
+  "--output-mode",
+  "stdout"
+];
+
+export const isolationChecks = [
+  "fresh_reasoning_context",
+  "prior_findings_absent",
+  "cookies_absent",
+  "local_storage_absent",
+  "session_storage_absent",
+  "cache_fresh_process",
+  "permissions_default",
+  "viewport_declared",
+  "navigation_start_url_only"
+];
+
+function valuesForKeys(value, keys, found = []) {
+  if (!value || typeof value !== "object") return found;
+  for (const [key, child] of Object.entries(value)) {
+    if (keys.has(key.toLowerCase())) found.push(child);
+    valuesForKeys(child, keys, found);
+  }
+  return found;
+}
+
+export function parseResolvedBrowserConfigText(text) {
+  assert.equal(typeof text, "string", "browser_get_config returned no text");
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+  assert(start >= 0 && end >= start, "browser_get_config returned no JSON object");
+  const config = JSON.parse(text.slice(start, end + 1));
+  assert(config && typeof config === "object" && !Array.isArray(config), "browser_get_config JSON is not an object");
+  return config;
+}
+
+export function validateResolvedBrowserConfig(config) {
+  const isolatedValues = [config?.isolated, config?.browser?.isolated].filter((value) => value !== undefined);
+  assert(isolatedValues.length > 0 && isolatedValues.every((value) => value === true), "resolved config is not isolated");
+
+  const legacyValues = [config?.blockServiceWorkers, config?.browser?.blockServiceWorkers].filter((value) => value !== undefined);
+  const contextValue = config?.browser?.contextOptions?.serviceWorkers;
+  assert(legacyValues.every((value) => value === true), "resolved config has an unsupported blockServiceWorkers value");
+  if (contextValue !== undefined) assert.equal(contextValue, "block", "resolved config has an unsupported browser.contextOptions.serviceWorkers value");
+  const representation = contextValue === "block" ? "browser.contextOptions.serviceWorkers=block" : legacyValues.includes(true) ? "blockServiceWorkers=true" : null;
+  assert(representation, "resolved config does not block service workers");
+
+  const persistentProfiles = valuesForKeys(config, new Set(["userdata", "userdatadir"])).filter((value) => value !== null && value !== undefined && value !== "");
+  assert.deepEqual(persistentProfiles, [], "resolved config contains persistent profile input");
+  const storageStates = valuesForKeys(config, new Set(["storagestate"])).filter((value) => value !== null && value !== undefined);
+  assert.deepEqual(storageStates, [], "resolved config contains storage-state input");
+  return {valid: true, service_worker_representation: representation};
+}
+
+const diagnostics = {
+  package_missing: {
+    code: "BROWSER_PACKAGE_UNAVAILABLE",
+    message: "Playwright MCP package is unavailable. Check the pinned package name and npm cache."
+  },
+  registry_blocked: {
+    code: "BROWSER_REGISTRY_UNAVAILABLE",
+    message: "Registry or network access failed while resolving Playwright MCP. Restore npm registry access or use a verified cached package."
+  },
+  browser_missing: {
+    code: "BROWSER_BINARY_MISSING",
+    message: "Browser binary is missing. Install the browser for the pinned Playwright MCP release, then rerun preflight."
+  },
+  mcp_startup: {
+    code: "BROWSER_MCP_STARTUP_FAILED",
+    message: "Playwright MCP failed to start. Check Node, the pinned package, browser binary, and MCP stderr."
+  },
+  target_unreachable: {
+    code: "BROWSER_TARGET_UNREACHABLE",
+    message: "Target URL is unreachable. Start the target, verify the URL, and rerun preflight."
+  },
+  isolation_unavailable: {
+    code: "BROWSER_ISOLATION_UNVERIFIED",
+    message: "Cold-persona isolation could not be verified. Stop, or downgrade the result to a shared-session observation."
+  }
+};
+
+export function diagnoseBrowserFailure(kind) {
+  return diagnostics[kind] ?? {
+    code: "BROWSER_PREFLIGHT_UNKNOWN",
+    message: "Browser preflight failed for an unclassified reason. Preserve stderr and stop before persona dispatch."
+  };
+}
+
+export function verifyColdPersona(input) {
+  const missing = isolationChecks.filter((check) => input[check] !== true);
+  if (missing.length) {
+    return {
+      independent: false,
+      action: "stop_or_downgrade_independence_claim",
+      diagnostic: diagnoseBrowserFailure("isolation_unavailable"),
+      missing
+    };
+  }
+  return {independent: true, action: "dispatch_cold_persona", missing: []};
+}
+
+const finalActions = new Set([
+  "final_signup_submit",
+  "place_order",
+  "send_message",
+  "confirm_subscription",
+  "upload_file",
+  "save_account_change",
+  "delete_account"
+]);
+
+export function decideMutation({action, approval = false, environment = "unknown"}) {
+  if (!finalActions.has(action)) return {decision: "allowed", cleanup_required: false};
+  if (!approval) return {decision: "stop", cleanup_required: false};
+  if (environment === "sandbox" || environment === "test") {
+    return {decision: "allowed_with_cleanup", cleanup_required: true};
+  }
+  return {decision: "approval_requires_safe_environment", cleanup_required: false};
+}
+
+export function resolveArtifactRoot({targetRepository, targetRepositoryWritable = false, approvedOutputDirectory}) {
+  if (targetRepository && targetRepositoryWritable) {
+    return {
+      status: "written",
+      root: `${targetRepository}/.review-squad/reports`,
+      reason: "writable_target_repository"
+    };
+  }
+  if (approvedOutputDirectory) {
+    return {
+      status: "written",
+      root: `${approvedOutputDirectory}/.review-squad/reports`,
+      reason: "explicit_user_approved_output_directory"
+    };
+  }
+  return {status: "inline_only", root: null, reason: "no_approved_writable_artifact_root"};
+}
+
+function realBrowserChannels(session) {
+  return {
+    page_evaluation: session.evaluation,
+    cookie_inspection: session.storage?.cookies,
+    local_storage_inspection: session.storage?.local,
+    session_storage_inspection: session.storage?.session
+  };
+}
+
+export function validateRealBrowserPositiveControl(first, marker = "planted-secret") {
+  const contains = (value) => JSON.stringify(value).includes(marker);
+  const missing = Object.entries(realBrowserChannels(first)).filter(([, value]) => !contains(value)).map(([name]) => name);
+  return {valid: missing.length === 0, missing_positive_controls: missing};
+}
+
+export function validateRealBrowserIsolation({first, second, marker = "planted-secret"}) {
+  const contains = (value) => JSON.stringify(value).includes(marker);
+  const missingPositiveControls = validateRealBrowserPositiveControl(first, marker).missing_positive_controls;
+  const secondChannels = realBrowserChannels(second);
+  const leakedNegativeControls = Object.entries(secondChannels).filter(([, value]) => contains(value)).map(([name]) => name);
+  const protocolErrors = [...(first.protocol_errors ?? []), ...(second.protocol_errors ?? [])];
+  const unconfirmedExits = [first, second].map((session, index) => ({process: index + 1, exit_confirmed: session.shutdown?.exit_confirmed === true})).filter(({exit_confirmed}) => !exit_confirmed).map(({process}) => process);
+  return {
+    valid: missingPositiveControls.length === 0 && leakedNegativeControls.length === 0 && protocolErrors.length === 0 && unconfirmedExits.length === 0,
+    missing_positive_controls: missingPositiveControls,
+    leaked_negative_controls: leakedNegativeControls,
+    protocol_errors: protocolErrors,
+    unconfirmed_processes: unconfirmedExits
+  };
+}
+
+export const policyScenarios = {
+  warm: {deterministic: true, expected: "requires_authorized_execution"},
+  cold_first_launch: {deterministic: true, expected: "requires_authorized_execution"},
+  cached_offline: {deterministic: true, expected: "deferred_field_test"},
+  missing_browser: {deterministic: true, expected: "browser_missing"},
+  blocked_registry: {deterministic: true, expected: "registry_blocked"},
+  startup_failure: {deterministic: true, expected: "mcp_startup"},
+  unreachable_target: {deterministic: true, expected: "target_unreachable"},
+  isolation_failure: {deterministic: true, expected: "isolation_unavailable"},
+  mutation_boundary: {deterministic: true, expected: "stop"},
+  artifact_root: {deterministic: true, expected: "inline_only"},
+  schema2_mode_output: {deterministic: true, expected: "valid_schema2_and_rendered_markdown"}
+};
+
+export function policyResult(scenario) {
+  const definition = policyScenarios[scenario];
+  if (!definition) return null;
+  const diagnostic = diagnoseBrowserFailure(definition.expected);
+  return {
+    scenario,
+    executed: false,
+    deterministic_policy_only: definition.deterministic,
+    expected: definition.expected,
+    diagnostic: diagnostic.code === "BROWSER_PREFLIGHT_UNKNOWN" ? null : diagnostic
+  };
+}

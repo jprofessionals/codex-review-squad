@@ -1,0 +1,5 @@
+[
+  "vite.config.ts",
+  "src/components/App.tsx",
+  "plugins/review-squad/skills/experts/SKILL.md"
+]

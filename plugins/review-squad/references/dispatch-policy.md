@@ -1,70 +1,60 @@
-# Review Dispatch Policy
+# Dispatch and approval policy
 
-Load this file before dispatching any Review Squad panel.
+Always show the proposed panel and decision. Continue without waiting only when
+all automatic conditions pass.
 
-## Determine the Dispatch Mode
+## Automatic dispatch
 
-Auto-dispatch the proposed panel only when all of the following are true:
-
-- The user or an already approved workflow explicitly requested the review.
-- The review is read-only. Required report artifacts are allowed.
-- The target and scope are unambiguous.
-- The panel contains only relevant default reviewers, standard lanes, or
-  strongly matched additions.
-- The panel stays within the normal 4-8 reviewer envelope and any stricter
-  mode-specific limit.
-- No reviewer materially expands product, delivery, repository, data-access,
-  or operational scope.
-- No production access, external private data, irreversible action, or
-  product, legal, license, compliance, or privacy decision is required.
-
-Request explicit approval before dispatch when any condition above is not
-satisfied. Also require approval when:
-
-- Review Squad introduced the review without a user request or prior workflow
-  approval.
-- The user explicitly requested panel approval.
-- Reasonable panel alternatives would materially affect cost, scope, or the
-  delivery plan.
-
-Ask the appropriate decision owner to approve or customize the panel. Product
-Owner approval is required only for product scope, semantics, acceptance
-criteria, user impact, or delivery-priority decisions.
-
-## Present the Decision
-
-Always show the proposed panel before dispatch for transparency.
-
-For autonomous dispatch, show:
+Use:
 
 ```text
 Status: panel proposal — auto-approved
-Dispatch decision: proceeding without a pause
-Reason: [concise evidence that every autonomous-dispatch condition is met]
+Decision owner: Review Squad orchestrator
+Reason: bounded read-only scope, explicit target, no private access or external write, and no more than five justified lanes
 ```
 
-Then dispatch immediately. Do not ask the user to reply before continuing.
+Automatic dispatch requires:
 
-For approval-required dispatch, show:
+- explicit, bounded review scope
+- local read-only access or a user-supplied public browser target
+- three initial lanes, with at most five after evidence-based escalation
+- no private credentials, external system access, mutation, destructive action,
+  material scope expansion, or materially different panel alternatives
+
+## Approval required
+
+Use:
 
 ```text
 Status: panel proposal — approval required
-Approval reason: [specific condition requiring a human decision]
+Decision owner: [user / Product Owner / security owner]
+Reason: [specific boundary]
+Decision needed: [approve, reject, or choose a bounded alternative]
 ```
 
-Then pause and ask the appropriate decision owner to approve or customize the
-panel.
+Pause for approval when any applies:
 
-Use this closing instruction where a panel proposal needs one:
+- six or more lanes
+- material scope or cost expansion
+- private or new external access
+- any external write, submission, purchase, signup, upload, account change, or
+  destructive action
+- competing panel choices with materially different assurance/cost
 
-```text
-If approval is required, reply approve or customize the panel.
-If the panel is auto-approved, review dispatch continues immediately.
-```
+Approval for a panel does not authorize later implementation or a browser final
+action. Those are separate boundaries.
 
-## Preserve the Post-Review Decision Gate
+## Escalation
 
-After the review, stop on findings that require Product Owner or another human
-decision. Clearly separate decision-required findings from patchable findings,
-identify the appropriate decision owner, and do not assume a resolution in an
-implementation plan or fix.
+Start ordinary expert reviews with three evidence-selected lanes. Add a lane or
+stronger tier only for:
+
+- security, privacy, data-integrity, reliability, or compliance risk
+- ambiguous scope
+- high-risk work left not verified
+- material reviewer conflict
+- a distinct uncovered risk
+- explicit launch, compliance, or high-assurance depth
+
+State each trigger and added lane. If a sixth lane appears necessary, present it
+as an approval-required candidate rather than dispatching it.

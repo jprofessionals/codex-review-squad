@@ -1,0 +1,119 @@
+{
+  "evidence_format": "review-squad-release-gate",
+  "evidence_format_version": "1.0",
+  "gate": "RG-08",
+  "verdict": "pass",
+  "wp05_verdict": "ready",
+  "completed_at": "2026-07-24T11:46:00+02:00",
+  "review_scope": {
+    "mode": "independent_read_only_re_review",
+    "repository_mutated": false,
+    "guarded_procedures_executed": false,
+    "browser_executed": false,
+    "plugin_installed": false,
+    "model_evaluation_executed": false
+  },
+  "original_findings": [
+    {
+      "finding": "standalone_plugin_validation",
+      "status": "closed",
+      "reproduction_result": "pass"
+    },
+    {
+      "finding": "third_party_license_completeness",
+      "status": "closed",
+      "reproduction_result": "pass"
+    },
+    {
+      "finding": "public_rg07_description_accuracy",
+      "status": "closed",
+      "reproduction_result": "pass"
+    }
+  ],
+  "reviewer_reported_results": {
+    "wp05": "ready",
+    "rg08": "pass",
+    "original_release_blockers": "all_closed",
+    "release_blockers": "none",
+    "new_0_3_x_follow_ups": "none",
+    "rg04": "not_verified_accepted_0.3.x_field_test_risk",
+    "rg05": "not_verified_accepted_0.3.x_field_test_risk"
+  },
+  "artifact_hashes": {
+    "algorithm": "sha256",
+    "runtime": {
+      "path": "plugins/review-squad/scripts/runtime/review-runtime.mjs",
+      "sha256": "02bb785710bb558da3a72c413d24749e343d215a47b265aa67af805e158de8d8"
+    },
+    "runtime_dependencies": {
+      "path": "plugins/review-squad/scripts/runtime/runtime-dependencies.json",
+      "sha256": "a6c9557b334382216557ec644158f3b95f4c8576489d266812bbc3afe6733eab"
+    },
+    "third_party_notices": {
+      "path": "plugins/review-squad/THIRD_PARTY_NOTICES.md",
+      "sha256": "7613914af01b467c46b82fb35094c0700a233205e5766f694361c34cfa7f9632"
+    },
+    "licenses": [
+      {
+        "path": "plugins/review-squad/licenses/ajv-8.20.0.txt",
+        "sha256": "a05350a88e318e4f5f2c2a1ff1e2e88daa4dd38e6e78b71cccae422bdc762cc3"
+      },
+      {
+        "path": "plugins/review-squad/licenses/ajv-formats-3.0.1.txt",
+        "sha256": "9df3bb69929a3b650ed73b3bfa1756725aaff0ac296461605753547004eafeaf"
+      },
+      {
+        "path": "plugins/review-squad/licenses/fast-deep-equal-3.1.3.txt",
+        "sha256": "7bf9b2de73a6b356761c948d0e9eeb4be6c1270bd04c79cd489c1e400ffdfc1a"
+      },
+      {
+        "path": "plugins/review-squad/licenses/fast-uri-3.1.4.txt",
+        "sha256": "b010b0dfdfdb23d7396e03b82cd4621fc9bb8f95d6b0aea70b9c24e12074c786"
+      },
+      {
+        "path": "plugins/review-squad/licenses/json-schema-traverse-1.0.0.txt",
+        "sha256": "7bf9b2de73a6b356761c948d0e9eeb4be6c1270bd04c79cd489c1e400ffdfc1a"
+      },
+      {
+        "path": "plugins/review-squad/licenses/yaml-2.9.0.txt",
+        "sha256": "5bba27375d93e9119f76c1015f7672cf9ad5f70952296e0842fb2243d6376869"
+      }
+    ],
+    "rg06": {
+      "path": "docs/plans/evidence/review-squad-0.3.0-rg06.json",
+      "sha256": "e28a87db7f9163980e7ad98b661af81fae27629120a8b2df72b2364c7ffe202c"
+    },
+    "rg07": {
+      "adjudication": {
+        "path": "docs/plans/evidence/review-squad-0.3.0-rg07/adjudication.json",
+        "sha256": "a501ff64d2fad2f3969c2edc82e5436f6a4b527a54a22c5c7a1b4420b64e90a5"
+      },
+      "original_result": {
+        "path": "docs/plans/evidence/review-squad-0.3.0-rg07/original-result.json",
+        "sha256": "b505241de1b014f6443a35492b7b8c70913d1a1f94e9319994fcf9f7d13de06c"
+      },
+      "session_final": {
+        "path": "docs/plans/evidence/review-squad-0.3.0-rg07/session-final.json",
+        "sha256": "0d79927d8d503f6fe343d700b6c8370738763ccab85c461174986a703c6d81b3"
+      },
+      "session_jsonl": {
+        "path": "docs/plans/evidence/review-squad-0.3.0-rg07/session.jsonl",
+        "sha256": "6fe267f66f1bf0a90277edc1736f783db4b8913d177a8a1871bddda7c53f40ec"
+      }
+    }
+  },
+  "release_blockers": [],
+  "accepted_field_test_risks": [
+    {
+      "gate": "RG-04",
+      "status": "not_verified",
+      "disposition": "accepted_0.3.x_field_test_risk"
+    },
+    {
+      "gate": "RG-05",
+      "status": "not_verified",
+      "disposition": "accepted_0.3.x_field_test_risk"
+    }
+  ],
+  "new_0_3_x_follow_ups": []
+}

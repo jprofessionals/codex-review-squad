@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "reproducibility_status": "not_reproducible",
+  "protocol": {
+    "cases": ["plugin-seeded", "web-seeded", "backend-seeded", "library-seeded", "infrastructure-seeded"],
+    "baseline_lanes": ["SEC", "TEST", "ARCH", "DX"],
+    "target_lanes": ["SEC", "TEST", "ARCH"],
+    "blinding": "Every lane received raw artifacts without the oracle or other lane outputs.",
+    "target_ownership": {
+      "SEC": ["secret exfiltration", "SQL injection", "storage public-access risk"],
+      "TEST": ["keyboard/control correctness", "invalid-input and regression behavior"],
+      "ARCH": ["public type contract", "purchase integration boundary"]
+    },
+    "tokens": null
+  },
+  "baseline": {
+    "findings": 17,
+    "unique_root_causes": 8,
+    "duplicate_instances": 9,
+    "duplicate_fraction": 0.5294,
+    "duplicates_by_case": [3, 0, 2, 2, 2],
+    "median_duplicates_per_case": 2,
+    "repeated_raw_artifact_bytes": 4924
+  },
+  "target": {
+    "findings": 7,
+    "unique_root_causes": 7,
+    "duplicate_instances": 0,
+    "duplicate_fraction": 0,
+    "duplicates_by_case": [0, 0, 0, 0, 0],
+    "median_duplicates_per_case": 0,
+    "lane_scoped_artifact_bytes": 1689
+  },
+  "comparison": {
+    "status": "not_reproducible",
+    "duplicate_instances_delta": -9,
+    "median_duplicates_per_case_delta": -2,
+    "repeated_artifact_bytes_delta": -3235,
+    "repeated_artifact_bytes_change_fraction": -0.657
+  },
+  "notes": [
+    "Raw lane outputs, exact prompt hashes, and the root-cause normalization ledger were not retained; numeric duplicate and byte values are historical reports, not reproducible test facts.",
+    "Root causes were normalized by case and evidenced defect, not by lane-provided key spelling.",
+    "The first target pass without explicit ownership left median duplicates unchanged at two; that failed iteration is why the final dossier contract requires owned risks and adjacent-lane exclusions.",
+    "The target sample retained all five seeded critical/important roots used by the primary quality comparator and also isolated accessibility, invalid-input, and purchase-boundary observations."
+  ]
+}

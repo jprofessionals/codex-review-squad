@@ -1,0 +1,15 @@
+{
+  "schema_version": "2.0",
+  "report_id": "well-actually-finding",
+  "mode": "well-actually",
+  "generated_at": "2026-07-22T00:00:00Z",
+  "generator": {"name": "codex-review-squad", "version": "0.3.0", "skill": "review-squad:well-actually"},
+  "target": {"kind": "site", "path": "/tmp/example", "url": "https://example.com", "name": "Example"},
+  "review_context": {"labels": [], "branch": null, "base_branch": null, "pull_request": null, "story": null, "commit": null, "working_tree_dirty": null},
+  "summary": {"headline": "One copy issue needs polish.", "overall_status": "needs_attention", "critical_count": 0, "important_count": 0, "minor_count": 1, "not_verified_count": 0, "recommended_next_move": "Correct the heading punctuation."},
+  "findings": [{"id": "M-01", "severity": "minor", "title": "Heading punctuation is inconsistent", "description": "One heading ends with a period while its peers do not.", "evidence": [{"kind": "browser_observation", "path": null, "line": null, "line_end": null, "url": "https://example.com", "detail": "The Pricing heading alone ends with a period."}], "source": ["COPY"], "suggested_fix": "Remove the period or apply the convention consistently."}],
+  "not_verified": [],
+  "mode_data": {"type": "well-actually", "roast_by_persona": [{"persona": "Grammarian", "observations": ["A lonely full stop."]}], "cross_persona_consensus": [], "practical_fixlist": [{"effort": "small", "action": "Normalize heading punctuation.", "finding_ids": ["M-01"]}]},
+  "sources": [{"name": "COPY", "type": "persona"}],
+  "artifacts": {"status": "written", "stem": "well-actually-finding", "json_path": ".review-squad/reports/well-actually-finding.json", "markdown_path": ".review-squad/reports/well-actually-finding.md"}
+}

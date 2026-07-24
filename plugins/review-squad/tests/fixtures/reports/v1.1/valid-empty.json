@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.1",
+  "report_id": "baseline-valid-empty",
+  "mode": "experts",
+  "generated_at": "2026-07-22T00:00:00Z",
+  "generator": {
+    "name": "codex-review-squad",
+    "version": "0.2.3",
+    "skill": "review-squad:experts"
+  },
+  "artifacts": {
+    "stem": "baseline-valid-empty",
+    "markdown_path": ".review-squad/reports/baseline-valid-empty.md",
+    "json_path": ".review-squad/reports/baseline-valid-empty.json"
+  },
+  "target": {
+    "kind": "repository",
+    "path": "/tmp/example",
+    "url": null,
+    "name": "example"
+  },
+  "review_context": {
+    "labels": [],
+    "branch": "main",
+    "base_branch": null,
+    "pull_request": null,
+    "story": null,
+    "commit": null,
+    "working_tree_dirty": false
+  },
+  "summary": {
+    "headline": "No findings.",
+    "overall_status": "pass",
+    "critical_count": 0,
+    "important_count": 0,
+    "minor_count": 0,
+    "not_verified_count": 0,
+    "recommended_next_move": "None."
+  },
+  "decision_summary": {
+    "patchable_now_count": 0,
+    "decision_required_count": 0,
+    "blocks_bmad_count": 0,
+    "recommended_bmad_commands": []
+  },
+  "findings": [],
+  "not_verified": [],
+  "mode_data": {
+    "type": "experts",
+    "panel": ["TEST"],
+    "implementation_plan_offer": false
+  },
+  "sources": [
+    {
+      "name": "TEST",
+      "type": "expert"
+    }
+  ]
+}

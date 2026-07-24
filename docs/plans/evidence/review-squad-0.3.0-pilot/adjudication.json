@@ -1,0 +1,154 @@
+{
+  "schema_version": "1.0",
+  "gate": "evaluation-pilot",
+  "verdict": "completed_not_verified",
+  "evidence_status": "completed_after_harness_false_failure_adjudication",
+  "release_evidence": false,
+  "adjudicated_at": "2026-07-23T16:32:15.510Z",
+  "execution": {
+    "pilot_executions_used": 1,
+    "retry_used": false,
+    "primary_calls_observed": 1,
+    "configured_top_level_delegated_calls": 3,
+    "configured_top_level_maximum_calls": 4,
+    "observed_delegation_identity_count": 0,
+    "runtime_proven_global_maximum_calls": null,
+    "statement": "The only pilot execution completed one primary turn. No retry was used because missing stable delegation identities is an honest completed_not_verified compatibility result."
+  },
+  "source_artifacts": {
+    "original_result": {
+      "original_path": "/tmp/review-squad-eval-pilot-0.3.0-adjudicated-1/result.json",
+      "retained_path": "docs/plans/evidence/review-squad-0.3.0-pilot/original-result.json",
+      "sha256": "d098d2249198e239a653433bcc472bf4c89b89c79f5424241d3783af4e187f80"
+    },
+    "session_jsonl": {
+      "original_path": "/tmp/review-squad-eval-pilot-0.3.0-adjudicated-1/raw/pilot-v0.3.0-backend-seeded/events.jsonl",
+      "retained_path": "docs/plans/evidence/review-squad-0.3.0-pilot/session-jsonl.jsonl",
+      "sha256": "935dc02072e355b6583696eb907a91345a8ffbae9df350d1930f5f5e32c5cfbe"
+    },
+    "final_response": {
+      "original_path": "/tmp/review-squad-eval-pilot-0.3.0-adjudicated-1/raw/pilot-v0.3.0-backend-seeded/final.json",
+      "retained_path": "docs/plans/evidence/review-squad-0.3.0-pilot/final-response.json",
+      "sha256": "843656cf32e9dff6ec9e4c99e197ee657a12d73b4c0c73716f7e25b103d11961"
+    },
+    "delegation_events": {
+      "original_path": "/tmp/review-squad-eval-pilot-0.3.0-adjudicated-1/raw/pilot-v0.3.0-backend-seeded/delegation-events.json",
+      "retained_path": "docs/plans/evidence/review-squad-0.3.0-pilot/delegation-events.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    "effective_argv": {
+      "original_path": "/tmp/review-squad-eval-pilot-0.3.0-adjudicated-1/raw/pilot-v0.3.0-backend-seeded/effective-argv.json",
+      "retained_path": "docs/plans/evidence/review-squad-0.3.0-pilot/effective-argv.json",
+      "sha256": "f121836db18b289e5b3161cff418e8d20c68d887b0578b8b10057e0695f1be13"
+    },
+    "prompt": {
+      "original_path": "/tmp/review-squad-eval-pilot-0.3.0-adjudicated-1/raw/pilot-v0.3.0-backend-seeded/prompt.txt",
+      "retained_path": "docs/plans/evidence/review-squad-0.3.0-pilot/prompt.txt",
+      "sha256": "2bede3fe6c758e21712fbde7405b4a45f407acefa6273739eabca7c5e341a4a2"
+    },
+    "input_manifest": {
+      "original_path": "/tmp/review-squad-eval-pilot-0.3.0-adjudicated-1/raw/pilot-v0.3.0-backend-seeded/input-manifest.json",
+      "retained_path": "docs/plans/evidence/review-squad-0.3.0-pilot/input-manifest.json",
+      "sha256": "8fae511938778bca2261be082d8d0fe7775c654385d6fa1ef64c041054e9d6b7"
+    }
+  },
+  "original_failure": {
+    "status": "failed",
+    "message": "pilot-v0.3.0-backend-seeded observed 0 delegation calls; expected 3-3",
+    "process_exit_confirmed": true
+  },
+  "corrected_runner_rule": {
+    "rule": "A completed pilot with unobservable delegation identities is retained as completed_not_verified; it is not a process or parse failure.",
+    "full_evaluation_behavior": "Full evaluation retains strict observable delegation and lane correspondence requirements."
+  },
+  "compatibility": {
+    "status": "completed_not_verified",
+    "checks": {
+      "jsonl_shape": "verified",
+      "delegation_mapping": "not_verified",
+      "top_level_delegation_identities": "not_verified",
+      "top_level_delegation_call_ids": [],
+      "top_level_returned_identities": [],
+      "raw_delegated_payload_provenance": "not_verified",
+      "ambient_review_squad_isolation": "verified",
+      "ambient_review_squad_skill_locators": [],
+      "raw_lane_retention": "verified",
+      "final_response_parsing": "verified",
+      "usage_capture": "observed"
+    },
+    "ambient_review_squad_isolation": {
+      "status": "verified",
+      "inventory_source": "system_available_skills",
+      "ambient_skill_locators": [],
+      "reason": null
+    },
+    "lane_results_retained": 3,
+    "completed_collab_wait_events": 3,
+    "delegation_mapping": {
+      "status": "not_verified",
+      "reason": "Codex JSONL or lane output did not expose a stable delegation_call_id for every lane",
+      "observed_call_ids": [],
+      "lane_call_ids": [
+        null,
+        null,
+        null
+      ],
+      "raw_artifact": "docs/plans/evidence/review-squad-0.3.0-pilot/delegation-events.json",
+      "raw_artifact_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    "raw_delegated_payload_provenance": "not_verified",
+    "reason": "Codex JSONL exposed collaboration waits and parent-restated lane results but no stable spawn identity or untouched delegated output."
+  },
+  "usage": {
+    "turn_completed_usage": {
+      "status": "observed",
+      "input_tokens": 234978,
+      "cached_input_tokens": 203520,
+      "output_tokens": 5826,
+      "reasoning_output_tokens": 900,
+      "field_status": {
+        "input_tokens": "observed",
+        "cached_input_tokens": "observed",
+        "output_tokens": "observed",
+        "reasoning_output_tokens": "observed"
+      }
+    },
+    "complete_workflow_token_accounting": {
+      "classification": "semantically_unknown",
+      "status": "not_verified",
+      "reason": "delegated usage lacks a stable one-to-one delegation_call_id mapping",
+      "supporting_events": [
+        {
+          "event_index": 13,
+          "usage": {
+            "input_tokens": 234978,
+            "cached_input_tokens": 203520,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 5826,
+            "reasoning_output_tokens": 900
+          },
+          "usage_scope": null,
+          "includes_delegated": null
+        }
+      ],
+      "observed_delegation_count": 0,
+      "delegation_call_ids": [],
+      "delegated_usage_call_ids": [],
+      "delegated_usage_events": []
+    },
+    "decision": "not_verified because delegated usage has no stable one-to-one delegation identity"
+  },
+  "process_and_isolation": {
+    "model_process_exit_confirmed": true,
+    "shutdown_probe_exit_confirmed": true,
+    "scratch_root_removed": true,
+    "effective_argv_validation": "passed",
+    "oracle_opened": false,
+    "scoring_run": false
+  },
+  "regression_test_evidence": {
+    "status": "passed",
+    "command": "npm run test:harness",
+    "assertion": "pilot accepts absent stable delegation identities only as completed_not_verified while full evaluation remains strict"
+  }
+}

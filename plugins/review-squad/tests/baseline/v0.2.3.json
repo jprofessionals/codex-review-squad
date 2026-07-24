@@ -1,0 +1,47 @@
+{
+  "release": "0.2.3",
+  "tag_commit": "f4ca1b80a9f165feb0d94dbcb2a2f45a279b2b25",
+  "captured_at": "2026-07-22",
+  "environment": {
+    "node": "v22.23.1",
+    "npm": "10.9.8"
+  },
+  "commands": [
+    "git diff --exit-code v0.2.3 -- plugins/review-squad .agents/plugins/marketplace.json README.md",
+    "node plugins/review-squad/scripts/validate-plugin.mjs",
+    "wc -w plugins/review-squad/skills/*/SKILL.md plugins/review-squad/references/*.md",
+    "wc -c plugins/review-squad/skills/*/SKILL.md plugins/review-squad/references/*.md plugins/review-squad/references/review-report.schema.json"
+  ],
+  "results": {
+    "tracked_release_diff_clean": true,
+    "plugin_validation_passed": true,
+    "skill_and_reference_words": 6432,
+    "skill_reference_and_schema_bytes": 67602,
+    "skill_words": {
+      "experts": 1632,
+      "normies": 589,
+      "regulars": 582,
+      "review-squad": 290,
+      "well-actually": 577
+    },
+    "default_expert_lanes": {
+      "minimum": 4,
+      "maximum": 8
+    }
+  },
+  "characterized_weaknesses": [
+    "The report schema permits verified findings with empty evidence and source arrays.",
+    "Summary counts are not checked against findings and not_verified arrays.",
+    "Expert dispatch documents obsolete fork_context and agent_type fields.",
+    "Project detection lacks first-class agent/plugin, library/SDK, infrastructure/IaC, and CI/tooling labels.",
+    "Cold personas share one sequential browser session.",
+    "Browser tasks do not encode a mandatory stop-before-external-write boundary.",
+    "Playwright MCP uses an unpinned @latest package and may prompt on first use."
+  ],
+  "model_eval": {
+    "status": "recorded_separately_from_deterministic_ci",
+    "protocol": "Two isolated gpt-5.6-sol/high read-only reviewers each received five disjoint raw cases, no same-surface clean/seeded pair, no oracle, and the unchanged v0.2.3 experts contract.",
+    "result": "../eval/results/v0.2.3.json",
+    "reason": "Model-run evaluations remain separate from predictable local validation; WP-02 repeats this bounded protocol against the same blinded corpus."
+  }
+}

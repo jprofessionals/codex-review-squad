@@ -1,0 +1,282 @@
+{
+  "schema_version": "1.0",
+  "gate": "RG-07",
+  "verdict": "pass",
+  "evidence_status": "passed_after_false_negative_adjudication",
+  "adjudicated_at": "2026-07-23T16:23:32.385Z",
+  "execution": {
+    "second_external_or_model_execution_used": false,
+    "statement": "This verdict revalidates the immutable completed RG-07 execution; no second external or model execution was used."
+  },
+  "source_artifacts": {
+    "original_result": {
+      "original_path": "/tmp/review-squad-rg07-0.3.0-evidence-renewed-3/result.json",
+      "retained_path": "docs/plans/evidence/review-squad-0.3.0-rg07/original-result.json",
+      "sha256": "b505241de1b014f6443a35492b7b8c70913d1a1f94e9319994fcf9f7d13de06c"
+    },
+    "session_final": {
+      "original_path": "/tmp/review-squad-rg07-0.3.0-evidence-renewed-3/session-final.json",
+      "retained_path": "docs/plans/evidence/review-squad-0.3.0-rg07/session-final.json",
+      "sha256": "0d79927d8d503f6fe343d700b6c8370738763ccab85c461174986a703c6d81b3"
+    },
+    "session_jsonl": {
+      "original_path": "/tmp/review-squad-rg07-0.3.0-evidence-renewed-3/session.jsonl",
+      "retained_path": "docs/plans/evidence/review-squad-0.3.0-rg07/session.jsonl",
+      "sha256": "6fe267f66f1bf0a90277edc1736f783db4b8913d177a8a1871bddda7c53f40ec"
+    }
+  },
+  "original_failure": {
+    "status": "failed",
+    "classification": "descendants_survived_direct_child",
+    "message": "codex direct child exited while descendants remained"
+  },
+  "corrected_classifier_rule": {
+    "rule": "When the direct child closes while its process group exists, wait one bounded natural-descendant grace period before classifying failure.",
+    "successful_natural_drain": "A group that disappears during the grace is a confirmed successful exit and requires no signal.",
+    "failure_boundary": "Descendants still present after the grace retain bounded SIGTERM/SIGKILL cleanup and leak handling.",
+    "original_evidence_interpretation": "The original group disappeared during its recorded graceful wait: exit was confirmed with no signal attempts and no leak."
+  },
+  "regression_test_evidence": {
+    "status": "passed",
+    "command": "npm run test:harness",
+    "test_file": "plugins/review-squad/tests/wp04-gate-harness.test.mjs",
+    "assertions": [
+      "descendant exits naturally inside the grace: confirmed pass without signals",
+      "descendant survives the grace: descendants_survived_direct_child failure with bounded cleanup",
+      "descendant survives cleanup: leaked_process failure",
+      "ordinary child and process-group exit: unchanged confirmed pass"
+    ]
+  },
+  "installation": {
+    "status": "verified",
+    "installed_path_authority": "codex_plugin_add_json_installedPath",
+    "installed_real_path": "/home/runar/.codex/plugins/cache/rs-rg07-mrxnh1zx-affb273ebc/review-squad-rg07-mrxnh1zx-affb273ebc/0.3.0+codex.rg07-mrxnh1zx-affb273ebc",
+    "marketplace_source_real_path": "/tmp/review-squad-rg07-mrxnh1zx-affb273ebc-Nn62bw/marketplace/plugins/review-squad-rg07-mrxnh1zx-affb273ebc",
+    "manifest": {
+      "name": "review-squad-rg07-mrxnh1zx-affb273ebc",
+      "version": "0.3.0+codex.rg07-mrxnh1zx-affb273ebc"
+    },
+    "compared_file_count": 8,
+    "compared_files": {
+      ".codex-plugin/plugin.json": {
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-rg07-mrxnh1zx-affb273ebc/review-squad-rg07-mrxnh1zx-affb273ebc/0.3.0+codex.rg07-mrxnh1zx-affb273ebc/.codex-plugin/plugin.json",
+        "installed_sha256": "d9020431ac48509b9b1dd618ec7b56947ec75390fc9b191bb73b4fa56500b869",
+        "source_path": "/tmp/review-squad-rg07-mrxnh1zx-affb273ebc-Nn62bw/marketplace/plugins/review-squad-rg07-mrxnh1zx-affb273ebc/.codex-plugin/plugin.json",
+        "source_sha256": "d9020431ac48509b9b1dd618ec7b56947ec75390fc9b191bb73b4fa56500b869"
+      },
+      "skills/review-squad/SKILL.md": {
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-rg07-mrxnh1zx-affb273ebc/review-squad-rg07-mrxnh1zx-affb273ebc/0.3.0+codex.rg07-mrxnh1zx-affb273ebc/skills/review-squad/SKILL.md",
+        "installed_sha256": "ec434821f13bbbfe6216c7ba733ff4e753818dadfe5c33ad6879361dfdb83862",
+        "source_path": "/tmp/review-squad-rg07-mrxnh1zx-affb273ebc-Nn62bw/marketplace/plugins/review-squad-rg07-mrxnh1zx-affb273ebc/skills/review-squad/SKILL.md",
+        "source_sha256": "ec434821f13bbbfe6216c7ba733ff4e753818dadfe5c33ad6879361dfdb83862"
+      },
+      "skills/experts/SKILL.md": {
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-rg07-mrxnh1zx-affb273ebc/review-squad-rg07-mrxnh1zx-affb273ebc/0.3.0+codex.rg07-mrxnh1zx-affb273ebc/skills/experts/SKILL.md",
+        "installed_sha256": "da922f9b159f21ec85fbc02d2ff1dd8573281ffe4d27fd320fa289a7db6a8175",
+        "source_path": "/tmp/review-squad-rg07-mrxnh1zx-affb273ebc-Nn62bw/marketplace/plugins/review-squad-rg07-mrxnh1zx-affb273ebc/skills/experts/SKILL.md",
+        "source_sha256": "da922f9b159f21ec85fbc02d2ff1dd8573281ffe4d27fd320fa289a7db6a8175"
+      },
+      "skills/normies/SKILL.md": {
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-rg07-mrxnh1zx-affb273ebc/review-squad-rg07-mrxnh1zx-affb273ebc/0.3.0+codex.rg07-mrxnh1zx-affb273ebc/skills/normies/SKILL.md",
+        "installed_sha256": "b402e014356d8cfc5e3a60d356efb02c56cc217f5ae98c20580e21f072f9aec6",
+        "source_path": "/tmp/review-squad-rg07-mrxnh1zx-affb273ebc-Nn62bw/marketplace/plugins/review-squad-rg07-mrxnh1zx-affb273ebc/skills/normies/SKILL.md",
+        "source_sha256": "b402e014356d8cfc5e3a60d356efb02c56cc217f5ae98c20580e21f072f9aec6"
+      },
+      "skills/regulars/SKILL.md": {
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-rg07-mrxnh1zx-affb273ebc/review-squad-rg07-mrxnh1zx-affb273ebc/0.3.0+codex.rg07-mrxnh1zx-affb273ebc/skills/regulars/SKILL.md",
+        "installed_sha256": "15bc48eb142e757ec6c2fa934c08737604f3ee62a83c13575e12d25a0e200055",
+        "source_path": "/tmp/review-squad-rg07-mrxnh1zx-affb273ebc-Nn62bw/marketplace/plugins/review-squad-rg07-mrxnh1zx-affb273ebc/skills/regulars/SKILL.md",
+        "source_sha256": "15bc48eb142e757ec6c2fa934c08737604f3ee62a83c13575e12d25a0e200055"
+      },
+      "skills/well-actually/SKILL.md": {
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-rg07-mrxnh1zx-affb273ebc/review-squad-rg07-mrxnh1zx-affb273ebc/0.3.0+codex.rg07-mrxnh1zx-affb273ebc/skills/well-actually/SKILL.md",
+        "installed_sha256": "387d534564f834516e673269046afec8019ccaa698be513bbe25580de55e2258",
+        "source_path": "/tmp/review-squad-rg07-mrxnh1zx-affb273ebc-Nn62bw/marketplace/plugins/review-squad-rg07-mrxnh1zx-affb273ebc/skills/well-actually/SKILL.md",
+        "source_sha256": "387d534564f834516e673269046afec8019ccaa698be513bbe25580de55e2258"
+      },
+      "scripts/runtime/review-runtime.mjs": {
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-rg07-mrxnh1zx-affb273ebc/review-squad-rg07-mrxnh1zx-affb273ebc/0.3.0+codex.rg07-mrxnh1zx-affb273ebc/scripts/runtime/review-runtime.mjs",
+        "installed_sha256": "02bb785710bb558da3a72c413d24749e343d215a47b265aa67af805e158de8d8",
+        "source_path": "/tmp/review-squad-rg07-mrxnh1zx-affb273ebc-Nn62bw/marketplace/plugins/review-squad-rg07-mrxnh1zx-affb273ebc/scripts/runtime/review-runtime.mjs",
+        "source_sha256": "02bb785710bb558da3a72c413d24749e343d215a47b265aa67af805e158de8d8"
+      },
+      "tests/fixtures/reports/v2/regulars-clean.json": {
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-rg07-mrxnh1zx-affb273ebc/review-squad-rg07-mrxnh1zx-affb273ebc/0.3.0+codex.rg07-mrxnh1zx-affb273ebc/tests/fixtures/reports/v2/regulars-clean.json",
+        "installed_sha256": "04e44027f4e8bb307acf4988d070719365be91aa9ce56c67c17bec1cc8a75c3f",
+        "source_path": "/tmp/review-squad-rg07-mrxnh1zx-affb273ebc-Nn62bw/marketplace/plugins/review-squad-rg07-mrxnh1zx-affb273ebc/tests/fixtures/reports/v2/regulars-clean.json",
+        "source_sha256": "04e44027f4e8bb307acf4988d070719365be91aa9ce56c67c17bec1cc8a75c3f"
+      }
+    },
+    "skill_metadata": {
+      "review-squad": {
+        "name": "review-squad",
+        "description": "Route Review Squad requests to experts, normies, regulars, or well-actually based on the user's review goal.",
+        "skill_key": "review-squad-rg07-mrxnh1zx-affb273ebc:review-squad",
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-rg07-mrxnh1zx-affb273ebc/review-squad-rg07-mrxnh1zx-affb273ebc/0.3.0+codex.rg07-mrxnh1zx-affb273ebc/skills/review-squad/SKILL.md"
+      },
+      "experts": {
+        "name": "experts",
+        "description": "Run a production-ready multi-perspective project audit with Codex subagents, multi-label project detection, risk-adaptive lane dispatch, and a canonical evidence-backed report.",
+        "skill_key": "review-squad-rg07-mrxnh1zx-affb273ebc:experts",
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-rg07-mrxnh1zx-affb273ebc/review-squad-rg07-mrxnh1zx-affb273ebc/0.3.0+codex.rg07-mrxnh1zx-affb273ebc/skills/experts/SKILL.md"
+      },
+      "normies": {
+        "name": "normies",
+        "description": "Run sequential browser-based first-impression reviews by personas with different levels of technical sophistication.",
+        "skill_key": "review-squad-rg07-mrxnh1zx-affb273ebc:normies",
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-rg07-mrxnh1zx-affb273ebc/review-squad-rg07-mrxnh1zx-affb273ebc/0.3.0+codex.rg07-mrxnh1zx-affb273ebc/skills/normies/SKILL.md"
+      },
+      "regulars": {
+        "name": "regulars",
+        "description": "Run sequential browser-based task-completion reviews by realistic users trying key flows.",
+        "skill_key": "review-squad-rg07-mrxnh1zx-affb273ebc:regulars",
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-rg07-mrxnh1zx-affb273ebc/review-squad-rg07-mrxnh1zx-affb273ebc/0.3.0+codex.rg07-mrxnh1zx-affb273ebc/skills/regulars/SKILL.md"
+      },
+      "well-actually": {
+        "name": "well-actually",
+        "description": "Run sequential nitpick and polish reviews by opinionated personas, with browser checks when available and source access only where allowed.",
+        "skill_key": "review-squad-rg07-mrxnh1zx-affb273ebc:well-actually",
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-rg07-mrxnh1zx-affb273ebc/review-squad-rg07-mrxnh1zx-affb273ebc/0.3.0+codex.rg07-mrxnh1zx-affb273ebc/skills/well-actually/SKILL.md"
+      }
+    },
+    "runtime_validation": {
+      "status": "passed",
+      "command": [
+        "/nix/store/9vrhqlr0hmzsksxmm3534dwg5ma9w552-nodejs-slim-22.23.1/bin/node",
+        "/home/runar/.codex/plugins/cache/rs-rg07-mrxnh1zx-affb273ebc/review-squad-rg07-mrxnh1zx-affb273ebc/0.3.0+codex.rg07-mrxnh1zx-affb273ebc/scripts/runtime/review-runtime.mjs",
+        "validate",
+        "/home/runar/.codex/plugins/cache/rs-rg07-mrxnh1zx-affb273ebc/review-squad-rg07-mrxnh1zx-affb273ebc/0.3.0+codex.rg07-mrxnh1zx-affb273ebc/tests/fixtures/reports/v2/regulars-clean.json"
+      ],
+      "exit_code": 0,
+      "process_exit_confirmed": true
+    }
+  },
+  "discovery": {
+    "status": "verified",
+    "inventory_source": "system_available_skills",
+    "ambient_review_squad_entry_count": 0,
+    "temporary_skill_count": 5,
+    "expected_skill_keys": [
+      "review-squad-rg07-mrxnh1zx-affb273ebc:experts",
+      "review-squad-rg07-mrxnh1zx-affb273ebc:normies",
+      "review-squad-rg07-mrxnh1zx-affb273ebc:regulars",
+      "review-squad-rg07-mrxnh1zx-affb273ebc:review-squad",
+      "review-squad-rg07-mrxnh1zx-affb273ebc:well-actually"
+    ],
+    "temporary_entries": [
+      {
+        "skill_key": "review-squad-rg07-mrxnh1zx-affb273ebc:experts",
+        "description": "Run a production-ready multi-perspective project audit with Codex subagents, multi-label project detection, risk-adaptive lane dispatch, and a canonical evidence-backed report.",
+        "source_locator": "/home/runar/.codex/plugins/cache/rs-rg07-mrxnh1zx-affb273ebc/review-squad-rg07-mrxnh1zx-affb273ebc/0.3.0+codex.rg07-mrxnh1zx-affb273ebc/skills/experts/SKILL.md"
+      },
+      {
+        "skill_key": "review-squad-rg07-mrxnh1zx-affb273ebc:normies",
+        "description": "Run sequential browser-based first-impression reviews by personas with different levels of technical sophistication.",
+        "source_locator": "/home/runar/.codex/plugins/cache/rs-rg07-mrxnh1zx-affb273ebc/review-squad-rg07-mrxnh1zx-affb273ebc/0.3.0+codex.rg07-mrxnh1zx-affb273ebc/skills/normies/SKILL.md"
+      },
+      {
+        "skill_key": "review-squad-rg07-mrxnh1zx-affb273ebc:regulars",
+        "description": "Run sequential browser-based task-completion reviews by realistic users trying key flows.",
+        "source_locator": "/home/runar/.codex/plugins/cache/rs-rg07-mrxnh1zx-affb273ebc/review-squad-rg07-mrxnh1zx-affb273ebc/0.3.0+codex.rg07-mrxnh1zx-affb273ebc/skills/regulars/SKILL.md"
+      },
+      {
+        "skill_key": "review-squad-rg07-mrxnh1zx-affb273ebc:review-squad",
+        "description": "Route Review Squad requests to experts, normies, regulars, or well-actually based on the user's review goal.",
+        "source_locator": "/home/runar/.codex/plugins/cache/rs-rg07-mrxnh1zx-affb273ebc/review-squad-rg07-mrxnh1zx-affb273ebc/0.3.0+codex.rg07-mrxnh1zx-affb273ebc/skills/review-squad/SKILL.md"
+      },
+      {
+        "skill_key": "review-squad-rg07-mrxnh1zx-affb273ebc:well-actually",
+        "description": "Run sequential nitpick and polish reviews by opinionated personas, with browser checks when available and source access only where allowed.",
+        "source_locator": "/home/runar/.codex/plugins/cache/rs-rg07-mrxnh1zx-affb273ebc/review-squad-rg07-mrxnh1zx-affb273ebc/0.3.0+codex.rg07-mrxnh1zx-affb273ebc/skills/well-actually/SKILL.md"
+      }
+    ],
+    "locator_alignment": "matched_or_not_exposed"
+  },
+  "usage": {
+    "turn_completed_count": 1,
+    "turn_completed_usage": {
+      "input_tokens": 14312,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 730,
+      "reasoning_output_tokens": 53
+    }
+  },
+  "process": {
+    "original_pid": 2445461,
+    "original_pgid": 2445461,
+    "direct_child_exit_confirmed": true,
+    "process_group_exit_confirmed": true,
+    "exit_code": 0,
+    "exit_signal": null,
+    "descendants_drained_naturally": true,
+    "graceful_wait_ms": 5000,
+    "signal_attempts": [],
+    "sigterm_sent": false,
+    "sigkill_sent": false,
+    "leaked_process": null
+  },
+  "cleanup": {
+    "status": "passed",
+    "attempts": [
+      {
+        "label": "temporary_profile_remove",
+        "status": "passed",
+        "path": "/home/runar/.codex/rg07-mrxnh1zx-affb273ebc.config.toml"
+      },
+      {
+        "label": "plugin_remove",
+        "status": "passed",
+        "command": [
+          "codex",
+          "plugin",
+          "remove",
+          "review-squad-rg07-mrxnh1zx-affb273ebc@rs-rg07-mrxnh1zx-affb273ebc",
+          "--json"
+        ],
+        "json": {
+          "pluginId": "review-squad-rg07-mrxnh1zx-affb273ebc@rs-rg07-mrxnh1zx-affb273ebc",
+          "name": "review-squad-rg07-mrxnh1zx-affb273ebc",
+          "marketplaceName": "rs-rg07-mrxnh1zx-affb273ebc"
+        },
+        "stderr": ""
+      },
+      {
+        "label": "marketplace_remove",
+        "status": "passed",
+        "command": [
+          "codex",
+          "plugin",
+          "marketplace",
+          "remove",
+          "rs-rg07-mrxnh1zx-affb273ebc",
+          "--json"
+        ],
+        "json": {
+          "marketplaceName": "rs-rg07-mrxnh1zx-affb273ebc",
+          "installedRoot": null
+        },
+        "stderr": ""
+      }
+    ],
+    "scratch_root_removed": true,
+    "checks": {
+      "temporary_profile_absent_after_cleanup": "passed",
+      "unique_plugin_absent_after_cleanup": "passed",
+      "unique_marketplace_absent_after_cleanup": "passed",
+      "pre_existing_0_2_3_unchanged": "passed",
+      "repository_manifest_unchanged_0_3_0": "passed"
+    }
+  },
+  "state_preservation": {
+    "status": "passed",
+    "repository_manifest_before_sha256": "167d6e82dba6b035e15c91792e408ae681fc5926791be9fc6cccca271d34cf88",
+    "repository_manifest_after_sha256": "167d6e82dba6b035e15c91792e408ae681fc5926791be9fc6cccca271d34cf88",
+    "repository_manifest_version": "0.3.0",
+    "pre_existing_0_2_3_unchanged": true
+  },
+  "no_mcp_browser_or_package_startup": {
+    "status": "passed",
+    "basis": "The temporary profile and invocation disabled ambient and temporary Playwright MCP; retained JSONL contains only thread/turn lifecycle and one agent message."
+  }
+}

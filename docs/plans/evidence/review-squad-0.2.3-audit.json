@@ -1,0 +1,913 @@
+{
+  "schema_version": "1.1",
+  "report_id": "20260722T114809Z-experts-main",
+  "mode": "experts",
+  "generated_at": "2026-07-22T11:48:09Z",
+  "generator": {
+    "name": "codex-review-squad",
+    "version": "0.2.3",
+    "skill": "review-squad:experts"
+  },
+  "artifacts": {
+    "stem": "20260722T114809Z-experts-main",
+    "markdown_path": ".review-squad/reports/20260722T114809Z-experts-main.md",
+    "json_path": ".review-squad/reports/20260722T114809Z-experts-main.json"
+  },
+  "target": {
+    "kind": "repository",
+    "path": "/home/runar/code/jpro/codex-tools/codex-review-squad",
+    "url": "https://github.com/jprofessionals/codex-review-squad",
+    "name": "codex-review-squad"
+  },
+  "review_context": {
+    "labels": [
+      "main"
+    ],
+    "branch": "main",
+    "base_branch": "origin/main",
+    "pull_request": null,
+    "story": null,
+    "commit": "f4ca1b80a9f165feb0d94dbcb2a2f45a279b2b25",
+    "working_tree_dirty": false
+  },
+  "summary": {
+    "headline": "Structurally healthy, but stale dispatch semantics, absent behavioral evals, fixed fan-out, and an over-coupled report contract limit GPT-5.6 quality and cost efficiency.",
+    "overall_status": "needs_attention",
+    "critical_count": 0,
+    "important_count": 8,
+    "minor_count": 4,
+    "not_verified_count": 2,
+    "recommended_next_move": "Repair dispatch, add deterministic report fixtures and a compact GPT-5.6 eval baseline, then simplify prompts and fan-out behind measured gates."
+  },
+  "decision_summary": {
+    "patchable_now_count": 11,
+    "decision_required_count": 1,
+    "blocks_bmad_count": 0,
+    "recommended_bmad_commands": [
+      {
+        "finding_id": "I-03",
+        "command": "make story-run-decision STORY=<story> RESUME_DECISION=stop_and_create_follow_up_story STATUS_UPDATE=review",
+        "reason": "Choose the canonical report representation and schema compatibility window before changing the public report contract.",
+        "recommended_resolution": "follow_up_story"
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "I-01",
+      "severity": "important",
+      "title": "Expert dispatch encodes an obsolete callable schema",
+      "description": "The experts skill prescribes fork_context and agent_type and omits task_name, while the current callable runtime requires task_name and uses fork_turns.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "plugins/review-squad/skills/experts/SKILL.md",
+          "line": 184,
+          "line_end": 214,
+          "url": null,
+          "detail": "Preferred call shapes use fork_context and agent_type and do not include the required task_name field."
+        },
+        {
+          "kind": "reviewer_observation",
+          "path": null,
+          "line": null,
+          "line_end": null,
+          "url": null,
+          "detail": "The current session spawn_agent contract requires task_name and message, supports fork_turns, and has no agent_type field."
+        }
+      ],
+      "source": [
+        "COMP",
+        "QUAL"
+      ],
+      "suggested_fix": "Remove volatile pseudo-API examples where possible; otherwise use task_name/message/fork_turns and state that the live tool schema is authoritative.",
+      "impact": {
+        "runtime": "Literal execution can reject calls, lose explicit model or effort selection, or fall back to sequential review.",
+        "architecture": "A stable workflow is coupled to volatile tool-call field names.",
+        "delivery": "The flagship mode depends on model improvisation rather than a deterministic dispatch contract."
+      },
+      "remediation": "patchable",
+      "decision_flags": {
+        "adr_required": false,
+        "follow_up_story_required": false,
+        "scope_decision_required": false
+      },
+      "human_gate_summary": {
+        "why_human": "No human gate is needed for the compatibility correction.",
+        "decision_needed": "None.",
+        "consequence_if_ignored": "Dispatch remains runtime-version dependent.",
+        "recommended_resolution": "continue_same_story"
+      },
+      "workflow": {
+        "patchable_now": true,
+        "decision_required": false,
+        "blocks_bmad": false
+      },
+      "bmad": {
+        "recommended_command": null,
+        "command_reason": null
+      },
+      "affected_files": [
+        "plugins/review-squad/skills/experts/SKILL.md",
+        "plugins/review-squad/scripts/validate-plugin.mjs"
+      ]
+    },
+    {
+      "id": "I-02",
+      "severity": "important",
+      "title": "Validation does not test review behavior or generated artifacts",
+      "description": "The validator proves packaging-shaped text exists but does not validate report instances or model behavior.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "plugins/review-squad/scripts/validate-plugin.mjs",
+          "line": 66,
+          "line_end": 189,
+          "url": null,
+          "detail": "Checks are limited to required files, JSON parsing, selected schema keys, frontmatter, and literal dispatch strings."
+        },
+        {
+          "kind": "command_output",
+          "path": null,
+          "line": null,
+          "line_end": null,
+          "url": null,
+          "detail": "rg --files found no test, fixture, eval, or CI files; the structural validator exited 0."
+        }
+      ],
+      "source": [
+        "TEST",
+        "QUAL",
+        "ARCH"
+      ],
+      "suggested_fix": "Add deterministic schema and semantic fixtures plus a compact behavioral corpus with clean controls and seeded defects; run affected slices for routine changes and the full corpus for skill, schema, or MCP releases.",
+      "impact": {
+        "runtime": "Malformed reports, unsupported findings, bad routing, or unsafe dispatch can pass validation.",
+        "architecture": "The primary behavior contract exists only as prose.",
+        "delivery": "Model upgrades and prompt reductions cannot be compared objectively."
+      },
+      "remediation": "patchable",
+      "decision_flags": {
+        "adr_required": false,
+        "follow_up_story_required": false,
+        "scope_decision_required": false
+      },
+      "human_gate_summary": {
+        "why_human": "No human gate is needed to add deterministic fixtures and a small baseline corpus.",
+        "decision_needed": "None for the first tranche; thresholds can be tuned after baseline data exists.",
+        "consequence_if_ignored": "Validation continues to overstate release confidence.",
+        "recommended_resolution": "continue_same_story"
+      },
+      "workflow": {
+        "patchable_now": true,
+        "decision_required": false,
+        "blocks_bmad": false
+      },
+      "bmad": {
+        "recommended_command": null,
+        "command_reason": null
+      },
+      "affected_files": [
+        "plugins/review-squad/scripts/validate-plugin.mjs",
+        "plugins/review-squad/references/review-report.schema.json"
+      ]
+    },
+    {
+      "id": "I-03",
+      "severity": "important",
+      "title": "Report data is internally weak, duplicated, and coupled to BMAD",
+      "description": "The schema permits evidence-free verified findings while requiring irrelevant workflow boilerplate, and Markdown plus JSON are authored independently.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "plugins/review-squad/references/review-report.schema.json",
+          "line": 298,
+          "line_end": 376,
+          "url": null,
+          "detail": "Fifteen finding fields are required, but evidence and source arrays have no minItems constraint."
+        },
+        {
+          "kind": "file",
+          "path": "plugins/review-squad/references/review-report.schema.json",
+          "line": 487,
+          "line_end": 616,
+          "url": null,
+          "detail": "Impact, human-gate, workflow, and BMAD objects are required for every finding."
+        },
+        {
+          "kind": "file",
+          "path": "plugins/review-squad/references/report-formats.md",
+          "line": 49,
+          "line_end": 88,
+          "url": null,
+          "detail": "The model is instructed to author both human and structured reports and fill BMAD-oriented fields."
+        }
+      ],
+      "source": [
+        "ARCH",
+        "QUAL",
+        "COST",
+        "TEST"
+      ],
+      "suggested_fix": "Make validated JSON the canonical report IR, render Markdown from it, require evidence and semantic count consistency, and move BMAD and presentation data into optional namespaced extensions.",
+      "impact": {
+        "runtime": "Reports can be schema-valid yet evidence-free or contradictory while consuming tokens on boilerplate.",
+        "architecture": "Review facts, rendering, orchestration state, and one delivery workflow are mixed in a closed schema.",
+        "delivery": "Markdown and JSON can diverge, and non-BMAD consumers must manufacture irrelevant fields."
+      },
+      "remediation": "needs_human",
+      "decision_flags": {
+        "adr_required": true,
+        "follow_up_story_required": true,
+        "scope_decision_required": false
+      },
+      "human_gate_summary": {
+        "why_human": "Changing the canonical report representation affects downstream consumers and schema compatibility.",
+        "decision_needed": "Choose JSON as the canonical representation and define the 1.x migration window and optional BMAD extension boundary.",
+        "consequence_if_ignored": "Artifact divergence and irrelevant report noise will grow with every new mode or workflow.",
+        "recommended_resolution": "follow_up_story"
+      },
+      "workflow": {
+        "patchable_now": false,
+        "decision_required": true,
+        "blocks_bmad": false
+      },
+      "bmad": {
+        "recommended_command": "make story-run-decision STORY=<story> RESUME_DECISION=stop_and_create_follow_up_story STATUS_UPDATE=review",
+        "command_reason": "Record the report-schema compatibility choice before implementing a breaking or conditionally compatible refactor."
+      },
+      "affected_files": [
+        "plugins/review-squad/references/review-report.schema.json",
+        "plugins/review-squad/references/report-formats.md",
+        "plugins/review-squad/skills/experts/SKILL.md",
+        "plugins/review-squad/skills/normies/SKILL.md",
+        "plugins/review-squad/skills/regulars/SKILL.md",
+        "plugins/review-squad/skills/well-actually/SKILL.md"
+      ]
+    },
+    {
+      "id": "I-04",
+      "severity": "important",
+      "title": "Dispatch has fixed fan-out but no scope budget, tier policy, or escalation gate",
+      "description": "Normal reviews dispatch four to eight broad lanes even when useful signal may plateau after a smaller first wave.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "plugins/review-squad/skills/experts/SKILL.md",
+          "line": 36,
+          "line_end": 48,
+          "url": null,
+          "detail": "Default expert panels contain four to eight reviewers."
+        },
+        {
+          "kind": "file",
+          "path": "plugins/review-squad/skills/experts/SKILL.md",
+          "line": 141,
+          "line_end": 182,
+          "url": null,
+          "detail": "Each lane receives broad directory hints and up to eight concerns; model tier is not selected."
+        },
+        {
+          "kind": "url",
+          "path": null,
+          "line": null,
+          "line_end": null,
+          "url": "https://developers.openai.com/api/docs/guides/latest-model",
+          "detail": "Current guidance differentiates quality-first Sol from lower-cost Terra and recommends measuring prompt and effort reductions."
+        }
+      ],
+      "source": [
+        "COST",
+        "COMP"
+      ],
+      "suggested_fix": "Start normal reviews with three evidence-selected lanes and a compact parent dossier; use Terra for bounded scans, Sol for high-risk reasoning, and escalate only on risk, ambiguity, conflict, or explicit launch scope.",
+      "impact": {
+        "runtime": "Repository discovery and overlapping reads repeat across agents, increasing tokens and wave latency.",
+        "architecture": "No adaptive second-wave or model-role contract exists.",
+        "delivery": "Routine reviews are expensive while quality-critical lanes have no explicit model safeguard."
+      },
+      "remediation": "patchable",
+      "decision_flags": {
+        "adr_required": false,
+        "follow_up_story_required": false,
+        "scope_decision_required": false
+      },
+      "human_gate_summary": {
+        "why_human": "No gate is needed for an overridable adaptive default that is validated before release.",
+        "decision_needed": "None.",
+        "consequence_if_ignored": "Cost grows linearly with lanes while marginal signal may plateau.",
+        "recommended_resolution": "continue_same_story"
+      },
+      "workflow": {
+        "patchable_now": true,
+        "decision_required": false,
+        "blocks_bmad": false
+      },
+      "bmad": {
+        "recommended_command": null,
+        "command_reason": null
+      },
+      "affected_files": [
+        "plugins/review-squad/skills/experts/SKILL.md",
+        "plugins/review-squad/references/dispatch-policy.md"
+      ]
+    },
+    {
+      "id": "I-05",
+      "severity": "important",
+      "title": "Project detection omits plugin, agent, library, and infrastructure repositories",
+      "description": "The project detector and default panels do not cover several repository classes central to current Codex workflows.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "plugins/review-squad/references/panels.md",
+          "line": 12,
+          "line_end": 26,
+          "url": null,
+          "detail": "Detection covers web, backend, mobile, CLI, data pipeline, and BMAD signals."
+        },
+        {
+          "kind": "file",
+          "path": "plugins/review-squad/references/panels.md",
+          "line": 28,
+          "line_end": 65,
+          "url": null,
+          "detail": "Default expert panels exist only for web, backend, mobile, and CLI projects."
+        }
+      ],
+      "source": [
+        "QUAL"
+      ],
+      "suggested_fix": "Add plugin/agent/prompt, library/SDK, data-pipeline, and infrastructure/CI types; use multi-label risk signals instead of forcing one user-facing surface.",
+      "impact": {
+        "runtime": "Relevant prompt, configuration, packaging, or infrastructure risks may receive no dedicated lane.",
+        "architecture": "Panel selection is product-surface-centric rather than multi-label and risk-centric.",
+        "delivery": "Audits can appear complete while missing the repository's primary failure mode."
+      },
+      "remediation": "patchable",
+      "decision_flags": {
+        "adr_required": false,
+        "follow_up_story_required": false,
+        "scope_decision_required": false
+      },
+      "human_gate_summary": {
+        "why_human": "No human gate is needed to add missing repository classes and risk signals.",
+        "decision_needed": "None.",
+        "consequence_if_ignored": "Agent and infrastructure audits remain inconsistently scoped.",
+        "recommended_resolution": "continue_same_story"
+      },
+      "workflow": {
+        "patchable_now": true,
+        "decision_required": false,
+        "blocks_bmad": false
+      },
+      "bmad": {
+        "recommended_command": null,
+        "command_reason": null
+      },
+      "affected_files": [
+        "plugins/review-squad/references/panels.md",
+        "plugins/review-squad/skills/experts/SKILL.md"
+      ]
+    },
+    {
+      "id": "I-06",
+      "severity": "important",
+      "title": "Cold browser personas share state and reasoning context",
+      "description": "Sequential personas use one browser session and can inherit earlier browser state and review conclusions.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "plugins/review-squad/skills/normies/SKILL.md",
+          "line": 10,
+          "line_end": 35,
+          "url": null,
+          "detail": "Personas must be cold visitors but execute sequentially because the browser session is shared."
+        },
+        {
+          "kind": "file",
+          "path": "plugins/review-squad/skills/review-squad/SKILL.md",
+          "line": 47,
+          "line_end": 49,
+          "url": null,
+          "detail": "Combined runs place source-aware experts and task flows before cold normies."
+        },
+        {
+          "kind": "url",
+          "path": null,
+          "line": null,
+          "line_end": null,
+          "url": "https://github.com/microsoft/playwright-mcp#user-profile",
+          "detail": "Playwright MCP documents persistent profiles and isolated sessions for clean storage state."
+        }
+      ],
+      "source": [
+        "COMP",
+        "QUAL",
+        "COST"
+      ],
+      "suggested_fix": "Isolate browser storage and reasoning per persona, close and reopen between personas, withhold prior outputs until consolidation, run cold modes first, and expand beyond three personas only when evidence warrants it.",
+      "impact": {
+        "runtime": "Later personas can inherit cookies, authentication, dismissed dialogs, viewport, history, and earlier conclusions.",
+        "architecture": "Correlated role-play is reported as independent corroboration.",
+        "delivery": "First-impression consensus becomes order-dependent and can miss onboarding defects."
+      },
+      "remediation": "patchable",
+      "decision_flags": {
+        "adr_required": false,
+        "follow_up_story_required": false,
+        "scope_decision_required": false
+      },
+      "human_gate_summary": {
+        "why_human": "No human gate is needed to make cold-review isolation match the documented promise.",
+        "decision_needed": "None.",
+        "consequence_if_ignored": "Persona breadth can be mistaken for independent evidence.",
+        "recommended_resolution": "continue_same_story"
+      },
+      "workflow": {
+        "patchable_now": true,
+        "decision_required": false,
+        "blocks_bmad": false
+      },
+      "bmad": {
+        "recommended_command": null,
+        "command_reason": null
+      },
+      "affected_files": [
+        "plugins/review-squad/.mcp.json",
+        "plugins/review-squad/references/browser-preflight.md",
+        "plugins/review-squad/skills/normies/SKILL.md",
+        "plugins/review-squad/skills/review-squad/SKILL.md"
+      ]
+    },
+    {
+      "id": "I-07",
+      "severity": "important",
+      "title": "Regulars can cross an external-write boundary during a read-only review",
+      "description": "Task prompts can complete signup, checkout, subscribe, or contact flows without an explicit per-task submission boundary.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "plugins/review-squad/skills/regulars/SKILL.md",
+          "line": 8,
+          "line_end": 10,
+          "url": null,
+          "detail": "The mode includes signup, checkout, subscribe, contact, and account flows."
+        },
+        {
+          "kind": "file",
+          "path": "plugins/review-squad/skills/regulars/SKILL.md",
+          "line": 34,
+          "line_end": 39,
+          "url": null,
+          "detail": "Approval relies on the orchestrator recognizing production or irreversible writes before dispatch."
+        },
+        {
+          "kind": "file",
+          "path": "plugins/review-squad/skills/regulars/SKILL.md",
+          "line": 71,
+          "line_end": 77,
+          "url": null,
+          "detail": "The persona is told to accomplish the goal naturally and stop only after completion or giving up."
+        }
+      ],
+      "source": [
+        "QUAL"
+      ],
+      "suggested_fix": "Default tasks to stop before final submit or irreversible action and record environment, credentials, allowed mutations, and stop boundary in the task panel.",
+      "impact": {
+        "runtime": "A reviewer can create accounts, send forms, subscribe addresses, or advance real checkout state.",
+        "architecture": "Safety is implicit rather than encoded in each task contract.",
+        "delivery": "Reviews can create cleanup, privacy, support, or financial risk."
+      },
+      "remediation": "patchable",
+      "decision_flags": {
+        "adr_required": false,
+        "follow_up_story_required": false,
+        "scope_decision_required": false
+      },
+      "human_gate_summary": {
+        "why_human": "No gate is needed to establish the safe default; a future runtime task must ask before crossing it.",
+        "decision_needed": "None for the plugin change.",
+        "consequence_if_ignored": "Nominally read-only audits can mutate external systems.",
+        "recommended_resolution": "continue_same_story"
+      },
+      "workflow": {
+        "patchable_now": true,
+        "decision_required": false,
+        "blocks_bmad": false
+      },
+      "bmad": {
+        "recommended_command": null,
+        "command_reason": null
+      },
+      "affected_files": [
+        "plugins/review-squad/skills/regulars/SKILL.md",
+        "plugins/review-squad/references/dispatch-policy.md"
+      ]
+    },
+    {
+      "id": "I-08",
+      "severity": "important",
+      "title": "Browser behavior is outside the plugin release boundary",
+      "description": "The plugin resolves @playwright/mcp@latest at runtime without a tested version, first-run, isolation, or offline contract.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "plugins/review-squad/.mcp.json",
+          "line": 3,
+          "line_end": 7,
+          "url": null,
+          "detail": "The server command is npx @playwright/mcp@latest with no version pin, -y, or isolation argument."
+        },
+        {
+          "kind": "file",
+          "path": "plugins/review-squad/references/browser-preflight.md",
+          "line": 11,
+          "line_end": 18,
+          "url": null,
+          "detail": "Preflight collapses package, network, prompt, and missing-browser failures into generic unavailability."
+        },
+        {
+          "kind": "url",
+          "path": null,
+          "line": null,
+          "line_end": null,
+          "url": "https://docs.npmjs.com/cli/npm-exec/",
+          "detail": "npm documents that missing packages can prompt and that --yes suppresses the prompt."
+        }
+      ],
+      "source": [
+        "DX",
+        "ARCH",
+        "TEST",
+        "COMP"
+      ],
+      "suggested_fix": "Pin a tested MCP version, include -y and isolation for persona use, document prerequisites, and add cold-cache plus offline smoke tests with specific diagnostics.",
+      "impact": {
+        "runtime": "The same plugin release can download different code, prompt or fail on first use, and behave differently offline.",
+        "architecture": "No compatibility boundary exists between plugin, Node/npm, MCP, and browser binary.",
+        "delivery": "Browser review failures and output differences are hard to reproduce."
+      },
+      "remediation": "patchable",
+      "decision_flags": {
+        "adr_required": false,
+        "follow_up_story_required": false,
+        "scope_decision_required": false
+      },
+      "human_gate_summary": {
+        "why_human": "No gate is needed to pin the currently tested version and document an update cadence.",
+        "decision_needed": "None for the initial hardening patch.",
+        "consequence_if_ignored": "Unchanged plugin versions remain non-reproducible.",
+        "recommended_resolution": "continue_same_story"
+      },
+      "workflow": {
+        "patchable_now": true,
+        "decision_required": false,
+        "blocks_bmad": false
+      },
+      "bmad": {
+        "recommended_command": null,
+        "command_reason": null
+      },
+      "affected_files": [
+        "plugins/review-squad/.mcp.json",
+        "plugins/review-squad/references/browser-preflight.md",
+        "README.md"
+      ]
+    },
+    {
+      "id": "M-01",
+      "severity": "minor",
+      "title": "Persona and polish severities are not calibrated to the common schema",
+      "description": "Normies severity relies on correlated persona counts, while Well-Actually uses incompatible display scales without canonical mappings.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "plugins/review-squad/skills/normies/SKILL.md",
+          "line": 45,
+          "line_end": 54,
+          "url": null,
+          "detail": "Default personas are primarily demographic and sophistication labels."
+        },
+        {
+          "kind": "file",
+          "path": "plugins/review-squad/skills/normies/SKILL.md",
+          "line": 88,
+          "line_end": 92,
+          "url": null,
+          "detail": "Severity is derived mainly from the number of personas affected."
+        },
+        {
+          "kind": "file",
+          "path": "plugins/review-squad/skills/well-actually/SKILL.md",
+          "line": 83,
+          "line_end": 90,
+          "url": null,
+          "detail": "Six persona-specific severity scales have no mapping to critical, important, or minor."
+        }
+      ],
+      "source": [
+        "QUAL"
+      ],
+      "suggested_fix": "Define personas by jobs, knowledge, device and access constraints; derive canonical severity from goal blockage, audience share, recoverability, and confidence, with persona labels as presentation only.",
+      "impact": {
+        "runtime": "Low-impact consensus can outrank a narrow conversion blocker.",
+        "architecture": "Presentation labels and machine severity are conflated.",
+        "delivery": "Severity is difficult to compare across panels and runs."
+      },
+      "remediation": "patchable",
+      "decision_flags": {
+        "adr_required": false,
+        "follow_up_story_required": false,
+        "scope_decision_required": false
+      },
+      "human_gate_summary": {
+        "why_human": "No human gate is needed for a generic evidence-based severity model.",
+        "decision_needed": "None.",
+        "consequence_if_ignored": "Persona consensus remains a weak proxy for impact.",
+        "recommended_resolution": "continue_same_story"
+      },
+      "workflow": {
+        "patchable_now": true,
+        "decision_required": false,
+        "blocks_bmad": false
+      },
+      "bmad": {
+        "recommended_command": null,
+        "command_reason": null
+      },
+      "affected_files": [
+        "plugins/review-squad/skills/normies/SKILL.md",
+        "plugins/review-squad/skills/well-actually/SKILL.md",
+        "plugins/review-squad/references/report-formats.md",
+        "plugins/review-squad/references/review-report.schema.json"
+      ]
+    },
+    {
+      "id": "M-02",
+      "severity": "minor",
+      "title": "Modes and shared rules form a duplicated closed-world registry",
+      "description": "Mode names and report requirements are repeated across routing, schema, validation, manifest, and documentation.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "plugins/review-squad/skills/review-squad/SKILL.md",
+          "line": 12,
+          "line_end": 49,
+          "url": null,
+          "detail": "The router owns a manual list and ordering of all modes."
+        },
+        {
+          "kind": "file",
+          "path": "plugins/review-squad/references/review-report.schema.json",
+          "line": 33,
+          "line_end": 35,
+          "url": null,
+          "detail": "The same mode list is independently encoded in the schema."
+        },
+        {
+          "kind": "command_output",
+          "path": null,
+          "line": null,
+          "line_end": null,
+          "url": null,
+          "detail": "Skills plus Markdown references contain 6,432 words before README and the 893-line schema."
+        }
+      ],
+      "source": [
+        "ARCH",
+        "COST"
+      ],
+      "suggested_fix": "Introduce one compact mode registry and one shared execution/report contract; keep each skill limited to mode-specific routing and reviewer behavior.",
+      "impact": {
+        "runtime": "Repeated instructions consume context and can be reconciled inconsistently.",
+        "architecture": "Adding or renaming a mode requires synchronized edits across many files.",
+        "delivery": "Policy drift and omission risk grow with each mode."
+      },
+      "remediation": "patchable",
+      "decision_flags": {
+        "adr_required": false,
+        "follow_up_story_required": false,
+        "scope_decision_required": false
+      },
+      "human_gate_summary": {
+        "why_human": "No human gate is needed for internal deduplication that preserves behavior.",
+        "decision_needed": "None.",
+        "consequence_if_ignored": "Prompt cost and cross-file drift continue to grow.",
+        "recommended_resolution": "continue_same_story"
+      },
+      "workflow": {
+        "patchable_now": true,
+        "decision_required": false,
+        "blocks_bmad": false
+      },
+      "bmad": {
+        "recommended_command": null,
+        "command_reason": null
+      },
+      "affected_files": [
+        "plugins/review-squad/skills/review-squad/SKILL.md",
+        "plugins/review-squad/references/report-formats.md",
+        "plugins/review-squad/references/review-report.schema.json",
+        "plugins/review-squad/scripts/validate-plugin.mjs",
+        "plugins/review-squad/.codex-plugin/plugin.json",
+        "README.md"
+      ]
+    },
+    {
+      "id": "M-03",
+      "severity": "minor",
+      "title": "URL-only reviews have no deterministic artifact root",
+      "description": "Browser-only modes can start from a URL but are still required to write repository-relative artifacts.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "plugins/review-squad/references/report-formats.md",
+          "line": 15,
+          "line_end": 40,
+          "url": null,
+          "detail": "All completed reviews must create .review-squad/reports under the target repository."
+        },
+        {
+          "kind": "file",
+          "path": "plugins/review-squad/skills/normies/SKILL.md",
+          "line": 24,
+          "line_end": 41,
+          "url": null,
+          "detail": "The mode may have only a URL but still mandates repository-relative report artifacts."
+        }
+      ],
+      "source": [
+        "ARCH"
+      ],
+      "suggested_fix": "Resolve and display artifact_root during preflight and define an explicit returned-content or chat-only fallback when no writable repository exists.",
+      "impact": {
+        "runtime": "A completed browser review can write into the wrong working directory or fail in a read-only environment.",
+        "architecture": "Review completion is coupled to an undefined persistence adapter.",
+        "delivery": "Valid site-only reviews can be lost or reported incomplete."
+      },
+      "remediation": "patchable",
+      "decision_flags": {
+        "adr_required": false,
+        "follow_up_story_required": false,
+        "scope_decision_required": false
+      },
+      "human_gate_summary": {
+        "why_human": "No human gate is needed to make the output root explicit and provide a safe fallback.",
+        "decision_needed": "None.",
+        "consequence_if_ignored": "Browser-only artifact behavior remains nondeterministic.",
+        "recommended_resolution": "continue_same_story"
+      },
+      "workflow": {
+        "patchable_now": true,
+        "decision_required": false,
+        "blocks_bmad": false
+      },
+      "bmad": {
+        "recommended_command": null,
+        "command_reason": null
+      },
+      "affected_files": [
+        "plugins/review-squad/references/report-formats.md",
+        "plugins/review-squad/skills/normies/SKILL.md",
+        "plugins/review-squad/skills/regulars/SKILL.md",
+        "plugins/review-squad/skills/well-actually/SKILL.md"
+      ]
+    },
+    {
+      "id": "M-04",
+      "severity": "minor",
+      "title": "Local marketplace troubleshooting recommends a Git-only refresh command",
+      "description": "The README applies codex plugin marketplace upgrade to both local and Git-backed installation paths.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "README.md",
+          "line": 103,
+          "line_end": 130,
+          "url": null,
+          "detail": "The documented local installation registers a filesystem marketplace."
+        },
+        {
+          "kind": "file",
+          "path": "README.md",
+          "line": 218,
+          "line_end": 225,
+          "url": null,
+          "detail": "Troubleshooting unconditionally recommends codex plugin marketplace upgrade."
+        },
+        {
+          "kind": "command_output",
+          "path": null,
+          "line": null,
+          "line_end": null,
+          "url": null,
+          "detail": "Codex CLI 0.145.0 help describes marketplace upgrade as refreshing configured Git marketplace snapshots."
+        }
+      ],
+      "source": [
+        "DX"
+      ],
+      "suggested_fix": "Split troubleshooting by source type; verify local installs with codex plugin list and a fresh session, and reserve marketplace upgrade for Git sources.",
+      "impact": {
+        "runtime": "Local edits or copies can remain stale despite following the documented command.",
+        "architecture": "Filesystem and Git marketplace lifecycle semantics are conflated.",
+        "delivery": "Users encounter recurring skill-not-loaded support failures."
+      },
+      "remediation": "patchable",
+      "decision_flags": {
+        "adr_required": false,
+        "follow_up_story_required": false,
+        "scope_decision_required": false
+      },
+      "human_gate_summary": {
+        "why_human": "No human gate is needed for a documentation correction.",
+        "decision_needed": "None.",
+        "consequence_if_ignored": "Local users continue to receive an ineffective recovery path.",
+        "recommended_resolution": "continue_same_story"
+      },
+      "workflow": {
+        "patchable_now": true,
+        "decision_required": false,
+        "blocks_bmad": false
+      },
+      "bmad": {
+        "recommended_command": null,
+        "command_reason": null
+      },
+      "affected_files": [
+        "README.md"
+      ]
+    }
+  ],
+  "not_verified": [
+    {
+      "item": "Cold-cache and offline Playwright startup",
+      "reason": "The audit did not clear npm caches, install browser binaries, or block registry access. Verify first launch, cached offline launch, absent browser binary, and blocked registry in a disposable environment.",
+      "source": [
+        "COMP",
+        "DX",
+        "TEST"
+      ]
+    },
+    {
+      "item": "Actual GPT-5.6 quality and cost delta",
+      "reason": "The repository contains no baseline corpus, historical usage telemetry, or repeated controlled runs. Compare current full-panel behavior with adaptive Sol/Terra dispatch on the same seeded corpus.",
+      "source": [
+        "COST",
+        "TEST"
+      ]
+    }
+  ],
+  "mode_data": {
+    "type": "experts",
+    "panel": [
+      "COMP Codex Runtime Compatibility Reviewer",
+      "QUAL Review Quality and Prompt Design Reviewer",
+      "COST Token and Latency Efficiency Reviewer",
+      "ARCH Plugin Architecture Reviewer",
+      "TEST Evaluation and Reliability Reviewer",
+      "DX Packaging and Developer Experience Reviewer"
+    ],
+    "implementation_plan_offer": true
+  },
+  "sources": [
+    {
+      "name": "COMP",
+      "type": "expert"
+    },
+    {
+      "name": "QUAL",
+      "type": "expert"
+    },
+    {
+      "name": "COST",
+      "type": "expert"
+    },
+    {
+      "name": "ARCH",
+      "type": "expert"
+    },
+    {
+      "name": "TEST",
+      "type": "expert"
+    },
+    {
+      "name": "DX",
+      "type": "expert"
+    },
+    {
+      "name": "Current Codex CLI and callable runtime",
+      "type": "current_agent"
+    },
+    {
+      "name": "Official Codex and GPT-5.6 documentation",
+      "type": "tool"
+    },
+    {
+      "name": "Official Playwright MCP and npm documentation",
+      "type": "tool"
+    }
+  ]
+}

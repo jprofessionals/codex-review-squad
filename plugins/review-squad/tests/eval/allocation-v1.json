@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0",
+  "rule": "No reviewer receives both the clean and seeded case for one surface.",
+  "reviewers": {
+    "reviewer-a": ["plugin-clean", "web-seeded", "backend-clean", "library-seeded", "infrastructure-clean"],
+    "reviewer-b": ["plugin-seeded", "web-clean", "backend-seeded", "library-clean", "infrastructure-seeded"]
+  }
+}

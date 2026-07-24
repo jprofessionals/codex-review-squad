@@ -1,0 +1,35 @@
+{
+  "schema_version": "2.0",
+  "report_id": "experts-decision-bmad",
+  "mode": "experts",
+  "generated_at": "2026-07-22T00:00:00Z",
+  "generator": {"name": "codex-review-squad", "version": "0.3.0", "skill": "review-squad:experts"},
+  "target": {"kind": "repository", "path": "/tmp/example", "url": null, "name": "example"},
+  "review_context": {"labels": [], "branch": "main", "base_branch": null, "pull_request": null, "story": "1.2", "commit": null, "working_tree_dirty": false},
+  "summary": {"headline": "One decision needs an owner.", "overall_status": "needs_attention", "critical_count": 0, "important_count": 1, "minor_count": 0, "not_verified_count": 0, "recommended_next_move": "Resolve the compatibility decision."},
+  "findings": [
+    {
+      "id": "I-01",
+      "severity": "important",
+      "title": "Compatibility choice is unresolved",
+      "description": "The public contract has two incompatible representations.",
+      "evidence": [{"kind": "file", "path": "api.json", "line": 4, "line_end": 4, "url": null, "detail": "The field type differs from the released contract."}],
+      "source": ["ARCH"],
+      "suggested_fix": "Choose one representation and document migration.",
+      "impact": {"architecture": "Consumers cannot implement both shapes safely."},
+      "decision": {"owner": "Product Owner", "question": "Which representation is canonical?", "consequence": "Clients may diverge.", "recommendation": "Keep the released shape and add a migration."},
+      "affected_files": ["api.json"]
+    }
+  ],
+  "not_verified": [],
+  "mode_data": {"type": "experts", "panel": ["ARCH", "COMP"], "implementation_plan_offer": true},
+  "sources": [{"name": "ARCH", "type": "expert"}, {"name": "COMP", "type": "expert"}],
+  "artifacts": {"status": "written", "stem": "experts-decision-bmad", "json_path": ".review-squad/reports/experts-decision-bmad.json", "markdown_path": ".review-squad/reports/experts-decision-bmad.md"},
+  "extensions": {
+    "bmad": {
+      "schema_version": "1.0",
+      "installation": {"kind": "modern", "root": "_bmad/", "manifest": "_bmad/_config/manifest.yaml", "version": "6", "channel": null, "sha": null, "modules": ["bmm"]},
+      "decisions": [{"finding_id": "I-01", "command": "make story-run-decision STORY=1.2", "reason": "The compatibility decision blocks implementation.", "recommended_resolution": "continue_same_story"}]
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codex-review-squad.local/schemas/extensions/bmad/review-report-bmad.v1.schema.json",
+  "title": "Review Squad BMAD report extension 1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "installation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "root", "manifest"],
+      "properties": {
+        "kind": {"enum": ["modern", "legacy"]},
+        "root": {"type": "string", "minLength": 1},
+        "manifest": {"type": "string", "minLength": 1},
+        "version": {"type": ["string", "number", "null"]},
+        "channel": {"type": ["string", "null"]},
+        "sha": {"type": ["string", "null"]},
+        "modules": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["finding_id", "command", "reason"],
+        "properties": {
+          "finding_id": {"type": "string", "minLength": 1},
+          "command": {"type": "string", "minLength": 1},
+          "reason": {"type": "string", "minLength": 1},
+          "recommended_resolution": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "diagnostics": {"type": "array", "items": {"type": "string", "minLength": 1}}
+  },
+  "anyOf": [
+    {"required": ["installation"]},
+    {"required": ["decisions"]},
+    {"required": ["diagnostics"]}
+  ]
+}

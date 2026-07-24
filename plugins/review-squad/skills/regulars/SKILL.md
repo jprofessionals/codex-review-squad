@@ -5,97 +5,63 @@ description: Run sequential browser-based task-completion reviews by realistic u
 
 # Regulars
 
-Use this skill to verify whether real users can complete important site flows:
-signup, checkout, search, subscribe, contact, pricing, docs, account, and
-similar task paths.
-
-This is not a source-code QA pass. Regulars must not read source code or project
-files. They navigate like users and report task outcomes. Writing the paired
-report artifacts under `.review-squad/reports/` is required and is still
-considered part of the review.
+Use this skill to test whether users can complete important flows. Regulars use
+the rendered site only: never read source or project files.
 
 ## References
 
 - `../../references/panels.md` for task examples.
-- `../../references/dispatch-policy.md` for autonomous versus approval-required
-  panel dispatch.
-- `../../references/browser-preflight.md` for browser availability and fallback.
-- `../../references/report-formats.md` for scorecards and report artifacts.
+- `../../references/review-catalog.json` for severity.
+- `../../references/dispatch-policy.md` for approval.
+- `../../references/browser-preflight.md` for browser, isolation, and safety.
+- `../../references/report-formats.md` for JSON and Markdown.
 
 ## Workflow
 
-1. Get the target URL.
-2. Identify key user flows from the user's request. If flows are not specified,
-   use the site's visible navigation after browser preflight, or ask the user
-   for the flows that matter most.
-3. Run browser preflight. If Playwright MCP is unavailable, stop and explain
-   that task completion needs browser access. Offer to draft the task panel
-   while waiting for browser access.
-4. Present a task panel with personas, goals, and one unhappy path per task.
-5. Determine and present the dispatch mode using `dispatch-policy.md`. Continue
-   immediately when the panel is auto-approved; pause when approval is required,
-   including when a task may write production data or cause an irreversible
-   external action.
-6. Run tasks sequentially because the browser session is shared.
-7. After each task, report `PASS`, `PARTIAL`, or `FAIL` plus the headline issue.
-8. Consolidate into a scorecard with blockers and friction.
-9. Write paired report artifacts using the artifact contract in
-   `report-formats.md`: `.review-squad/reports/<stem>.md` and
-   `.review-squad/reports/<stem>.json`.
-10. Present the Markdown findings in chat and include the JSON artifact path.
-    Preserve the post-review decision gate in `dispatch-policy.md` for findings
-    that require a Product Owner or other human decision.
+1. Get the URL and key flows. If unspecified, use visible navigation after
+   preflight or ask which flows matter.
+2. Run browser preflight. If unavailable, stop and offer to draft the panel.
+3. Make the safety-complete task panel below, then apply `dispatch-policy.md`.
+4. Each persona needs a fresh reasoning context and isolated browser session.
+   Close and verify it between personas as `browser-preflight.md` requires; if
+   this is impossible, stop or downgrade the independence claim.
+5. Report `PASS`, `PARTIAL`, or `FAIL`; consolidate blockers and friction.
+6. Author, validate, and render schema-2.0 JSON. Use `inline_only` without an
+   approved writable root.
 
-## Task Panel Format
+## Task panel
 
-```markdown
-| # | Persona | Goal | Unhappy Path |
-| --- | --- | --- | --- |
-| 1 | [Name and context] | [Specific task] | [Invalid input, empty state, back button, etc.] |
-```
+| # | Job / device | Goal / success / unhappy path | Environment | Credential policy | Allowed mutations | Forbidden actions | Exact stop boundary |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | [knowledge; constraints] | [task; observable result; edge case] | [local/staging/sandbox/production] | [none/test account; never invent] | [navigate, screenshot, fill without submit] | [external writes] | [final button/action not crossed] |
 
-Keep tasks concrete. "Browse the site" is not a task. "Find pricing and start a
-trial" is a task.
+Tasks must be concrete: “find pricing and start a trial,” not “browse.”
 
-## Persona Prompt Template
+## Persona prompt
 
 ```text
-You are [NAME], a [DESCRIPTION].
-[One or two sentences about how you browse.]
-You came to this site to: [SPECIFIC GOAL]
+Job/knowledge: [specific user job; low/moderate/high]
+Device/access: [explicit]
+Goal and success criteria: [observable]
+Environment: [local / staging / sandbox / production]
+Credential policy: [none / supplied test account; never create or infer]
+Allowed mutations: [normally navigate, screenshot, snapshot, fill without submit]
+Forbidden actions: [all external writes]
+Exact stop boundary: Stop before [signup / purchase / send / subscribe / upload /
+account save / other visible final action].
 
-Do not read source code or project files. You are a real user.
-Use browser MCP tools to navigate: [URL]
-[For mobile personas: set viewport to 375x812 first.]
+Do not read source or project files. Visit: [URL]
+Viewport: [WIDTHxHEIGHT]
+Isolation: fresh reasoning and isolated session; no prior state or findings.
 
-Task:
-1. Open the URL and take a screenshot.
-2. Try to accomplish the goal naturally.
-3. Click, search, scroll, or go back as a real user would.
-4. Take screenshots at major steps.
-5. Test this unhappy path: [EDGE CASE].
-6. Stop when you complete the goal or give up.
+1. Screenshot first load and try the goal naturally.
+2. Click, search, scroll, or go back; test [EDGE CASE].
+3. Screenshot major steps.
+4. Stop at completion, give-up, or the boundary. Never cross it without explicit
+   approval and a sandbox/test cleanup plan.
 
-Report as [NAME]:
-- Goal
-- Result: PASS / PARTIAL / FAIL
-- Steps Taken
-- Where It Broke
-- Frustrations
-- Time to Complete
-- Would I Come Back?
+Report: goal; PASS/PARTIAL/FAIL; steps; breakage; friction; time; return intent.
 ```
 
-## Consolidation
-
-Use the `Regulars` format from `report-formats.md`.
-
-Blockers are failed tasks. Treat a failed primary conversion flow as critical.
-Passed-but-painful flows go under friction.
-
-Always write the paired Markdown and JSON artifacts before the final response.
-The JSON artifact must conform to `review-report.schema.json`, include
-`schema_version: "1.1"`, `findings: []`, `not_verified: []`,
-`decision_summary`, stable `review_context` fields, and `mode_data.type:
-"regulars"`. Findings must include structured impact, human gate summary,
-workflow flags, decision flags, and evidence detail using the schema fields.
+Use catalog severity. A failed task is a blocker, not automatically critical;
+passed-but-painful flows are friction. Author canonical JSON only; render Markdown.

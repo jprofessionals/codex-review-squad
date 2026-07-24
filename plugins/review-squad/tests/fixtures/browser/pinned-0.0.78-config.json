@@ -1,0 +1,21 @@
+{
+  "browser": {
+    "launchOptions": {
+      "headless": true,
+      "channel": "chrome"
+    },
+    "contextOptions": {
+      "serviceWorkers": "block",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      }
+    },
+    "isolated": true,
+    "browserName": "chromium"
+  },
+  "capabilities": [
+    "storage",
+    "config"
+  ]
+}

@@ -5,101 +5,45 @@ description: Run sequential nitpick and polish reviews by opinionated personas, 
 
 # Well, Actually
 
-Use this skill when the user wants the nitpicks that professional audits often
-skip: typography, grammar, standards, spacing, awkward UX, and questionable
-technical choices.
-
-This mode may be playful, but it must still be useful. Do not edit project
-source files during the review. Writing the paired report artifacts under
-`.review-squad/reports/` is required and is still considered part of the review.
-Keep a practical fixlist after the in-character reports.
+Use this skill for typography, grammar, standards, spacing, awkward UX, and
+questionable technical choices. It is a review: never edit project files. Keep
+the in-character notes useful with a practical fixlist.
 
 ## References
 
-- `../../references/panels.md` for default pedants and access rules.
-- `../../references/dispatch-policy.md` for autonomous versus approval-required
-  panel dispatch.
-- `../../references/browser-preflight.md` for browser availability and fallback.
-- `../../references/report-formats.md` for the roast, fixlist format, and
-  report artifacts.
+- `../../references/panels.md` for pedants and access.
+- `../../references/review-catalog.json` for mode and severity.
+- `../../references/dispatch-policy.md` for approval.
+- `../../references/browser-preflight.md` for browser, isolation, and fallback.
+- `../../references/report-formats.md` for JSON and Markdown.
 
 ## Workflow
 
-1. Identify the target site/project and URL if available.
-2. Run browser preflight for visual/browser personas.
-3. Present the default pedant panel and suggest project-specific additions.
-4. Determine and present the dispatch mode using `dispatch-policy.md`. Continue
-   immediately when the panel is auto-approved; pause only when approval is
-   required.
-5. Run browser-using personas sequentially. Code-only personas may run without a
-   browser if their access rules allow it.
-6. If browser MCP is unavailable, say which visual checks are skipped. Run only
-   useful source-access reviewers, such as standards or tech-choice reviewers,
-   when the user still wants a partial review.
-7. Write paired report artifacts using the artifact contract in
-   `report-formats.md`: `.review-squad/reports/<stem>.md` and
-   `.review-squad/reports/<stem>.json`.
-8. Present in-character findings first, then a practical fixlist, and include
-   the JSON artifact path. Preserve the post-review decision gate in
-   `dispatch-policy.md` for findings that require a Product Owner or other human
-   decision.
+1. Identify the target and URL; run browser preflight for visual personas.
+2. Present the default `panels.md` pedants and justified additions, then apply
+   `dispatch-policy.md`.
+3. Each browser persona needs a fresh reasoning context and isolated browser
+   session. Close and verify it between personas per `browser-preflight.md`; if
+   that fails, stop or downgrade independence. Code-only personas may continue
+   only within their access rules.
+4. If browser MCP fails, state which visual checks are skipped and run only
+   useful allowed source reviewers.
+5. Author, validate, and render schema-2.0 JSON; use `inline_only` without an
+   approved writable root. Present persona notes then a plain practical fixlist.
 
-## Default Panel
-
-- Typographer: rendered typography and CSS only.
-- Grammarian: rendered text only.
-- Standards zealot: rendered DOM and templates only.
-- Hacker News commenter: rendered site and source code.
-- Pixel cop: rendered site, DOM, and CSS only.
-- UX reply guy: rendered site only.
-
-## Reviewer Prompt Template
+## Reviewer prompt
 
 ```text
-You are [PERSONA] -- [one-line personality].
-[Two sentences explaining why this person cares too much about this topic.]
-
-This is a review only. Do not edit files.
-Target URL: [URL OR "none"]
-Project path: [PATH]
+You are [PERSONA] — [why they care]. This is a review; do not edit files.
+URL: [URL or none]; project: [PATH]
 Allowed access: [browser/DOM/CSS/source limits from panels.md]
-Browser status: [available/unavailable/not checked]
+Browser: [available/unavailable/not checked]; viewport: [WIDTHxHEIGHT/not applicable]
+Isolation: [fresh reasoning + isolated session, or explicit shared-session downgrade]
 
-Mission: find [DOMAIN] issues that a normal reviewer might skip.
-
-Look for:
-1. [Specific thing and where to check]
-2. [Specific thing and where to check]
-...
-10. [Specific thing and where to check]
-
-Report in character. For each issue include:
-- The Crime
-- The Evidence
-- The Sentence
-- Severity
+Find [DOMAIN] issues. For each: The Crime; Evidence; Sentence; canonical severity.
 ```
 
-Use persona-specific severity scales:
-
-- Typographer: Unforgivable / Deeply Troubling / Disappointing
-- Grammarian: 1-5 Red Pens
-- Standards zealot: Spec Violation / Accessibility Failure / Best Practice Breach
-- Hacker News commenter: fake upvote count, plus practical note
-- Pixel cop: Pixel Crime / Misdemeanor / Infraction
-- UX reply guy: Unusable / Annoying / Suboptimal
-
-## Consolidation
-
-Use the `Well Actually` format from `report-formats.md`.
-
-The first section can keep the persona voice. The practical fixlist must be
-plain, actionable, and ordered by effort. Do not let jokes obscure whether a fix
-is worth doing.
-
-Always write the paired Markdown and JSON artifacts before the final response.
-The JSON artifact must conform to `review-report.schema.json`, include
-`schema_version: "1.1"`, `findings: []`, `not_verified: []`,
-`decision_summary`, stable `review_context` fields, and `mode_data.type:
-"well-actually"`. Findings must include structured impact, human gate summary,
-workflow flags, decision flags, and evidence detail using the schema fields.
+Playful labels are presentation metadata only. Use canonical
+critical/important/minor severity from goal blockage, breadth, recoverability,
+risk, and evidence—not jokes or persona counts. Keep fixes actionable and
+ordered by effort. Author canonical JSON only; the renderer produces Markdown.

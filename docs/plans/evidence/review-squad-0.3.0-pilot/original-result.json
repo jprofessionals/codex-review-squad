@@ -1,0 +1,209 @@
+{
+  "schema_version": "2.0",
+  "mode": "pilot",
+  "status": "failed",
+  "release_evidence": false,
+  "plan": {
+    "command": "node plugins/review-squad/scripts/run-evaluation.mjs --pilot-authorized --output /tmp/review-squad-eval-pilot-0.3.0",
+    "release_evidence": false,
+    "oracle_opened": false,
+    "scoring_calls": 0,
+    "configured_top_level_primary_calls": 1,
+    "configured_top_level_delegated_calls": 3,
+    "configured_top_level_maximum_calls": 4,
+    "runtime_proven_global_maximum_calls": null,
+    "invocation_local_isolation": [
+      "--ignore-user-config",
+      "plugins.\"review-squad@codex-review-squad\".enabled=false",
+      "plugins.\"review-squad@codex-review-squad\".mcp_servers.playwright.enabled=false",
+      "the pilot stops as completed_not_verified unless the system Available Skills inventory is exposed and has no ambient Review Squad locator"
+    ],
+    "requested_primary_model": "gpt-5.6-sol",
+    "requested_primary_reasoning_effort": "high",
+    "checks": [
+      "actual Codex JSONL shape",
+      "three stable unique spawn_agent identities and one-to-one lane mapping",
+      "untouched delegated payload and raw-findings equality against retained JSONL",
+      "retained raw delegation artifact path and SHA-256",
+      "ambient Review Squad skill inventory is exposed and empty",
+      "structured final parsing",
+      "turn.completed.usage field capture and semantic scope classification",
+      "bounded child/grandchild timeout with SIGTERM/SIGKILL escalation"
+    ],
+    "expected_duration": "approximately 5-15 minutes",
+    "estimated_evidence_volume": "approximately 1-5 MB",
+    "warning": "pilot success is harness compatibility evidence only and cannot satisfy RG-04 or RG-05; this ordinary pilot does not prove nested-delegation observability"
+  },
+  "protocol_fingerprint": {
+    "reproducibility_sha256": "8a3d4fa23d90fc71a2c592029ace264655541d54446a6f8748f1e18002a93044",
+    "subject_manifest_sha256": "22e8c27f4ba9259f39b04c3f77baa192c0834a0ddc524a4749e67b1ca0625cda",
+    "corpus_sha256": "189b8aa6361ae333c5fb8e7ca1e209c8c5a147c8a32cfca1354de1aed5c1dabf",
+    "allocation_sha256": "b54b3602d155bd269af5fbcb67788a31bc051e60eb75ff9494052f8e28010274",
+    "wrapper_sha256": {
+      "controlled_quality": "bfce1e3b3c58603acf4f958b4974ccb66102546451a82bfd02e45f628e8bb019",
+      "production_behavior": "38344eeba924e26ec5b6afa1b83ee0794e3654b90562f63a112e7796f57acbdb",
+      "independent_scoring": "91928825ae42719fca26c6946e123cbeb1085ad341730e21e5450917e6d28fc2",
+      "pilot": "9f19c4f4e0884a0f3d3e1d73a766a820b30706e41691a0dbb0fceb6f9d3f1259"
+    }
+  },
+  "validated_pilot_prerequisite": null,
+  "self_verification": {
+    "status": "passed_before_first_model_call",
+    "reproducibility_schema": "3.0",
+    "structured_output_schemas": {
+      "status": "passed_before_first_model_call",
+      "schemas_checked": 12
+    },
+    "manifest": {
+      "name": "review-squad",
+      "version": "0.3.0"
+    },
+    "materialization": {
+      "v0.2.3": {
+        "source": {
+          "kind": "git_commit",
+          "commit": "f4ca1b80a9f165feb0d94dbcb2a2f45a279b2b25",
+          "required_manifest_name": "review-squad",
+          "required_manifest_version": "0.2.3"
+        },
+        "files": {
+          "plugins/review-squad/.codex-plugin/plugin.json": {
+            "sha256": "a73ff30f9d2c29f041561fe7278f44d960173bef15c8e5eb0886fbab1c8d8549",
+            "bytes": 1547
+          },
+          "plugins/review-squad/skills/experts/SKILL.md": {
+            "sha256": "8f271f17df459ce4a1e2c872e68282dfb00228672518e78bb0efbfd44a4594e3",
+            "bytes": 11719
+          },
+          "plugins/review-squad/references/panels.md": {
+            "sha256": "b2affa6ae7dd91d9556bf12043392fa56eead74c9c0d4ff3d7615752b7567e5e",
+            "bytes": 6996
+          },
+          "plugins/review-squad/references/dispatch-policy.md": {
+            "sha256": "ce9f9aa7fb2f8ac546220812f37e5f47f60d9e2c660f52e8dfdfc677340a3d8c",
+            "bytes": 2512
+          },
+          "plugins/review-squad/references/report-formats.md": {
+            "sha256": "f662aca3b224c265fde0ab7774f593ed41c7f818f67fd91bee5cc17017fadef4",
+            "bytes": 8538
+          },
+          "plugins/review-squad/references/browser-preflight.md": {
+            "sha256": "6ea74d8a3034bd0296ab9a3df88852f9b5ba4482a42089f5df139e85b27ddde9",
+            "bytes": 2141
+          }
+        }
+      },
+      "v0.3.0": {
+        "source": {
+          "kind": "worktree",
+          "required_manifest_name": "review-squad",
+          "required_manifest_version": "0.3.0"
+        },
+        "files": {
+          "plugins/review-squad/.codex-plugin/plugin.json": {
+            "sha256": "167d6e82dba6b035e15c91792e408ae681fc5926791be9fc6cccca271d34cf88",
+            "bytes": 1606
+          },
+          "plugins/review-squad/skills/experts/SKILL.md": {
+            "sha256": "da922f9b159f21ec85fbc02d2ff1dd8573281ffe4d27fd320fa289a7db6a8175",
+            "bytes": 5253
+          },
+          "plugins/review-squad/references/review-catalog.json": {
+            "sha256": "0b1f67c8246bd76848610f85ac42facb55f8e0d7ed5b71a0d19f9d51442bcdf1",
+            "bytes": 6943
+          },
+          "plugins/review-squad/references/panels.md": {
+            "sha256": "f273e09ec2a5bc0f4d0cd577274e0e96ebb04b4489996afa0bac92474e80054f",
+            "bytes": 2540
+          },
+          "plugins/review-squad/references/dispatch-policy.md": {
+            "sha256": "2e322e5e469fbefba08a995f74f8d42bf91e5c9d3c4b54fcef1783a8b0a5f139",
+            "bytes": 1898
+          },
+          "plugins/review-squad/references/report-formats.md": {
+            "sha256": "68fdb403fb817adc4e1b6a107d3a923e10b595a3f320c6a575d9e0c3ccfdc83e",
+            "bytes": 2948
+          },
+          "plugins/review-squad/references/browser-preflight.md": {
+            "sha256": "193963ecf2e1f8e82d76cd28a556467e02c70ee9b38a3a4e4df71c911dbe098a",
+            "bytes": 9301
+          },
+          "plugins/review-squad/references/bmad-detection.md": {
+            "sha256": "0b39c606ac23af5be7243bf7f71e4d66b51e018f0f65d0245d8a559bd2242528",
+            "bytes": 1343
+          }
+        }
+      }
+    }
+  },
+  "calls": [],
+  "raw_seal": null,
+  "scoring": null,
+  "production_cost_metrics": null,
+  "shutdown_probe": {
+    "expected_timeout": true,
+    "diagnostic": {
+      "kind": "timeout",
+      "timeout_ms": 40
+    },
+    "stdout": "probe-started\n",
+    "stderr": "",
+    "shutdown": {
+      "pid": 2906050,
+      "pgid": 2906050,
+      "process_group_supported": true,
+      "stdin_close": {
+        "attempted": true,
+        "status": "closed",
+        "error": null
+      },
+      "graceful_wait_ms": 20,
+      "term_wait_ms": 20,
+      "kill_wait_ms": 2000,
+      "signal_attempts": [
+        {
+          "phase": "term",
+          "signal": "SIGTERM",
+          "target": "process_group",
+          "id": 2906050,
+          "status": "sent",
+          "error": null
+        },
+        {
+          "phase": "kill",
+          "signal": "SIGKILL",
+          "target": "process_group",
+          "id": 2906050,
+          "status": "sent",
+          "error": null
+        }
+      ],
+      "sigterm_sent": true,
+      "sigkill_sent": true,
+      "child_exit_confirmed": true,
+      "process_group_exit_confirmed": true,
+      "exit_confirmed": true,
+      "exit_code": null,
+      "exit_signal": "SIGKILL",
+      "leaked_process": null
+    }
+  },
+  "failure": {
+    "name": "AssertionError",
+    "message": "pilot-v0.3.0-backend-seeded observed 0 delegation calls; expected 3-3",
+    "diagnostic": null,
+    "call": {
+      "id": "pilot-v0.3.0-backend-seeded",
+      "phase": "production_behavior",
+      "subject": "v0.3.0",
+      "status": "failed",
+      "diagnostic": {
+        "kind": "delegation_or_lane_parse_failure",
+        "message": "pilot-v0.3.0-backend-seeded observed 0 delegation calls; expected 3-3"
+      },
+      "process_exit_confirmed": true,
+      "partial_stdout_bytes": 21778,
+      "partial_stderr_bytes": 0
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "call_id": "pilot-v0.3.0-backend-seeded",
+  "files": [
+    {
+      "path": "server.mjs",
+      "sha256": "0d3e391bc20cba2929d090855e69d88ea3aa18cd852272b89e5b42aa5acfb494",
+      "bytes": 203
+    }
+  ]
+}

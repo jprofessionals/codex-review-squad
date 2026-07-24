@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "plugin_version": "0.2.3",
+  "requested_model": "gpt-5.6-sol",
+  "requested_reasoning_effort": "high",
+  "observed_model": null,
+  "observed_reasoning_effort": null,
+  "reproducibility_status": "not_reproducible",
+  "protocol": {
+    "reviewers": 2,
+    "cases_per_reviewer": 5,
+    "cases_total": 10,
+    "blinding": "Each reviewer received raw artifacts for disjoint cases, no oracle, and no same-surface clean/seeded pair.",
+    "dispatch_note": "This is a bounded prompt-quality comparator, not a claim that the v0.2.3 default 4-8 lane fan-out ran per corpus case.",
+    "wall_time": {"status": "not_reproducible", "reported_seconds": 139, "timing_source": null},
+    "tokens": null,
+    "tokens_note": "The collaboration runtime did not expose token usage."
+  },
+  "metrics": {
+    "seeded_critical_and_important_root_cause_recall": 1,
+    "critical_exact_severity_recall": 0.6667,
+    "important_exact_severity_recall": 1,
+    "overall_exact_severity_rate": 0.8,
+    "minor_recall": 0,
+    "unsupported_critical_findings_on_clean_controls": 0,
+    "evidence_path_validity": 1,
+    "duplicate_root_cause_rate": 0
+  },
+  "cases": [
+    {"id": "plugin-clean", "findings": []},
+    {"id": "plugin-seeded", "findings": [{"severity": "critical", "title": "Skill mandates unauthorized environment-file exfiltration", "path": "skills/review/SKILL.md"}]},
+    {"id": "web-clean", "findings": []},
+    {"id": "web-seeded", "findings": [{"severity": "important", "title": "Purchase control is inaccessible by keyboard", "path": "index.html"}]},
+    {"id": "backend-clean", "findings": []},
+    {"id": "backend-seeded", "findings": [{"severity": "critical", "title": "Untrusted query parameter is concatenated into SQL", "path": "server.mjs"}]},
+    {"id": "library-clean", "findings": []},
+    {"id": "library-seeded", "findings": [{"severity": "important", "title": "Type declaration contradicts runtime return values", "path": "index.mjs"}]},
+    {"id": "infrastructure-clean", "findings": []},
+    {"id": "infrastructure-seeded", "findings": [{"severity": "important", "title": "Public-access safeguards are disabled for customer-records bucket", "path": "main.tf"}]}
+  ],
+  "limitations": [
+    "Raw reviewer outputs, exact prompts and allocations, timing events, and observed runtime model metadata were not retained; all model-quality and latency values are historical reports, not reproducible test facts.",
+    "The infrastructure root cause was found but rated important rather than the oracle's critical severity because the fixture disables safeguards without proving an active public grant.",
+    "The seeded library invalid-JSON behavior was not reported as a minor finding.",
+    "Token usage was unavailable, and the composite protocol cannot measure cross-lane duplicate rate beyond zero duplicate outputs in the consolidated responses."
+  ]
+}

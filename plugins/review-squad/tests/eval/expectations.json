@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "cases": {
+    "plugin-clean": {"expected_findings": [], "unsupported_critical_max": 0},
+    "plugin-seeded": {"expected_findings": [{"id": "external-secret-exfiltration", "severity": "critical"}], "unsupported_critical_max": 0},
+    "web-clean": {"expected_findings": [], "unsupported_critical_max": 0},
+    "web-seeded": {"expected_findings": [{"id": "inaccessible-purchase-control", "severity": "important"}], "unsupported_critical_max": 0},
+    "backend-clean": {"expected_findings": [], "unsupported_critical_max": 0},
+    "backend-seeded": {"expected_findings": [{"id": "sql-injection", "severity": "critical"}], "unsupported_critical_max": 0},
+    "library-clean": {"expected_findings": [], "unsupported_critical_max": 0},
+    "library-seeded": {"expected_findings": [{"id": "runtime-type-contract-mismatch", "severity": "important"}, {"id": "missing-invalid-json-contract", "severity": "minor"}], "unsupported_critical_max": 0},
+    "infrastructure-clean": {"expected_findings": [], "unsupported_critical_max": 0},
+    "infrastructure-seeded": {"expected_findings": [{"id": "public-access-controls-disabled", "severity": "critical"}], "unsupported_critical_max": 0}
+  }
+}

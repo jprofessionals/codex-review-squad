@@ -11,6 +11,8 @@ mode they need.
 Review Squad is a Codex adaptation of 2389 Research's MIT-licensed
 `review-squad` plugin. It offers four modes:
 
+Load `../../references/review-catalog.json` as the canonical mode registry.
+
 - `review-squad:experts`: production-ready multi-perspective project audit.
 - `review-squad:normies`: first-time visitor impressions across a sophistication spectrum.
 - `review-squad:regulars`: browser-based task completion smoke review.
@@ -20,16 +22,10 @@ All modes must work standalone. Do not require or delegate to other plugins or
 skills. If a mode needs a plan, report, browser preflight, or fixlist, produce it
 directly from this plugin's skill and reference files.
 
-Every completed mode writes paired report artifacts under
-`.review-squad/reports/` using the same filename stem:
-
-```text
-.review-squad/reports/<timestamp>-<mode>[-<label>...].md
-.review-squad/reports/<timestamp>-<mode>[-<label>...].json
-```
-
-The final chat response should stay human-readable Markdown and include the JSON
-artifact path.
+Every mode follows `../../references/report-formats.md`: author and validate one
+schema-2.0 JSON report, then generate Markdown from it. Use written artifacts
+only in an explicit writable root; otherwise return validated JSON and rendered
+Markdown as `inline_only`.
 
 ## Routing
 
@@ -44,9 +40,11 @@ Choose the mode from the user's intent:
 - Nitpicks, polish, roast, Hacker News-style feedback, grammar/typography:
   use `well-actually`.
 
-If the request clearly maps to one mode, proceed with that mode. If it asks for
-several modes, run them in this order: `experts`, `regulars`, `normies`,
-`well-actually`, unless the user states a different priority.
+If the request clearly maps to one mode, proceed with that mode. For a combined
+request containing first impressions, run `normies` before any source-aware
+mode so its observations remain cold. The default combined order is `normies`,
+`regulars`, `experts`, `well-actually` unless the user excludes a mode or states
+a different priority; disclose when a requested order weakens coldness.
 
 If the target is browser-only and no URL is provided, ask for the URL or offer
 to start the local dev server if that fits the repository.

@@ -1,6 +1,6 @@
 {
   "name": "review-squad",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Multi-perspective Codex review panels for project audits, first impressions, task flows, and polish passes.",
   "author": {
     "name": "JProfessionals",
@@ -33,7 +33,8 @@
     "defaultPrompt": [
       "Run review-squad:experts before launch.",
       "Use review-squad:normies on my homepage.",
-      "Run review-squad:regulars on key flows."
+      "Run review-squad:regulars on key flows.",
+      "Use review-squad:well-actually for a polish pass."
     ],
     "brandColor": "#2563EB"
   }

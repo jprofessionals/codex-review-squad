@@ -1,0 +1,29 @@
+{
+  "name": "codex-review-squad",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:runtime": "node plugins/review-squad/scripts/build-runtime.mjs",
+    "check:runtime": "node plugins/review-squad/scripts/build-runtime.mjs --check",
+    "validate": "node plugins/review-squad/scripts/validate-plugin.mjs",
+    "test": "node --test plugins/review-squad/tests/*.test.mjs",
+    "test:deterministic": "node --test plugins/review-squad/tests/*.test.mjs",
+    "test:reports": "node --test plugins/review-squad/tests/wp01-report.test.mjs",
+    "test:dispatch": "node --test plugins/review-squad/tests/wp02-dispatch.test.mjs",
+    "test:browser": "node --test plugins/review-squad/tests/wp03-browser.test.mjs",
+    "test:release": "node --test plugins/review-squad/tests/wp04-release.test.mjs",
+    "test:harness": "node --test plugins/review-squad/tests/wp04-gate-harness.test.mjs",
+    "validate:catalog": "node plugins/review-squad/scripts/validate-catalog.mjs",
+    "eval:check": "node plugins/review-squad/scripts/check-eval-corpus.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "esbuild": "0.28.1",
+    "yaml": "2.9.0"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0",
+  "plugin_version": "0.3.0-wp02-integrated",
+  "requested_model": "gpt-5.6-sol",
+  "requested_reasoning_effort": "high",
+  "observed_model": null,
+  "observed_reasoning_effort": null,
+  "reproducibility_status": "not_reproducible",
+  "protocol": {
+    "reviewers": 2,
+    "cases_per_reviewer": 5,
+    "cases_total": 10,
+    "blinding": "Same disjoint raw-case allocation as the v0.2.3 baseline; no oracle and no same-surface clean/seeded pair.",
+    "dispatch_note": "Bounded prompt-quality comparator; cross-lane duplicate behavior is measured separately.",
+    "wall_time": {"status": "not_reproducible", "reported_seconds": 85, "timing_source": null},
+    "tokens": null,
+    "tokens_note": "The collaboration runtime did not expose token usage."
+  },
+  "metrics": {
+    "seeded_critical_and_important_root_cause_recall": 1,
+    "critical_exact_severity_recall": 0.6667,
+    "important_exact_severity_recall": 1,
+    "overall_exact_severity_rate": 0.8,
+    "minor_recall": 0,
+    "unsupported_critical_findings_on_clean_controls": 0,
+    "evidence_path_validity": 1,
+    "duplicate_root_cause_rate": 0,
+    "expert_skill_bytes": 4967,
+    "expert_skill_bytes_delta_from_v0_2_3": -6752,
+    "expert_skill_bytes_change_fraction": -0.5762,
+    "skill_and_markdown_reference_words": 4059,
+    "skill_and_markdown_reference_words_delta_from_v0_2_3": -2373,
+    "ordinary_initial_lane_count": 3,
+    "baseline_minimum_lane_count": 4,
+    "multi_lane_duplicate_result": "multi-lane-duplicate-comparison.json",
+    "multi_lane_median_duplicates_per_case": 0,
+    "multi_lane_repeated_artifact_bytes": 1689
+  },
+  "cases": [
+    {"id": "plugin-clean", "findings": []},
+    {"id": "plugin-seeded", "findings": [{"severity": "critical", "title": "Skill mandates unauthorized environment-file exfiltration", "path": "skills/review/SKILL.md"}]},
+    {"id": "web-clean", "findings": []},
+    {"id": "web-seeded", "findings": [{"severity": "important", "title": "Checkout action is not keyboard accessible", "path": "index.html"}]},
+    {"id": "backend-clean", "findings": []},
+    {"id": "backend-seeded", "findings": [{"severity": "critical", "title": "Untrusted query input is concatenated into SQL", "path": "server.mjs"}]},
+    {"id": "library-clean", "findings": []},
+    {"id": "library-seeded", "findings": [{"severity": "important", "title": "Runtime return values violate the declared public type contract", "path": "index.d.ts"}]},
+    {"id": "infrastructure-clean", "findings": []},
+    {"id": "infrastructure-seeded", "findings": [{"severity": "important", "title": "S3 public-access guardrails are disabled", "path": "main.tf"}]}
+  ],
+  "comparison": {
+    "critical_and_important_root_cause_recall_delta": 0,
+    "unsupported_critical_delta": 0,
+    "evidence_path_validity_delta": 0,
+    "wall_time": {"status": "not_reproducible", "reported_seconds_delta": -54, "reported_change_fraction": -0.3885},
+    "ordinary_initial_fanout_change_fraction": -0.25,
+    "multi_lane_median_duplicate_delta": -2,
+    "multi_lane_repeated_artifact_bytes_change_fraction": -0.657
+  },
+  "limitations": [
+    "Raw reviewer outputs, exact prompts and allocations, timing events, and observed runtime model metadata were not retained; all model-quality and latency values are historical reports, not reproducible test facts.",
+    "Token usage remains unavailable.",
+    "The infrastructure safeguard finding remains important rather than the oracle's critical because no active public grant is evidenced.",
+    "The seeded minor invalid-JSON behavior remains undetected in the primary comparator; the ownership-focused TEST lane detected it in the multi-lane sample but rated it important."
+  ]
+}

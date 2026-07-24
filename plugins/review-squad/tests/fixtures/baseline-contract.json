@@ -1,0 +1,132 @@
+{
+  "report_cases": [
+    {
+      "id": "valid-empty",
+      "fixture": "reports/v1.1/valid-empty.json",
+      "v0_2_3_expectation": "accepted"
+    },
+    {
+      "id": "empty-evidence",
+      "mutation": "add a verified finding with evidence=[] and source=[]",
+      "v0_2_3_expectation": "accepted_weakness",
+      "v2_expectation": "reject: finding evidence must contain at least one item"
+    },
+    {
+      "id": "mismatched-counts",
+      "mutation": "set summary.critical_count=1 while findings=[]",
+      "v0_2_3_expectation": "accepted_weakness",
+      "v2_expectation": "reject: summary counts do not match derived counts"
+    },
+    {
+      "id": "invalid-mode",
+      "mutation": "set mode=unknown",
+      "v0_2_3_expectation": "rejected_by_schema",
+      "v2_expectation": "reject: unsupported mode"
+    },
+    {
+      "id": "invalid-severity",
+      "mutation": "set finding severity=not_verified",
+      "v0_2_3_expectation": "rejected_by_schema",
+      "v2_expectation": "reject: unsupported severity"
+    },
+    {
+      "id": "malformed-bmad",
+      "mutation": "set decision_required=true with null BMAD command",
+      "v0_2_3_expectation": "rejected_by_schema",
+      "v2_expectation": "migrate failure or valid optional BMAD extension"
+    }
+  ],
+  "routing_cases": [
+    {"id": "launch", "intent": "review before launch", "expected_mode": "experts"},
+    {"id": "first-impression", "intent": "do visitors understand the homepage", "expected_mode": "normies"},
+    {"id": "task-flow", "intent": "can users complete checkout", "expected_mode": "regulars"},
+    {"id": "polish", "intent": "nitpick typography and copy", "expected_mode": "well-actually"},
+    {"id": "combined-cold-first", "intent": "run experts and normies", "v0_2_3_order": ["experts", "normies"], "v2_expected_order": ["normies", "experts"]}
+  ],
+  "approval_cases": [
+    {"id": "three-read-only", "lanes": 3, "external_access": false, "mutation": false, "expected": "auto_approved"},
+    {"id": "six-lanes", "lanes": 6, "external_access": false, "mutation": false, "expected": "approval_required"},
+    {"id": "private-access", "lanes": 3, "external_access": true, "mutation": false, "expected": "approval_required"},
+    {"id": "external-write", "lanes": 1, "external_access": false, "mutation": true, "expected": "approval_required"}
+  ],
+  "project_signal_cases": [
+    {"id": "web", "files": ["package.json", "src/App.tsx"], "expected_labels": ["web"]},
+    {"id": "backend", "files": ["pom.xml", "src/main/java/App.java"], "expected_labels": ["backend_api"]},
+    {"id": "mobile", "files": ["pubspec.yaml", "lib/main.dart"], "expected_labels": ["mobile"]},
+    {"id": "cli", "files": ["Cargo.toml", "src/main.rs"], "expected_labels": ["cli"]},
+    {"id": "data", "files": ["dags/load.py", "dbt_project.yml"], "expected_labels": ["data_pipeline"]},
+    {"id": "agent-plugin", "files": [".codex-plugin/plugin.json", "skills/review/SKILL.md"], "expected_labels": ["agent_plugin_prompt"]},
+    {"id": "library", "files": ["package.json", "src/index.ts", "types/index.d.ts"], "expected_labels": ["library_sdk"]},
+    {"id": "infrastructure", "files": ["main.tf", "modules/network/main.tf"], "expected_labels": ["infrastructure_iac"]},
+    {"id": "ci", "files": [".github/workflows/ci.yml", "action.yml"], "expected_labels": ["ci_tooling"]},
+    {"id": "multi-label", "files": ["package.json", "src/App.tsx", "action.yml"], "expected_labels": ["web", "ci_tooling"]},
+    {"id": "nested-marketplace-plugin", "files": ["plugins/review-squad/.codex-plugin/plugin.json", "plugins/review-squad/skills/experts/SKILL.md"], "expected_labels": ["agent_plugin_prompt"]},
+    {"id": "deep-web-and-plugin-multi-label", "files": ["vite.config.ts", "src/components/App.tsx", "plugins/review-squad/skills/experts/SKILL.md"], "expected_labels": ["web", "agent_plugin_prompt"]},
+    {"id": "negative", "files": ["README.md"], "expected_labels": []}
+  ],
+  "glob_cases": [
+    {"id": "skill-at-zero-one-and-many-directories", "glob": "**/SKILL.md", "matches": ["SKILL.md", "skills/SKILL.md", "plugins/review-squad/skills/experts/SKILL.md"], "rejects": ["skills/SKILL.mdx", "skills/NOT_SKILL.md"]},
+    {"id": "tsx-at-zero-one-and-many-directories", "glob": "**/*.tsx", "matches": ["App.tsx", "src/App.tsx", "src/components/App.tsx"], "rejects": ["src/App.ts", "src/components/App.tsx.bak"]}
+  ],
+  "bmad_cases": [
+    {"id": "absent", "signals": {}, "requested": false, "expected_state": "absent", "extension": false},
+    {"id": "supporting-only", "signals": {"_bmad-output/report.md": "text"}, "requested": true, "expected_state": "absent", "extension": false},
+    {"id": "modern-valid-inactive", "signals": {"_bmad/_config/manifest.yaml": "version: 6\nmodules: [bmm]\n"}, "requested": false, "expected_state": "installed_inactive", "extension": false},
+    {"id": "modern-valid-active", "signals": {"_bmad/_config/manifest.yaml": "version: 6\nmodules: [bmm]\n"}, "requested": true, "expected_state": "active", "extension": true},
+    {"id": "legacy-valid", "signals": {".bmad-core/install-manifest.yaml": "version: 4\nmodules: [core]\n"}, "requested": true, "expected_state": "active", "selected": "legacy", "extension": true},
+    {"id": "dual-valid", "signals": {"_bmad/_config/manifest.yaml": "version: 6\nmodules: [bmm]\n", ".bmad-core/install-manifest.yaml": "version: 4\nmodules: [core]\n"}, "requested": true, "expected_state": "active", "selected": "modern", "extension": true},
+    {"id": "malformed-modern", "signals": {"_bmad/_config/manifest.yaml": "not: [valid"}, "requested": true, "expected_state": "absent", "extension": false, "diagnostic": "manifest not confirmed"}
+  ],
+  "browser_degradation_cases": [
+    {"id": "package-missing", "signal": "npm package unavailable", "expected_diagnostic": "Playwright MCP package is unavailable"},
+    {"id": "registry-blocked", "signal": "registry network error", "expected_diagnostic": "Registry or network access failed"},
+    {"id": "browser-missing", "signal": "browser executable missing", "expected_diagnostic": "Browser binary is missing"},
+    {"id": "mcp-startup", "signal": "MCP process exits", "expected_diagnostic": "Playwright MCP failed to start"},
+    {"id": "target-unreachable", "signal": "navigation connection refused", "expected_diagnostic": "Target URL is unreachable"},
+    {"id": "isolation-unavailable", "signal": "clean context cannot be verified", "expected_action": "stop_or_downgrade_independence_claim"}
+  ],
+  "browser_isolation_cases": [
+    {"id": "cookies", "persona_one_state": "cookie", "persona_two_expected": "absent"},
+    {"id": "local-storage", "persona_one_state": "localStorage", "persona_two_expected": "absent"},
+    {"id": "session-storage", "persona_one_state": "sessionStorage", "persona_two_expected": "absent"},
+    {"id": "navigation", "persona_one_state": "history", "persona_two_expected": "start_url_only"},
+    {"id": "viewport", "persona_one_state": "375x812", "persona_two_expected": "declared_viewport"},
+    {"id": "permissions", "persona_one_state": "granted", "persona_two_expected": "default"},
+    {"id": "prior-findings", "persona_one_state": "finding_text", "persona_two_expected": "not_in_prompt"}
+  ],
+  "mutation_boundary_cases": [
+    {"id": "browse", "action": "navigate", "approval": false, "expected": "allowed"},
+    {"id": "fill-local-form", "action": "fill_without_submit", "approval": false, "expected": "allowed"},
+    {"id": "signup", "action": "final_signup_submit", "approval": false, "expected": "stop"},
+    {"id": "checkout", "action": "place_order", "approval": false, "expected": "stop"},
+    {"id": "contact", "action": "send_message", "approval": false, "expected": "stop"},
+    {"id": "subscribe", "action": "confirm_subscription", "approval": false, "expected": "stop"},
+    {"id": "upload", "action": "upload_file", "approval": false, "expected": "stop"},
+    {"id": "account-change", "action": "save_account_change", "approval": false, "expected": "stop"},
+    {"id": "destructive", "action": "delete_account", "approval": false, "expected": "stop"},
+    {"id": "approved-sandbox", "action": "final_signup_submit", "approval": true, "environment": "sandbox", "expected": "allowed_with_cleanup"}
+  ],
+  "artifact_root_cases": [
+    {"id": "writable-repository", "target": "repository", "writable": true, "expected": "written"},
+    {"id": "approved-directory", "target": "url", "approved_output_directory": "/tmp/review-output", "expected": "written"},
+    {"id": "url-only", "target": "url", "writable": false, "expected": "inline_only"},
+    {"id": "unrelated-cwd", "target": "url", "cwd_related": false, "expected": "do_not_write"}
+  ],
+  "severity_cases": [
+    {"id": "primary-goal-blocked", "factors": {"goal_blockage": "full", "breadth": "narrow", "recoverability": "low", "confidence": "high"}, "expected": "critical_or_important_by_risk"},
+    {"id": "broad-recoverable", "factors": {"goal_blockage": "partial", "breadth": "broad", "recoverability": "high", "confidence": "high"}, "expected": "important"},
+    {"id": "unsupported-critical", "factors": {"goal_blockage": "unknown", "breadth": "unknown", "confidence": "low"}, "requested": "critical", "expected": "reject"},
+    {"id": "persona-count-only", "persona_count": 6, "other_factors": null, "expected": "insufficient"},
+    {"id": "playful-label", "presentation": "5 red pens", "canonical": "minor", "expected": "canonical_severity_controls"}
+  ],
+  "installation_recovery_cases": [
+    {"id": "local-marketplace", "source": "local", "expected_commands": ["codex plugin list", "start fresh session"], "forbidden_commands": ["codex plugin marketplace upgrade"]},
+    {"id": "git-marketplace", "source": "git", "expected_commands": ["codex plugin marketplace upgrade"], "forbidden_commands": []}
+  ],
+  "dispatch_runtime_cases": [
+    {"id": "live-schema", "required_fields": ["task_name", "message"], "optional_fields": ["fork_turns", "model", "reasoning_effort"], "obsolete_fields": ["fork_context", "agent_type"], "authority": "live_tool_schema"},
+    {"id": "ordinary-panel", "risk": "normal", "expected_initial_lanes": 3},
+    {"id": "high-risk-panel", "risk": "security", "expected_tier": "frontier", "expected_model": "gpt-5.6-sol"},
+    {"id": "bounded-scan", "risk": "documentation", "expected_tier": "balanced", "expected_model": "gpt-5.6-terra"}
+  ]
+}
