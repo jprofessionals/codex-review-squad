@@ -51,25 +51,18 @@ never authored independently.
 - For browser-based modes, a browser binary and Playwright MCP must be
   available. This plugin pins Playwright MCP and cannot prompt for installation:
 
-```json
-{
-  "mcpServers": {
-    "playwright": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@playwright/mcp@0.0.78",
-        "--isolated",
-        "--block-service-workers",
-        "--caps",
-        "storage,config",
-        "--output-mode",
-        "stdout"
-      ]
-    }
-  }
-}
+The shipped `.mcp.json` uses a small inline Node launcher. For every session it
+creates an OS-temporary output root outside the reviewed repository, reports
+that path for diagnostics, and starts the equivalent pinned command:
+
+```text
+npx -y @playwright/mcp@0.0.78 --isolated --block-service-workers \
+  --caps storage,config --output-mode stdout --output-dir <unique-temp-root>
 ```
+
+`--output-mode stdout` does not by itself prevent filesystem output. The
+explicit session directory prevents Playwright MCP snapshots and logs from
+falling back to the reviewed repository.
 
 The shipped optional capabilities are deliberately narrow. Playwright MCP
 `--caps` is additive, so `storage,config` adds optional tools rather than
@@ -99,12 +92,16 @@ invoked, stop and confirm browser-process cleanup, emit
 `not_verified`.
 
 The browser modes create a fresh reasoning context and isolated browser session
-for each cold persona. They close the browser between personas and stop or
-downgrade the claim if cookies, storage, cache, permissions, viewport,
-navigation, or prior findings cannot be shown clean. Browser tasks are
-read-only by default and stop before signup, checkout, contact, subscription,
-upload, account changes, or another externally visible final action unless the
-user explicitly approves a safe test/sandbox mutation.
+for each cold persona, verify the effective config, and require a successful
+`browser_close` tool result before starting the next session. Cookies may be
+inspected before navigation; localStorage and sessionStorage are checked only
+after reaching the approved origin because `about:blank` can legitimately
+raise `SecurityError`. Missing delegated PID/process-tree identity is retained
+as diagnostic observability, not treated as a leak. An explicit close failure,
+reused context, or observed state leak still stops fail-closed. Browser tasks
+are read-only by default and stop before signup, checkout, contact,
+subscription, upload, account changes, or another externally visible final
+action unless the user explicitly approves a safe test/sandbox mutation.
 
 If browser MCP is unavailable, the browser/persona skills stop cleanly with a
 specific package, registry, binary, MCP-startup, target-URL, or isolation

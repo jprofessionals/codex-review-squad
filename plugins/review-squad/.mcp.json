@@ -1,16 +1,11 @@
 {
   "mcpServers": {
     "playwright": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "@playwright/mcp@0.0.78",
-        "--isolated",
-        "--block-service-workers",
-        "--caps",
-        "storage,config",
-        "--output-mode",
-        "stdout"
+        "--input-type=module",
+        "-e",
+        "import{mkdtempSync,readdirSync,rmSync,writeSync}from'node:fs';import{tmpdir}from'node:os';import{isAbsolute,join,relative,resolve,sep}from'node:path';import{spawn}from'node:child_process';const cwd=resolve(process.cwd());const root=mkdtempSync(join(tmpdir(),'review-squad-playwright-'));const rel=relative(cwd,root);if(rel===''||(!rel.startsWith(`..${sep}`)&&rel!=='..'&&!isAbsolute(rel))){rmSync(root,{recursive:true,force:true});throw new Error('Playwright MCP output root resolved inside target cwd')}writeSync(2,`REVIEW_SQUAD_MCP_OUTPUT_ROOT=${root}\\n`);const child=spawn('npx',['-y','@playwright/mcp@0.0.78','--isolated','--block-service-workers','--caps','storage,config','--output-mode','stdout','--output-dir',root],{stdio:'inherit'});for(const signal of ['SIGINT','SIGTERM','SIGHUP'])process.on(signal,()=>child.kill(signal));child.once('error',error=>{writeSync(2,`REVIEW_SQUAD_MCP_START_ERROR=${error.message}\\n`);process.exitCode=1});child.once('exit',(code,signal)=>{if(code===0&&readdirSync(root).length===0)rmSync(root,{recursive:true,force:true});process.exitCode=code??(signal?1:0)});"
       ]
     }
   }

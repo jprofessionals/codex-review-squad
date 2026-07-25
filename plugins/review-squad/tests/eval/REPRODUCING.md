@@ -10,7 +10,9 @@ usage events, and raw-lane normalization ledger were not retained.
 SHA-256 of every model-visible manifest, skill, reference, and catalog file.
 Materialize v0.2.3 with `git show` from immutable commit
 `f4ca1b80a9f165feb0d94dbcb2a2f45a279b2b25`; never checkout or alter the
-worktree. Materialize v0.3.0 only from hash-matching current release inputs.
+worktree. Materialize v0.3.0 from release commit
+`8ca05939330326830fc6f50a77b3ed062c419c66`; the 0.3.1 bugfix worktree must not
+silently replace that historical evaluation subject.
 
 Before its first model call, the runner verifies the reproducibility metadata,
 all four wrapper hashes, corpus, allocation, subject manifest, every

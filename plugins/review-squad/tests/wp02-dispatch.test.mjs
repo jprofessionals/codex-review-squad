@@ -110,6 +110,10 @@ test("production instructions use current dispatch semantics and cold-first rout
   assert(!experts.includes("4-8"));
   const router = fs.readFileSync(path.join(pluginRoot, "skills", "review-squad", "SKILL.md"), "utf8");
   assert(router.indexOf("`normies`") < router.indexOf("`experts`", router.indexOf("default combined order")));
+  const normies = fs.readFileSync(path.join(pluginRoot, "skills", "normies", "SKILL.md"), "utf8");
+  for (const required of ["browser_get_config", "browser_close", "panel_status", "partial", "not_verified", "PID/process-tree identity as diagnostic only"]) {
+    assert(normies.includes(required), `normies contract missing ${required}`);
+  }
 });
 
 test("persona and severity guidance is job-based and canonical", () => {
@@ -137,6 +141,7 @@ test("future eval protocol separates controlled quality from shipped production 
   const reproducibility = JSON.parse(fs.readFileSync(path.join(evalRoot, "reproducibility.json"), "utf8"));
   const subjects = JSON.parse(fs.readFileSync(path.join(evalRoot, "subjects-v1.json"), "utf8"));
   assert.equal(subjects.subjects["v0.2.3"].source.commit, "f4ca1b80a9f165feb0d94dbcb2a2f45a279b2b25");
+  assert.equal(subjects.subjects["v0.3.0"].source.commit, "8ca05939330326830fc6f50a77b3ed062c419c66");
   assert.equal(subjects.subjects["v0.3.0"].source.required_manifest_version, "0.3.0");
   assert(subjects.subjects["v0.3.0"].files["plugins/review-squad/references/review-catalog.json"]);
   assert.equal(reproducibility.future_protocol.run_matrix.total_primary_calls, 12);

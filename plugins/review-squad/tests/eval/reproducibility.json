@@ -16,7 +16,7 @@
   },
   "future_protocol": {
     "evaluation_skill": "review-squad:experts",
-    "subject_manifest": {"file": "subjects-v1.json", "sha256": "22e8c27f4ba9259f39b04c3f77baa192c0834a0ddc524a4749e67b1ca0625cda"},
+    "subject_manifest": {"file": "subjects-v1.json", "sha256": "540291e85bbb0f06643f839ccfb54d6d92335625902a110d8db63c2d930d4837"},
     "baseline_commit": "f4ca1b80a9f165feb0d94dbcb2a2f45a279b2b25",
     "wrappers": {
       "controlled_quality": {"file": "reviewer-prompt-v2.md", "sha256": "bfce1e3b3c58603acf4f958b4974ccb66102546451a82bfd02e45f628e8bb019"},

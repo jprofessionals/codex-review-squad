@@ -14,7 +14,7 @@
       }
     },
     "v0.3.0": {
-      "source": {"kind": "worktree", "required_manifest_name": "review-squad", "required_manifest_version": "0.3.0"},
+      "source": {"kind": "git_commit", "commit": "8ca05939330326830fc6f50a77b3ed062c419c66", "required_manifest_name": "review-squad", "required_manifest_version": "0.3.0"},
       "files": {
         "plugins/review-squad/.codex-plugin/plugin.json": "167d6e82dba6b035e15c91792e408ae681fc5926791be9fc6cccca271d34cf88",
         "plugins/review-squad/skills/experts/SKILL.md": "da922f9b159f21ec85fbc02d2ff1dd8573281ffe4d27fd320fa289a7db6a8175",

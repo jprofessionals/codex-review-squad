@@ -4,7 +4,7 @@ import path from "node:path";
 import process from "node:process";
 import {fileURLToPath, pathToFileURL} from "node:url";
 import {loadPluginCatalogState, validatePluginCatalogState} from "./lib/catalog-validation.mjs";
-import {PLAYWRIGHT_MCP_ARGS} from "./browser-contract.mjs";
+import {PLAYWRIGHT_MCP_CONFIG} from "./browser-contract.mjs";
 
 if (process.argv.length === 3 && process.argv[2] === "--help") {
   console.log("Usage: node validate-plugin.mjs");
@@ -120,8 +120,8 @@ if (manifest) {
   if (manifest.name !== "review-squad") {
     errors.push(`plugin manifest name must be "review-squad", got "${manifest.name}"`);
   }
-  if (manifest.version !== "0.3.0") {
-    errors.push(`plugin manifest version must be exactly "0.3.0", got "${manifest.version}"`);
+  if (manifest.version !== "0.3.1") {
+    errors.push(`plugin manifest version must be exactly "0.3.1", got "${manifest.version}"`);
   }
   if (manifest.skills !== "./skills/") {
     errors.push('plugin manifest must reference skills as "./skills/"');
@@ -133,9 +133,8 @@ if (manifest) {
 
 const mcpConfig = readJson(path.join(pluginRoot, ".mcp.json"), "plugin MCP config");
 if (mcpConfig) {
-  if (mcpConfig.mcpServers?.playwright?.command !== "npx") errors.push('Playwright MCP command must be "npx"');
-  if (JSON.stringify(mcpConfig.mcpServers?.playwright?.args) !== JSON.stringify(PLAYWRIGHT_MCP_ARGS)) {
-    errors.push("Playwright MCP arguments do not match the pinned browser contract");
+  if (JSON.stringify(mcpConfig.mcpServers?.playwright) !== JSON.stringify(PLAYWRIGHT_MCP_CONFIG)) {
+    errors.push("Playwright MCP launcher does not match the pinned browser contract");
   }
 }
 const runtimeDependencies = readJson(path.join(pluginRoot, "scripts", "runtime", "runtime-dependencies.json"), "runtime dependency manifest");

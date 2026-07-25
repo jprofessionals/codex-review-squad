@@ -13,17 +13,50 @@ export const PLAYWRIGHT_MCP_ARGS = [
   "stdout"
 ];
 
+export const PLAYWRIGHT_MCP_LAUNCHER_SOURCE = "import{mkdtempSync,readdirSync,rmSync,writeSync}from'node:fs';import{tmpdir}from'node:os';import{isAbsolute,join,relative,resolve,sep}from'node:path';import{spawn}from'node:child_process';const cwd=resolve(process.cwd());const root=mkdtempSync(join(tmpdir(),'review-squad-playwright-'));const rel=relative(cwd,root);if(rel===''||(!rel.startsWith(`..${sep}`)&&rel!=='..'&&!isAbsolute(rel))){rmSync(root,{recursive:true,force:true});throw new Error('Playwright MCP output root resolved inside target cwd')}writeSync(2,`REVIEW_SQUAD_MCP_OUTPUT_ROOT=${root}\\n`);const child=spawn('npx',['-y','@playwright/mcp@0.0.78','--isolated','--block-service-workers','--caps','storage,config','--output-mode','stdout','--output-dir',root],{stdio:'inherit'});for(const signal of ['SIGINT','SIGTERM','SIGHUP'])process.on(signal,()=>child.kill(signal));child.once('error',error=>{writeSync(2,`REVIEW_SQUAD_MCP_START_ERROR=${error.message}\\n`);process.exitCode=1});child.once('exit',(code,signal)=>{if(code===0&&readdirSync(root).length===0)rmSync(root,{recursive:true,force:true});process.exitCode=code??(signal?1:0)});";
+
+export const PLAYWRIGHT_MCP_CONFIG = {
+  command: "node",
+  args: ["--input-type=module", "-e", PLAYWRIGHT_MCP_LAUNCHER_SOURCE]
+};
+
 export const isolationChecks = [
   "fresh_reasoning_context",
   "prior_findings_absent",
+  "browser_close_succeeded",
+  "resolved_config_valid",
+  "fresh_browser_session",
   "cookies_absent",
   "local_storage_absent",
   "session_storage_absent",
-  "cache_fresh_process",
   "permissions_default",
   "viewport_declared",
   "navigation_start_url_only"
 ];
+
+export function classifyStorageProbe({url, errorName = null}) {
+  const origin = new URL(url).origin;
+  if (origin === "null" && errorName === "SecurityError") {
+    return {status: "origin_required", isolation_failure: false, action: "navigate_to_controlled_origin"};
+  }
+  if (errorName) return {status: "failed", isolation_failure: true, action: "stop"};
+  return {status: "verified", isolation_failure: false, action: "continue"};
+}
+
+export function classifyNormiesPanel({planned, completed}) {
+  const plannedSet = new Set(planned);
+  const completedSet = new Set(completed);
+  if (plannedSet.size !== planned.length || completedSet.size !== completed.length) {
+    throw new Error("persona identities must be unique");
+  }
+  for (const persona of completedSet) {
+    if (!plannedSet.has(persona)) throw new Error(`completed persona was not planned: ${persona}`);
+  }
+  return {
+    panel_status: completed.length === planned.length ? "complete" : completed.length === 0 ? "not_run" : "partial",
+    not_verified: planned.filter((persona) => !completedSet.has(persona))
+  };
+}
 
 function valuesForKeys(value, keys, found = []) {
   if (!value || typeof value !== "object") return found;

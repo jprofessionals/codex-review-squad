@@ -25,11 +25,20 @@ project files.
 3. Start with `DECIDE`, `VERIFY`, and `ADOPT` from `panels.md`; add a profile
    only for concrete audience evidence or uncovered risk.
 4. Apply `dispatch-policy.md`.
-5. For each persona, use the preflight isolation contract: fresh reasoning
-   context, fresh isolated browser session, then close and verify it before the
-   next persona. If this fails, stop or explicitly downgrade the cold claim.
-6. Briefly report each impression, consolidate a confusion matrix, then author,
-   validate, and render schema-2.0 JSON. Use `inline_only` without an approved
+5. For each persona, use a fresh reasoning context and browser session. Call
+   `browser_get_config` and verify isolation, blocked service workers, and no
+   persistent profile or storage-state input. Cookies may be checked before
+   navigation; navigate to the approved controlled origin before probing local
+   or session storage. The persona must call `browser_close`, receive a
+   successful tool result, and include that result in its handoff.
+6. Start a new isolated browser session for the next persona. Treat unavailable
+   PID/process-tree identity as diagnostic only. Stop fail-closed on an explicit
+   close failure, reused context, or observed state leak.
+7. Briefly report each impression, consolidate a confusion matrix, then author,
+   validate, and render schema-2.0 JSON. Set `mode_data.panel_status` to
+   `complete`, `partial`, or `not_run`. Preserve completed persona findings;
+   list every undispatched persona as `not_verified`, and distinguish a proven
+   leak from missing observability. Use `inline_only` without an approved
    writable root.
 
 ## Persona prompt
@@ -50,9 +59,11 @@ cache, permissions, navigation, viewport, or findings.
 2. Within [TIME LIMIT], say what this site is about.
 3. Find [persona-relevant thing], navigating naturally.
 4. Screenshot major moments; note confusion, hesitation, jargon, and give-up.
+5. Call browser_close. Report whether its tool result succeeded; do not infer a
+   PID or process-tree result that the runtime did not expose.
 
 Report: first impression; understanding; confusion; give-up; missing items;
-unknown words; what worked.
+unknown words; what worked; browser_close result; isolation assurance.
 ```
 
 Use catalog severity: goal blockage, breadth, recoverability, risk, confidence,

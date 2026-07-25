@@ -34,7 +34,7 @@ const proposed = {
   requested_model: "gpt-5.6-sol",
   requested_reasoning_effort: "high",
   duration: "approximately 2-5 minutes",
-  namespace: "a collision-safe unique marketplace name, plugin name, and 0.3.0+codex.rg07-* cachebuster are generated for every run",
+  namespace: "a collision-safe unique marketplace name, plugin name, and 0.3.1+codex.rg07-* cachebuster are generated for every run",
   mutations: ["add one unique local /tmp marketplace", "install one uniquely named cachebuster copy", "run one ephemeral read-only Codex session from an isolated /tmp working directory", "remove that plugin and marketplace in finally"],
   provenance: [
     "codex plugin add --json installedPath is the machine-readable installation receipt and the only filesystem root authority",
@@ -117,7 +117,7 @@ const writeJson = (name, value) => fs.writeFileSync(path.join(parsed.output, nam
 const nonce = `${Date.now().toString(36)}-${crypto.randomBytes(5).toString("hex")}`;
 const marketplaceName = `rs-rg07-${nonce}`;
 const pluginName = `review-squad-rg07-${nonce}`;
-const cachebuster = `0.3.0+codex.rg07-${nonce}`;
+const cachebuster = `0.3.1+codex.rg07-${nonce}`;
 const pluginId = `${pluginName}@${marketplaceName}`;
 const profileName = `rg07-${nonce}`;
 const codexHome = process.env.CODEX_HOME ? path.resolve(process.env.CODEX_HOME) : path.join(os.homedir(), ".codex");
@@ -172,7 +172,7 @@ async function cleanupCommand(label, executable, args) {
 }
 
 try {
-  assert.equal(JSON.parse(repoManifestBefore).version, "0.3.0", "repository manifest is not exactly 0.3.0");
+  assert.equal(JSON.parse(repoManifestBefore).version, "0.3.1", "repository manifest is not exactly 0.3.1");
   preState = await snapshotState();
   writeJson("pre-state.json", preState);
   assert(findOriginal023(preState), "pre-existing review-squad@codex-review-squad 0.2.3 installation is absent");
@@ -340,9 +340,9 @@ try {
     const originalUnchanged = sameJson(findOriginal023(preState), findOriginal023(postState));
     const repoManifestAfter = fs.readFileSync(repoManifestPath);
     fs.writeFileSync(path.join(parsed.output, "repository-manifest-after.json"), repoManifestAfter);
-    const repositoryUnchanged = repoManifestAfter.equals(repoManifestBefore) && JSON.parse(repoManifestAfter).version === "0.3.0";
+    const repositoryUnchanged = repoManifestAfter.equals(repoManifestBefore) && JSON.parse(repoManifestAfter).version === "0.3.1";
     const profileAbsent = !fs.existsSync(profilePath);
-    Object.assign(resultEvidence.checks, {temporary_profile_absent_after_cleanup: profileAbsent ? "passed" : "failed", unique_plugin_absent_after_cleanup: uniquePluginAbsent ? "passed" : "failed", unique_marketplace_absent_after_cleanup: uniqueMarketplaceAbsent ? "passed" : "failed", pre_existing_0_2_3_unchanged: originalUnchanged ? "passed" : "failed", repository_manifest_unchanged_0_3_0: repositoryUnchanged ? "passed" : "failed"});
+    Object.assign(resultEvidence.checks, {temporary_profile_absent_after_cleanup: profileAbsent ? "passed" : "failed", unique_plugin_absent_after_cleanup: uniquePluginAbsent ? "passed" : "failed", unique_marketplace_absent_after_cleanup: uniqueMarketplaceAbsent ? "passed" : "failed", pre_existing_0_2_3_unchanged: originalUnchanged ? "passed" : "failed", repository_manifest_unchanged_0_3_1: repositoryUnchanged ? "passed" : "failed"});
     resultEvidence.repository_manifest.after_sha256 = sha256(repoManifestAfter);
     resultEvidence.repository_manifest.after_version = JSON.parse(repoManifestAfter).version;
     if (!profileAbsent || !uniquePluginAbsent || !uniqueMarketplaceAbsent || !originalUnchanged || !repositoryUnchanged) throw new Error("post-cleanup state did not match the pre-run contract");

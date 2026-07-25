@@ -244,6 +244,7 @@
       "required": ["type", "personas", "confusion_matrix", "recommendations", "what_worked"],
       "properties": {
         "type": {"const": "normies"},
+        "panel_status": {"enum": ["complete", "partial", "not_run"]},
         "personas": {"type": "array", "items": {"$ref": "#/$defs/persona_output"}},
         "confusion_matrix": {"type": "array", "items": {"$ref": "#/$defs/confusion_entry"}},
         "recommendations": {"type": "array", "items": {"$ref": "#/$defs/recommendation"}},

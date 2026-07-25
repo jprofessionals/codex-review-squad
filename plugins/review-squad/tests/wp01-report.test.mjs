@@ -11,13 +11,22 @@ import {validateLegacyReport, validateReport} from "../scripts/lib/report-valida
 const testsRoot = path.dirname(fileURLToPath(import.meta.url));
 const readJson = (relative) => JSON.parse(fs.readFileSync(path.join(testsRoot, relative), "utf8"));
 const clone = (value) => structuredClone(value);
-const v2Names = ["experts-decision-bmad", "normies-not-verified-inline", "regulars-clean", "well-actually-finding"];
+const v2Names = ["experts-decision-bmad", "normies-not-verified-inline", "normies-partial-panel", "regulars-clean", "well-actually-finding"];
 
-test("all four schema 2.0 modes validate", () => {
+test("all schema 2.0 mode fixtures validate", () => {
   for (const name of v2Names) {
     const result = validateReport(readJson(`fixtures/reports/v2/${name}.json`));
     assert.equal(result.valid, true, `${name}: ${JSON.stringify(result.diagnostics)}`);
   }
+});
+
+test("partial normies panels retain completed evidence and identify undispatched personas", () => {
+  const report = readJson("fixtures/reports/v2/normies-partial-panel.json");
+  assert.equal(validateReport(report).valid, true);
+  assert.equal(report.mode_data.panel_status, "partial");
+  assert.deepEqual(report.mode_data.personas.map(({persona}) => persona), ["DECIDE"]);
+  assert.deepEqual(report.not_verified.map(({item}) => item), ["VERIFY persona", "ADOPT persona"]);
+  assert(report.not_verified.every(({reason}) => reason.includes("no browser leak was detected")));
 });
 
 test("verified findings require evidence and source attribution", () => {

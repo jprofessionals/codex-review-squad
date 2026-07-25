@@ -1,11 +1,16 @@
 import assert from "node:assert/strict";
+import {spawnSync} from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
 import {
   PLAYWRIGHT_MCP_ARGS,
+  PLAYWRIGHT_MCP_CONFIG,
   PLAYWRIGHT_MCP_VERSION,
+  classifyNormiesPanel,
+  classifyStorageProbe,
   decideMutation,
   diagnoseBrowserFailure,
   isolationChecks,
@@ -26,10 +31,10 @@ const pluginRoot = path.resolve(testsRoot, "..");
 const repoRoot = path.resolve(pluginRoot, "..", "..");
 const readJson = (file) => JSON.parse(fs.readFileSync(file, "utf8"));
 
-test("MCP is exactly pinned, non-interactive, isolated, and does not emit files", () => {
+test("MCP is exactly pinned, non-interactive, isolated, and uses external session output", () => {
   const mcp = readJson(path.join(pluginRoot, ".mcp.json"));
   assert.equal(PLAYWRIGHT_MCP_VERSION, "0.0.78");
-  assert.deepEqual(mcp.mcpServers.playwright, {command: "npx", args: PLAYWRIGHT_MCP_ARGS});
+  assert.deepEqual(mcp.mcpServers.playwright, PLAYWRIGHT_MCP_CONFIG);
   assert(PLAYWRIGHT_MCP_ARGS.includes("-y"));
   assert(PLAYWRIGHT_MCP_ARGS.includes("--isolated"));
   assert(PLAYWRIGHT_MCP_ARGS.includes("--block-service-workers"));
@@ -38,6 +43,47 @@ test("MCP is exactly pinned, non-interactive, isolated, and does not emit files"
   assert(!PLAYWRIGHT_MCP_ARGS.includes("storage,network,config"));
   assert(!JSON.stringify(mcp).includes("@latest"));
   assert(!PLAYWRIGHT_MCP_ARGS.some((arg) => arg.includes("user-data-dir") || arg.includes("storage-state") || arg.includes("shared-browser-context") || arg.includes("grant-permissions")));
+  assert(PLAYWRIGHT_MCP_CONFIG.args.at(-1).includes("--output-dir"));
+  assert(PLAYWRIGHT_MCP_CONFIG.args.at(-1).includes("REVIEW_SQUAD_MCP_OUTPUT_ROOT"));
+});
+
+test("MCP launcher never lets pinned output fall back to target cwd", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "review-squad-mcp-launcher-test-"));
+  const target = path.join(root, "target");
+  const bin = path.join(root, "bin");
+  let outputRoot = null;
+  try {
+    fs.mkdirSync(target);
+    fs.mkdirSync(bin);
+    const fakeNpx = path.join(bin, "npx");
+    fs.writeFileSync(fakeNpx, `#!/usr/bin/env node
+const fs = require("node:fs");
+const path = require("node:path");
+const args = process.argv.slice(2);
+const index = args.indexOf("--output-dir");
+const output = index >= 0 ? args[index + 1] : path.join(process.cwd(), ".playwright-mcp");
+fs.mkdirSync(output, {recursive: true});
+fs.writeFileSync(path.join(output, "captured.log"), "diagnostic");
+process.exit(7);
+`);
+    fs.chmodSync(fakeNpx, 0o755);
+    const result = spawnSync(PLAYWRIGHT_MCP_CONFIG.command, PLAYWRIGHT_MCP_CONFIG.args, {
+      cwd: target,
+      env: {...process.env, PATH: `${bin}${path.delimiter}${process.env.PATH}`},
+      encoding: "utf8",
+      timeout: 10_000
+    });
+    assert.equal(result.status, 7, result.stderr);
+    outputRoot = result.stderr.match(/REVIEW_SQUAD_MCP_OUTPUT_ROOT=(.+)/)?.[1]?.trim() ?? null;
+    assert(outputRoot, result.stderr);
+    assert.equal(path.relative(target, outputRoot).startsWith(".."), true);
+    assert.equal(fs.readFileSync(path.join(outputRoot, "captured.log"), "utf8"), "diagnostic");
+    assert.equal(fs.existsSync(path.join(target, ".playwright-mcp")), false);
+    assert.deepEqual(fs.readdirSync(target), []);
+  } finally {
+    if (outputRoot) fs.rmSync(outputRoot, {recursive: true, force: true});
+    fs.rmSync(root, {recursive: true, force: true});
+  }
 });
 
 test("guarded browser verifier uses the pin's install CLI and hardens process lifecycle", () => {
@@ -110,6 +156,33 @@ test("cold persona verification rejects every inherited-state dimension", () => 
     assert.equal(result.diagnostic.code, "BROWSER_ISOLATION_UNVERIFIED", check);
     assert(result.missing.includes(check), check);
   }
+  assert(!isolationChecks.includes("process_identity_observed"));
+  assert(!isolationChecks.includes("cache_fresh_process"));
+});
+
+test("origin-less storage SecurityError requests navigation instead of failing isolation", () => {
+  assert.deepEqual(classifyStorageProbe({url: "about:blank", errorName: "SecurityError"}), {
+    status: "origin_required",
+    isolation_failure: false,
+    action: "navigate_to_controlled_origin"
+  });
+  assert.deepEqual(classifyStorageProbe({url: "https://example.test", errorName: null}), {
+    status: "verified",
+    isolation_failure: false,
+    action: "continue"
+  });
+  assert.equal(classifyStorageProbe({url: "https://example.test", errorName: "SecurityError"}).isolation_failure, true);
+});
+
+test("a stopped normies panel preserves completed persona evidence and marks the rest not verified", () => {
+  assert.deepEqual(classifyNormiesPanel({planned: ["DECIDE", "VERIFY", "ADOPT"], completed: ["DECIDE"]}), {
+    panel_status: "partial",
+    not_verified: ["VERIFY", "ADOPT"]
+  });
+  assert.deepEqual(classifyNormiesPanel({planned: ["DECIDE", "VERIFY", "ADOPT"], completed: []}), {
+    panel_status: "not_run",
+    not_verified: ["DECIDE", "VERIFY", "ADOPT"]
+  });
 });
 
 test("preflight diagnostics distinguish package, registry, browser, MCP, target, and isolation failures", () => {
@@ -167,7 +240,7 @@ test("policy matrix covers expected decisions without claiming browser execution
 });
 
 test("browser-mode report fixtures validate schema 2.0 and render Markdown", () => {
-  for (const name of ["normies-not-verified-inline", "regulars-clean", "well-actually-finding"]) {
+  for (const name of ["normies-not-verified-inline", "normies-partial-panel", "regulars-clean", "well-actually-finding"]) {
     const report = readJson(path.join(testsRoot, "fixtures", "reports", "v2", `${name}.json`));
     const validation = validateReport(report);
     assert.equal(validation.valid, true, `${name}: ${JSON.stringify(validation.diagnostics)}`);
@@ -190,4 +263,14 @@ test("browser documentation carries the same pin, state contract, and regulars s
   assert(!regulars.includes("browser session is shared"));
   assert(preflight.includes("browser_run_code_unsafe"));
   assert(preflight.includes("BROWSER_UNSAFE_TOOL_FORBIDDEN"));
+  assert(preflight.includes("REVIEW_SQUAD_MCP_OUTPUT_ROOT"));
+  assert.match(preflight, /missing\s+observability, not evidence of a leak/);
+  assert(preflight.includes("context-and-storage isolation"));
+  assert.match(preflight, /allowed only in RG-06 or an explicitly\s+authorized isolation\/field-test harness/);
+  assert.match(preflight, /Ordinary reviews must not create one/);
+  assert.match(preflight, /must never be sent to a server/);
+  assert.match(preflight, /must\s+disappear with the isolated browser context/);
+  assert(readme.includes("`browser_close` tool result"));
+  assert(readme.includes("`about:blank` can legitimately"));
+  assert(readme.includes("diagnostic observability, not treated as a leak"));
 });
