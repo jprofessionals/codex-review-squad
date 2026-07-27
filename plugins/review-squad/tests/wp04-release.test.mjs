@@ -12,15 +12,15 @@ const pluginRoot = path.resolve(testsRoot, "..");
 const repoRoot = path.resolve(pluginRoot, "..", "..");
 const readJson = (file) => JSON.parse(fs.readFileSync(file, "utf8"));
 
-test("release and generator versions are exactly 0.3.1 without a cachebuster", () => {
+test("release and generator versions are exactly 0.3.2 without a cachebuster", () => {
   const manifest = readJson(path.join(pluginRoot, ".codex-plugin", "plugin.json"));
   const packageJson = readJson(path.join(repoRoot, "package.json"));
-  assert.equal(manifest.version, "0.3.1");
-  assert.equal(packageJson.version, "0.3.1");
+  assert.equal(manifest.version, "0.3.2");
+  assert.equal(packageJson.version, "0.3.2");
   assert(!manifest.version.includes("+"));
   for (const file of fs.readdirSync(path.join(testsRoot, "fixtures", "reports", "v2"))) {
     const report = readJson(path.join(testsRoot, "fixtures", "reports", "v2", file));
-    assert.equal(report.generator.version, "0.3.1", file);
+    assert.equal(report.generator.version, "0.3.2", file);
   }
 });
 
@@ -147,7 +147,7 @@ test("installed-plugin verifier guards identity, evidence, and cleanup", () => {
   ].map((file) => fs.readFileSync(file, "utf8")).join("\n");
   for (const expected of [
     "crypto.randomBytes",
-    "0.3.1+codex.rg07-",
+    "0.3.2+codex.rg07-",
     "plugin\", \"list\", \"--json",
     "marketplace\", \"list\", \"--json",
     "--ephemeral", "--json", "turn.completed",

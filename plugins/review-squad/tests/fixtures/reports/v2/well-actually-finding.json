@@ -3,7 +3,7 @@
   "report_id": "well-actually-finding",
   "mode": "well-actually",
   "generated_at": "2026-07-22T00:00:00Z",
-  "generator": {"name": "codex-review-squad", "version": "0.3.1", "skill": "review-squad:well-actually"},
+  "generator": {"name": "codex-review-squad", "version": "0.3.2", "skill": "review-squad:well-actually"},
   "target": {"kind": "site", "path": "/tmp/example", "url": "https://example.com", "name": "Example"},
   "review_context": {"labels": [], "branch": null, "base_branch": null, "pull_request": null, "story": null, "commit": null, "working_tree_dirty": null},
   "summary": {"headline": "One copy issue needs polish.", "overall_status": "needs_attention", "critical_count": 0, "important_count": 0, "minor_count": 1, "not_verified_count": 0, "recommended_next_move": "Correct the heading punctuation."},

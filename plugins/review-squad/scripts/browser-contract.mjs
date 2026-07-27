@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
 
 export const PLAYWRIGHT_MCP_VERSION = "0.0.78";
 
@@ -13,12 +15,117 @@ export const PLAYWRIGHT_MCP_ARGS = [
   "stdout"
 ];
 
-export const PLAYWRIGHT_MCP_LAUNCHER_SOURCE = "import{mkdtempSync,readdirSync,rmSync,writeSync}from'node:fs';import{tmpdir}from'node:os';import{isAbsolute,join,relative,resolve,sep}from'node:path';import{spawn}from'node:child_process';const cwd=resolve(process.cwd());const root=mkdtempSync(join(tmpdir(),'review-squad-playwright-'));const rel=relative(cwd,root);if(rel===''||(!rel.startsWith(`..${sep}`)&&rel!=='..'&&!isAbsolute(rel))){rmSync(root,{recursive:true,force:true});throw new Error('Playwright MCP output root resolved inside target cwd')}writeSync(2,`REVIEW_SQUAD_MCP_OUTPUT_ROOT=${root}\\n`);const child=spawn('npx',['-y','@playwright/mcp@0.0.78','--isolated','--block-service-workers','--caps','storage,config','--output-mode','stdout','--output-dir',root],{stdio:'inherit'});for(const signal of ['SIGINT','SIGTERM','SIGHUP'])process.on(signal,()=>child.kill(signal));child.once('error',error=>{writeSync(2,`REVIEW_SQUAD_MCP_START_ERROR=${error.message}\\n`);process.exitCode=1});child.once('exit',(code,signal)=>{if(code===0&&readdirSync(root).length===0)rmSync(root,{recursive:true,force:true});process.exitCode=code??(signal?1:0)});";
+export const PLAYWRIGHT_MCP_LAUNCHER_SOURCE = "import{mkdirSync,mkdtempSync,readdirSync,rmSync,writeSync}from'node:fs';import{tmpdir}from'node:os';import{isAbsolute,join,relative,resolve,sep}from'node:path';import{spawn}from'node:child_process';const cwd=resolve(process.cwd());const configured=process.env.REVIEW_SQUAD_BROWSER_ARTIFACT_ROOT;if(configured&&!isAbsolute(configured))throw new Error('REVIEW_SQUAD_BROWSER_ARTIFACT_ROOT must be absolute');const base=resolve(configured||tmpdir());const baseRel=relative(cwd,base);if(baseRel===''||(!baseRel.startsWith(`..${sep}`)&&baseRel!=='..'&&!isAbsolute(baseRel)))throw new Error('Playwright MCP artifact root resolved inside target cwd');mkdirSync(base,{recursive:true});const root=mkdtempSync(join(base,'review-squad-playwright-'));const rel=relative(cwd,root);if(rel===''||(!rel.startsWith(`..${sep}`)&&rel!=='..'&&!isAbsolute(rel))){rmSync(root,{recursive:true,force:true});throw new Error('Playwright MCP output root resolved inside target cwd')}writeSync(2,`REVIEW_SQUAD_MCP_OUTPUT_ROOT=${root}\\n`);const child=spawn('npx',['-y','@playwright/mcp@0.0.78','--isolated','--block-service-workers','--caps','storage,config','--output-mode','stdout','--output-dir',root],{stdio:'inherit'});for(const signal of ['SIGINT','SIGTERM','SIGHUP'])process.on(signal,()=>child.kill(signal));child.once('error',error=>{writeSync(2,`REVIEW_SQUAD_MCP_START_ERROR=${error.message}\\n`);process.exitCode=1});child.once('exit',(code,signal)=>{if(code===0&&readdirSync(root).length===0)rmSync(root,{recursive:true,force:true});process.exitCode=code??(signal?1:0)});";
 
 export const PLAYWRIGHT_MCP_CONFIG = {
   command: "node",
-  args: ["--input-type=module", "-e", PLAYWRIGHT_MCP_LAUNCHER_SOURCE]
+  args: ["--input-type=module", "-e", PLAYWRIGHT_MCP_LAUNCHER_SOURCE],
+  env_vars: ["REVIEW_SQUAD_BROWSER_ARTIFACT_ROOT"]
 };
+
+export const BROWSER_ARTIFACT_OUTPUT_TOOLS = Object.freeze({
+  browser_console_messages: {path_argument: "filename", inline_output: true},
+  browser_network_request: {path_argument: "filename", inline_output: true},
+  browser_network_requests: {path_argument: "filename", inline_output: true},
+  browser_snapshot: {path_argument: "filename", inline_output: true},
+  browser_storage_state: {path_argument: "filename", inline_output: false},
+  browser_take_screenshot: {path_argument: "filename", inline_output: true}
+});
+
+const resolveThroughExistingAncestor = (value) => {
+  let existing = path.resolve(value);
+  const missing = [];
+  while (!fs.existsSync(existing)) {
+    const parent = path.dirname(existing);
+    assert.notEqual(parent, existing, `cannot resolve filesystem ancestor for ${value}`);
+    missing.unshift(path.basename(existing));
+    existing = parent;
+  }
+  return path.resolve(fs.realpathSync(existing), ...missing);
+};
+
+const pathWithin = (root, candidate) => {
+  const relative = path.relative(resolveThroughExistingAncestor(root), resolveThroughExistingAncestor(candidate));
+  return relative === "" || (!relative.startsWith(`..${path.sep}`) && relative !== ".." && !path.isAbsolute(relative));
+};
+
+export function prepareBrowserArtifactCall({tool, args = {}, artifactMode, artifactRoot = null, mcpOutputRoot = null}) {
+  const contract = BROWSER_ARTIFACT_OUTPUT_TOOLS[tool];
+  if (!contract) return {tool, args: {...args}, artifact_path: null, disposition: "not_an_output_tool"};
+
+  const outputArgs = {...args};
+  const value = outputArgs[contract.path_argument];
+  if (artifactMode === "inline_only" && contract.inline_output) {
+    delete outputArgs[contract.path_argument];
+    return {tool, args: outputArgs, artifact_path: null, disposition: "inline"};
+  }
+  if (value === undefined) {
+    return {tool, args: outputArgs, artifact_path: null, disposition: "mcp_managed_output"};
+  }
+  const roots = [artifactRoot, mcpOutputRoot].filter(Boolean);
+  if (typeof value !== "string" || !path.isAbsolute(value) || roots.length === 0 || !roots.some((root) => path.isAbsolute(root) && pathWithin(root, value))) {
+    const error = new Error("Browser artifact output path must be absolute and inside the approved artifact root or reported MCP output root");
+    error.code = "BROWSER_ARTIFACT_PATH_UNSAFE";
+    throw error;
+  }
+  return {tool, args: outputArgs, artifact_path: path.resolve(value), disposition: "written"};
+}
+
+export function assessDelegatedBrowserApproval({approvalPolicy = null, approvalsReviewer = null, approvalRequiredTools = []}) {
+  const effective = {
+    approval_policy: approvalPolicy,
+    approvals_reviewer: approvalsReviewer,
+    observed: approvalPolicy !== null || approvalsReviewer !== null
+  };
+  if (approvalRequiredTools.length > 0 && approvalPolicy === "on-request" && approvalsReviewer === "user") {
+    return {
+      supported_unattended: false,
+      action: "stop_before_persona_dispatch",
+      diagnostic: {
+        code: "BROWSER_DELEGATED_APPROVAL_UNATTENDED_UNSUPPORTED",
+        message: "Delegated browser actions cannot wait unattended for a user approval reviewer. Start a new session with approval_policy=on-request and approvals_reviewer=auto_review, or explicitly choose the limited snapshot-only fallback."
+      },
+      effective,
+      approval_required_tools: [...approvalRequiredTools],
+      alternatives: ["new_on_request_auto_review_session", "explicit_snapshot_only_fallback"]
+    };
+  }
+  return {
+    supported_unattended: true,
+    action: "continue_preflight",
+    diagnostic: null,
+    effective,
+    approval_required_tools: [...approvalRequiredTools],
+    alternatives: []
+  };
+}
+
+export function browserToolTimeoutDiagnostic({
+  tool,
+  waitedMs,
+  lastSuccessfulCall = null,
+  approvalPolicy = null,
+  approvalsReviewer = null,
+  mcpBeginObserved = false,
+  callTerminal = false,
+  cleanupStatus = "not_started"
+}) {
+  assert.equal(typeof tool, "string", "timed-out browser tool is required");
+  assert(Number.isFinite(waitedMs) && waitedMs >= 0, "waitedMs must be a non-negative number");
+  return {
+    code: "BROWSER_MCP_TOOL_TIMEOUT",
+    tool,
+    waited_ms: waitedMs,
+    last_successful_call: lastSuccessfulCall,
+    approval_policy: approvalPolicy,
+    approvals_reviewer: approvalsReviewer,
+    mcp_begin: mcpBeginObserved ? "observed" : "not_observed",
+    cleanup_status: cleanupStatus,
+    pending_call_terminal: callTerminal,
+    retry: "forbidden",
+    browser_close: callTerminal ? "allowed_after_terminal_confirmation" : "forbidden_until_call_terminal"
+  };
+}
 
 export const isolationChecks = [
   "fresh_reasoning_context",

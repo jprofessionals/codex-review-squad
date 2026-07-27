@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import {spawnSync} from "node:child_process";
+import crypto from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -7,8 +8,11 @@ import test from "node:test";
 import {fileURLToPath} from "node:url";
 import {
   PLAYWRIGHT_MCP_ARGS,
+  BROWSER_ARTIFACT_OUTPUT_TOOLS,
   PLAYWRIGHT_MCP_CONFIG,
   PLAYWRIGHT_MCP_VERSION,
+  assessDelegatedBrowserApproval,
+  browserToolTimeoutDiagnostic,
   classifyNormiesPanel,
   classifyStorageProbe,
   decideMutation,
@@ -18,6 +22,7 @@ import {
   policyResult,
   policyScenarios,
   parseResolvedBrowserConfigText,
+  prepareBrowserArtifactCall,
   validateRealBrowserIsolation,
   validateRealBrowserPositiveControl,
   validateResolvedBrowserConfig,
@@ -35,6 +40,7 @@ test("MCP is exactly pinned, non-interactive, isolated, and uses external sessio
   const mcp = readJson(path.join(pluginRoot, ".mcp.json"));
   assert.equal(PLAYWRIGHT_MCP_VERSION, "0.0.78");
   assert.deepEqual(mcp.mcpServers.playwright, PLAYWRIGHT_MCP_CONFIG);
+  assert.deepEqual(mcp.mcpServers.playwright.env_vars, ["REVIEW_SQUAD_BROWSER_ARTIFACT_ROOT"]);
   assert(PLAYWRIGHT_MCP_ARGS.includes("-y"));
   assert(PLAYWRIGHT_MCP_ARGS.includes("--isolated"));
   assert(PLAYWRIGHT_MCP_ARGS.includes("--block-service-workers"));
@@ -51,10 +57,12 @@ test("MCP launcher never lets pinned output fall back to target cwd", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "review-squad-mcp-launcher-test-"));
   const target = path.join(root, "target");
   const bin = path.join(root, "bin");
+  const artifactBase = path.join(root, "artifacts");
   let outputRoot = null;
   try {
     fs.mkdirSync(target);
     fs.mkdirSync(bin);
+    fs.mkdirSync(artifactBase);
     const fakeNpx = path.join(bin, "npx");
     fs.writeFileSync(fakeNpx, `#!/usr/bin/env node
 const fs = require("node:fs");
@@ -69,13 +77,14 @@ process.exit(7);
     fs.chmodSync(fakeNpx, 0o755);
     const result = spawnSync(PLAYWRIGHT_MCP_CONFIG.command, PLAYWRIGHT_MCP_CONFIG.args, {
       cwd: target,
-      env: {...process.env, PATH: `${bin}${path.delimiter}${process.env.PATH}`},
+      env: {...process.env, PATH: `${bin}${path.delimiter}${process.env.PATH}`, REVIEW_SQUAD_BROWSER_ARTIFACT_ROOT: artifactBase},
       encoding: "utf8",
       timeout: 10_000
     });
     assert.equal(result.status, 7, result.stderr);
     outputRoot = result.stderr.match(/REVIEW_SQUAD_MCP_OUTPUT_ROOT=(.+)/)?.[1]?.trim() ?? null;
     assert(outputRoot, result.stderr);
+    assert.equal(path.relative(artifactBase, outputRoot).startsWith(".."), false);
     assert.equal(path.relative(target, outputRoot).startsWith(".."), true);
     assert.equal(fs.readFileSync(path.join(outputRoot, "captured.log"), "utf8"), "diagnostic");
     assert.equal(fs.existsSync(path.join(target, ".playwright-mcp")), false);
@@ -84,6 +93,177 @@ process.exit(7);
     if (outputRoot) fs.rmSync(outputRoot, {recursive: true, force: true});
     fs.rmSync(root, {recursive: true, force: true});
   }
+});
+
+test("MCP launcher rejects a configured artifact base inside target cwd before startup", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "review-squad-mcp-root-rejection-test-"));
+  const target = path.join(root, "target");
+  try {
+    fs.mkdirSync(target);
+    const result = spawnSync(PLAYWRIGHT_MCP_CONFIG.command, PLAYWRIGHT_MCP_CONFIG.args, {
+      cwd: target,
+      env: {...process.env, REVIEW_SQUAD_BROWSER_ARTIFACT_ROOT: path.join(target, "browser-artifacts")},
+      encoding: "utf8",
+      timeout: 10_000
+    });
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /artifact root resolved inside target cwd/);
+    assert.deepEqual(fs.readdirSync(target), []);
+  } finally {
+    fs.rmSync(root, {recursive: true, force: true});
+  }
+});
+
+test("typed browser output paths are absolute, root-confined, and inline-safe", () => {
+  const artifactRoot = "/tmp/review-squad-artifacts";
+  const mcpOutputRoot = "/tmp/review-squad-mcp";
+  for (const [tool, contract] of Object.entries(BROWSER_ARTIFACT_OUTPUT_TOOLS)) {
+    assert.throws(
+      () => prepareBrowserArtifactCall({tool, args: {filename: "relative.out"}, artifactMode: "written", artifactRoot, mcpOutputRoot}),
+      (error) => error.code === "BROWSER_ARTIFACT_PATH_UNSAFE",
+      tool
+    );
+    assert.throws(
+      () => prepareBrowserArtifactCall({tool, args: {filename: "/tmp/outside.out"}, artifactMode: "written", artifactRoot, mcpOutputRoot}),
+      (error) => error.code === "BROWSER_ARTIFACT_PATH_UNSAFE",
+      tool
+    );
+    const approved = prepareBrowserArtifactCall({tool, args: {filename: `${artifactRoot}/${tool}.out`}, artifactMode: "written", artifactRoot, mcpOutputRoot});
+    assert.equal(approved.disposition, "written", tool);
+    assert.equal(prepareBrowserArtifactCall({tool, args: {filename: `${mcpOutputRoot}/${tool}.out`}, artifactMode: "written", artifactRoot, mcpOutputRoot}).disposition, "written", tool);
+    if (contract.inline_output) {
+      const inline = prepareBrowserArtifactCall({tool, args: {filename: "must-not-survive.out", level: "info"}, artifactMode: "inline_only", mcpOutputRoot});
+      assert.equal(inline.disposition, "inline", tool);
+      assert.equal(Object.hasOwn(inline.args, "filename"), false, tool);
+      assert.equal(inline.args.level, "info", tool);
+    }
+  }
+  assert.throws(
+    () => prepareBrowserArtifactCall({tool: "browser_take_screenshot", args: {filename: "/tmp/no-approved-root.png"}, artifactMode: "written"}),
+    (error) => error.code === "BROWSER_ARTIFACT_PATH_UNSAFE"
+  );
+  assert.equal(prepareBrowserArtifactCall({tool: "browser_click", args: {ref: "e1"}, artifactMode: "inline_only"}).disposition, "not_an_output_tool");
+});
+
+test("browser artifact confinement rejects a symlink escape from an approved root", {skip: process.platform === "win32"}, () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "review-squad-browser-symlink-test-"));
+  const approved = path.join(root, "approved");
+  const outside = path.join(root, "outside");
+  try {
+    fs.mkdirSync(approved);
+    fs.mkdirSync(outside);
+    fs.symlinkSync(outside, path.join(approved, "escape"), "dir");
+    assert.throws(
+      () => prepareBrowserArtifactCall({
+        tool: "browser_take_screenshot",
+        args: {filename: path.join(approved, "escape", "leaked.png")},
+        artifactMode: "written",
+        artifactRoot: approved
+      }),
+      (error) => error.code === "BROWSER_ARTIFACT_PATH_UNSAFE"
+    );
+  } finally {
+    fs.rmSync(root, {recursive: true, force: true});
+  }
+});
+
+test("explicit screenshot output leaves a real target cwd byte- and status-unchanged", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "review-squad-browser-artifact-test-"));
+  const target = path.join(root, "target");
+  const artifactRoot = path.join(root, "artifacts");
+  const status = () => spawnSync("git", ["status", "--short"], {cwd: target, encoding: "utf8"});
+  const targetManifest = () => {
+    const entries = [];
+    const walk = (directory, relative = "") => {
+      for (const entry of fs.readdirSync(directory, {withFileTypes: true}).sort((a, b) => a.name.localeCompare(b.name))) {
+        if (!relative && entry.name === ".git") continue;
+        const childRelative = path.join(relative, entry.name);
+        const child = path.join(directory, entry.name);
+        if (entry.isDirectory()) walk(child, childRelative);
+        else entries.push(`${childRelative}:${crypto.createHash("sha256").update(fs.readFileSync(child)).digest("hex")}`);
+      }
+    };
+    walk(target);
+    return entries;
+  };
+  try {
+    fs.mkdirSync(target);
+    fs.mkdirSync(artifactRoot);
+    fs.writeFileSync(path.join(target, "tracked.txt"), "target bytes\n");
+    assert.equal(spawnSync("git", ["init", "--quiet"], {cwd: target}).status, 0);
+    assert.equal(spawnSync("git", ["add", "tracked.txt"], {cwd: target}).status, 0);
+    const beforeStatus = status();
+    assert.equal(beforeStatus.status, 0, beforeStatus.stderr);
+    const beforeManifest = targetManifest();
+    const screenshotPath = path.join(artifactRoot, "decide-first-load.png");
+    const prepared = prepareBrowserArtifactCall({
+      tool: "browser_take_screenshot",
+      args: {filename: screenshotPath, type: "png"},
+      artifactMode: "written",
+      artifactRoot
+    });
+    const writer = spawnSync(process.execPath, ["-e", "require('node:fs').writeFileSync(process.argv[1], Buffer.from('89504e470d0a1a0a','hex'))", prepared.args.filename], {
+      cwd: target,
+      encoding: "utf8",
+      timeout: 10_000
+    });
+    assert.equal(writer.status, 0, writer.stderr);
+    assert.equal(fs.existsSync(screenshotPath), true);
+    assert.deepEqual(targetManifest(), beforeManifest);
+    const afterStatus = status();
+    assert.equal(afterStatus.status, 0, afterStatus.stderr);
+    assert.equal(afterStatus.stdout, beforeStatus.stdout);
+    assert.equal(fs.existsSync(path.join(target, "decide-first-load.png")), false);
+    assert.equal(fs.existsSync(path.join(target, ".playwright-mcp")), false);
+  } finally {
+    fs.rmSync(root, {recursive: true, force: true});
+  }
+});
+
+test("delegated user-review approval stalls stop before unattended dispatch", () => {
+  const stopped = assessDelegatedBrowserApproval({
+    approvalPolicy: "on-request",
+    approvalsReviewer: "user",
+    approvalRequiredTools: ["browser_click"]
+  });
+  assert.equal(stopped.supported_unattended, false);
+  assert.equal(stopped.action, "stop_before_persona_dispatch");
+  assert.equal(stopped.diagnostic.code, "BROWSER_DELEGATED_APPROVAL_UNATTENDED_UNSUPPORTED");
+  assert.deepEqual(stopped.alternatives, ["new_on_request_auto_review_session", "explicit_snapshot_only_fallback"]);
+  const supported = assessDelegatedBrowserApproval({
+    approvalPolicy: "on-request",
+    approvalsReviewer: "auto_review",
+    approvalRequiredTools: ["browser_click"]
+  });
+  assert.equal(supported.supported_unattended, true);
+  assert.deepEqual(supported.effective, {approval_policy: "on-request", approvals_reviewer: "auto_review", observed: true});
+});
+
+test("browser tool timeout keeps the canonical diagnosis and forbids retry or early close", () => {
+  const pending = browserToolTimeoutDiagnostic({
+    tool: "browser_click",
+    waitedMs: 254_500,
+    lastSuccessfulCall: "browser_snapshot",
+    approvalPolicy: "on-request",
+    approvalsReviewer: "user",
+    mcpBeginObserved: false,
+    callTerminal: false,
+    cleanupStatus: "pending_call_cancellation_requested"
+  });
+  assert.deepEqual(pending, {
+    code: "BROWSER_MCP_TOOL_TIMEOUT",
+    tool: "browser_click",
+    waited_ms: 254_500,
+    last_successful_call: "browser_snapshot",
+    approval_policy: "on-request",
+    approvals_reviewer: "user",
+    mcp_begin: "not_observed",
+    cleanup_status: "pending_call_cancellation_requested",
+    pending_call_terminal: false,
+    retry: "forbidden",
+    browser_close: "forbidden_until_call_terminal"
+  });
+  assert.equal(browserToolTimeoutDiagnostic({tool: "browser_click", waitedMs: 1, callTerminal: true}).browser_close, "allowed_after_terminal_confirmation");
 });
 
 test("guarded browser verifier uses the pin's install CLI and hardens process lifecycle", () => {
@@ -264,6 +444,12 @@ test("browser documentation carries the same pin, state contract, and regulars s
   assert(preflight.includes("browser_run_code_unsafe"));
   assert(preflight.includes("BROWSER_UNSAFE_TOOL_FORBIDDEN"));
   assert(preflight.includes("REVIEW_SQUAD_MCP_OUTPUT_ROOT"));
+  assert(preflight.includes("REVIEW_SQUAD_BROWSER_ARTIFACT_ROOT"));
+  assert(preflight.includes("BROWSER_ARTIFACT_PATH_UNSAFE"));
+  assert(preflight.includes("BROWSER_MCP_TOOL_TIMEOUT"));
+  assert(preflight.includes("approval_policy=on-request"));
+  assert(preflight.includes("approvals_reviewer=auto_review"));
+  assert.match(preflight, /Never pass a relative output `filename`/);
   assert.match(preflight, /missing\s+observability, not evidence of a leak/);
   assert(preflight.includes("context-and-storage isolation"));
   assert.match(preflight, /allowed only in RG-06 or an explicitly\s+authorized isolation\/field-test harness/);

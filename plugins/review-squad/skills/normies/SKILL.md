@@ -20,8 +20,9 @@ project files.
 ## Workflow
 
 1. Get the target URL; ask for it or offer the in-scope local server if absent.
-2. Run browser preflight. If it fails, stop and offer only user-provided
-   screenshots or a browser transcript.
+2. Run browser preflight, including artifact-path and delegated-approval checks.
+   If it fails, stop and offer only user-provided screenshots, a browser
+   transcript, or the explicitly limited snapshot-only fallback.
 3. Start with `DECIDE`, `VERIFY`, and `ADOPT` from `panels.md`; add a profile
    only for concrete audience evidence or uncovered risk.
 4. Apply `dispatch-policy.md`.
@@ -54,11 +55,14 @@ Do not read source or project files. Visit: [URL]
 Viewport: [WIDTHxHEIGHT]
 Isolation: fresh reasoning and isolated session; no inherited cookies, storage,
 cache, permissions, navigation, viewport, or findings.
+Browser artifacts: [inline_only with filename omitted / absolute approved root]
 
-1. Screenshot first load.
+1. Screenshot first load using no filename for inline output or an absolute
+   filename under the supplied approved browser-artifact root.
 2. Within [TIME LIMIT], say what this site is about.
 3. Find [persona-relevant thing], navigating naturally.
-4. Screenshot major moments; note confusion, hesitation, jargon, and give-up.
+4. Screenshot major moments under the same artifact rule; note confusion,
+   hesitation, jargon, and give-up.
 5. Call browser_close. Report whether its tool result succeeded; do not infer a
    PID or process-tree result that the runtime did not expose.
 

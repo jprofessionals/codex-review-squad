@@ -1,0 +1,643 @@
+{
+  "schema_version": "1.0",
+  "phase": "installed_delegated_probe",
+  "verdict": "pass",
+  "classification": "passed",
+  "started_at": "2026-07-27T08:05:23.910Z",
+  "identities": {
+    "marketplace_name": "rs-032-probe-ms2xzc5h-60ed357905",
+    "plugin_name": "review-squad-032-probe-ms2xzc5h-60ed357905",
+    "plugin_id": "review-squad-032-probe-ms2xzc5h-60ed357905@rs-032-probe-ms2xzc5h-60ed357905",
+    "cachebuster": "0.3.2+codex.probe-ms2xzc5h-60ed357905"
+  },
+  "paths": {
+    "artifact_root": "/tmp/review-squad-field-test-0.3.2/probe-ms2xzc5h-60ed357905",
+    "evidence_root": "/tmp/review-squad-field-test-0.3.2/probe-ms2xzc5h-60ed357905/evidence",
+    "screenshot_basename": "delegated-probe.png",
+    "temporary_install_root": "/tmp/review-squad-032-probe-install-ms2xzc5h-60ed357905-OYPUYn",
+    "target_repository": "/home/runar/code/jpro/admin/internal-dev-platform"
+  },
+  "preflight": {
+    "node": "v22.23.1",
+    "target_url": "http://localhost:5893/public/radars/1",
+    "repository_manifest_version": "0.3.2",
+    "repository_manifest_sha256": "993a31577134eecdf7f5f5d303cec303cfce9af28aa64a478bc722a5a00e326d",
+    "target_status_sha256": "6f3b26e4e2b223c8f08c2e3bc973bb3f5a4589cda2e0569e90edcef3d54413d5",
+    "target_manifest_sha256": "832f7513ed10f13f7d72f9aeb851c10763fbbfcb52f23484cc2c56e03022e87a",
+    "target_browser_artifacts_before": [
+      {
+        "path": ".playwright-mcp/console-2026-03-23T15-55-15-816Z.log",
+        "type": "file",
+        "sha256": "e88e7ee89063d143c5ae3d3b09704e8866e4ddb9bdf748afa6d14e7a8a248f88"
+      },
+      {
+        "path": ".playwright-mcp/console-2026-03-23T15-55-30-653Z.log",
+        "type": "file",
+        "sha256": "3482ce041953b228d29822ce4688d6540834b4b6e5355009f05b4379d0a45597"
+      },
+      {
+        "path": ".worktrees/a11y-fixes/frontend/node_modules/@mateothegreat/svelte5-router/logo.png",
+        "type": "file",
+        "sha256": "e82d017f0ec621a48e3fefb5288c35bdee4e90de836aa2a720ed209f602513d7"
+      },
+      {
+        "path": ".worktrees/a11y-fixes/frontend/node_modules/highlight.js/styles/brown-papersq.png",
+        "type": "file",
+        "sha256": "68003b5dbe5c47c0309a193f57aeefad0186559e176a60b76a0636470ece9f5b"
+      },
+      {
+        "path": ".worktrees/a11y-fixes/frontend/node_modules/highlight.js/styles/pojoaque.jpg",
+        "type": "file",
+        "sha256": "499141b14881b3c0e369666fa11cfc38afb7c05d7ced6e1b25fb0c61b5f386ed"
+      },
+      {
+        "path": "frontend/node_modules/@mateothegreat/svelte5-router/logo.png",
+        "type": "file",
+        "sha256": "e82d017f0ec621a48e3fefb5288c35bdee4e90de836aa2a720ed209f602513d7"
+      },
+      {
+        "path": "frontend/node_modules/highlight.js/styles/brown-papersq.png",
+        "type": "file",
+        "sha256": "68003b5dbe5c47c0309a193f57aeefad0186559e176a60b76a0636470ece9f5b"
+      },
+      {
+        "path": "frontend/node_modules/highlight.js/styles/pojoaque.jpg",
+        "type": "file",
+        "sha256": "499141b14881b3c0e369666fa11cfc38afb7c05d7ced6e1b25fb0c61b5f386ed"
+      },
+      {
+        "path": "tools/browser-mcp/node_modules/playwright-core/lib/server/chromium/appIcon.png",
+        "type": "file",
+        "sha256": "6ba994f05c5cf18e22d9b6bef9898fbdec6ad4d4d77f5187d0609cb42d72d01e"
+      },
+      {
+        "path": "tools/browser-mcp/node_modules/zod-to-json-schema/.github/CR_logotype-full-color.png",
+        "type": "file",
+        "sha256": "fbff840670352c4c480ff6b686bca9c33e3946752aee15b9c3495550f7d6d965"
+      }
+    ],
+    "approval_policy": "on-request",
+    "approvals_reviewer": "auto_review",
+    "approval_config_validation": "passed"
+  },
+  "installation": {
+    "status": "verified",
+    "receipt_installed_path": "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905",
+    "installed_real_path": "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905",
+    "marketplace_source_real_path": "/tmp/review-squad-032-probe-install-ms2xzc5h-60ed357905-OYPUYn/marketplace/plugins/review-squad-032-probe-ms2xzc5h-60ed357905",
+    "paths_differ": true,
+    "manifest_path": "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905/.codex-plugin/plugin.json",
+    "manifest": {
+      "name": "review-squad-032-probe-ms2xzc5h-60ed357905",
+      "version": "0.3.2+codex.probe-ms2xzc5h-60ed357905",
+      "description": "Multi-perspective Codex review panels for project audits, first impressions, task flows, and polish passes.",
+      "author": {
+        "name": "JProfessionals",
+        "url": "https://github.com/jprofessionals/codex-review-squad"
+      },
+      "homepage": "https://github.com/jprofessionals/codex-review-squad",
+      "repository": "https://github.com/jprofessionals/codex-review-squad",
+      "license": "MIT",
+      "keywords": [
+        "review",
+        "audit",
+        "subagents",
+        "playwright",
+        "persona"
+      ],
+      "skills": "./skills/",
+      "mcpServers": "./.mcp.json",
+      "interface": {
+        "displayName": "Review Squad",
+        "shortDescription": "Dispatch focused review panels from multiple perspectives.",
+        "longDescription": "A standalone Codex adaptation of 2389 Research's MIT-licensed Review Squad plugin. Original: https://github.com/2389-research/review-squad. This port provides expert audits, first-impression visitors, task-flow reviewers, and pedantic polish passes using Codex skills, subagents, and Playwright MCP when available.",
+        "developerName": "JProfessionals, based on 2389 Research",
+        "category": "Productivity",
+        "capabilities": [
+          "Interactive",
+          "Read",
+          "Browser"
+        ],
+        "websiteURL": "https://github.com/jprofessionals/codex-review-squad",
+        "defaultPrompt": [
+          "Run review-squad:experts before launch.",
+          "Use review-squad:normies on my homepage.",
+          "Run review-squad:regulars on key flows.",
+          "Use review-squad:well-actually for a polish pass."
+        ],
+        "brandColor": "#2563EB"
+      }
+    },
+    "skill_metadata": {
+      "review-squad": {
+        "name": "review-squad",
+        "description": "Route Review Squad requests to experts, normies, regulars, or well-actually based on the user's review goal.",
+        "skill_key": "review-squad-032-probe-ms2xzc5h-60ed357905:review-squad",
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905/skills/review-squad/SKILL.md"
+      },
+      "experts": {
+        "name": "experts",
+        "description": "Run a production-ready multi-perspective project audit with Codex subagents, multi-label project detection, risk-adaptive lane dispatch, and a canonical evidence-backed report.",
+        "skill_key": "review-squad-032-probe-ms2xzc5h-60ed357905:experts",
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905/skills/experts/SKILL.md"
+      },
+      "normies": {
+        "name": "normies",
+        "description": "Run sequential browser-based first-impression reviews by personas with different levels of technical sophistication.",
+        "skill_key": "review-squad-032-probe-ms2xzc5h-60ed357905:normies",
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905/skills/normies/SKILL.md"
+      },
+      "regulars": {
+        "name": "regulars",
+        "description": "Run sequential browser-based task-completion reviews by realistic users trying key flows.",
+        "skill_key": "review-squad-032-probe-ms2xzc5h-60ed357905:regulars",
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905/skills/regulars/SKILL.md"
+      },
+      "well-actually": {
+        "name": "well-actually",
+        "description": "Run sequential nitpick and polish reviews by opinionated personas, with browser checks when available and source access only where allowed.",
+        "skill_key": "review-squad-032-probe-ms2xzc5h-60ed357905:well-actually",
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905/skills/well-actually/SKILL.md"
+      }
+    },
+    "runtime_path": "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905/scripts/runtime/review-runtime.mjs",
+    "fixture_path": "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905/tests/fixtures/reports/v2/regulars-clean.json",
+    "compared_files": {
+      ".codex-plugin/plugin.json": {
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905/.codex-plugin/plugin.json",
+        "installed_sha256": "24edb144c06ce8280135cacd65717de354614c240cf2477ec2b23bf445faaf22",
+        "source_path": "/tmp/review-squad-032-probe-install-ms2xzc5h-60ed357905-OYPUYn/marketplace/plugins/review-squad-032-probe-ms2xzc5h-60ed357905/.codex-plugin/plugin.json",
+        "source_sha256": "24edb144c06ce8280135cacd65717de354614c240cf2477ec2b23bf445faaf22"
+      },
+      "skills/review-squad/SKILL.md": {
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905/skills/review-squad/SKILL.md",
+        "installed_sha256": "ec434821f13bbbfe6216c7ba733ff4e753818dadfe5c33ad6879361dfdb83862",
+        "source_path": "/tmp/review-squad-032-probe-install-ms2xzc5h-60ed357905-OYPUYn/marketplace/plugins/review-squad-032-probe-ms2xzc5h-60ed357905/skills/review-squad/SKILL.md",
+        "source_sha256": "ec434821f13bbbfe6216c7ba733ff4e753818dadfe5c33ad6879361dfdb83862"
+      },
+      "skills/experts/SKILL.md": {
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905/skills/experts/SKILL.md",
+        "installed_sha256": "da922f9b159f21ec85fbc02d2ff1dd8573281ffe4d27fd320fa289a7db6a8175",
+        "source_path": "/tmp/review-squad-032-probe-install-ms2xzc5h-60ed357905-OYPUYn/marketplace/plugins/review-squad-032-probe-ms2xzc5h-60ed357905/skills/experts/SKILL.md",
+        "source_sha256": "da922f9b159f21ec85fbc02d2ff1dd8573281ffe4d27fd320fa289a7db6a8175"
+      },
+      "skills/normies/SKILL.md": {
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905/skills/normies/SKILL.md",
+        "installed_sha256": "61be9e03442b5aa9c75dccf3a0803667d58f62aab6fb709a8b9d20cab4d0c1c9",
+        "source_path": "/tmp/review-squad-032-probe-install-ms2xzc5h-60ed357905-OYPUYn/marketplace/plugins/review-squad-032-probe-ms2xzc5h-60ed357905/skills/normies/SKILL.md",
+        "source_sha256": "61be9e03442b5aa9c75dccf3a0803667d58f62aab6fb709a8b9d20cab4d0c1c9"
+      },
+      "skills/regulars/SKILL.md": {
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905/skills/regulars/SKILL.md",
+        "installed_sha256": "1ad440ea6205b4df69b6eea9db3c84cf3b07ed6da646242fc7783c9867f80595",
+        "source_path": "/tmp/review-squad-032-probe-install-ms2xzc5h-60ed357905-OYPUYn/marketplace/plugins/review-squad-032-probe-ms2xzc5h-60ed357905/skills/regulars/SKILL.md",
+        "source_sha256": "1ad440ea6205b4df69b6eea9db3c84cf3b07ed6da646242fc7783c9867f80595"
+      },
+      "skills/well-actually/SKILL.md": {
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905/skills/well-actually/SKILL.md",
+        "installed_sha256": "e79047b31d0d1612404e0b89c322f8046a3b2fb2e0c8e231a9ce6b91cc0b39fb",
+        "source_path": "/tmp/review-squad-032-probe-install-ms2xzc5h-60ed357905-OYPUYn/marketplace/plugins/review-squad-032-probe-ms2xzc5h-60ed357905/skills/well-actually/SKILL.md",
+        "source_sha256": "e79047b31d0d1612404e0b89c322f8046a3b2fb2e0c8e231a9ce6b91cc0b39fb"
+      },
+      "scripts/runtime/review-runtime.mjs": {
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905/scripts/runtime/review-runtime.mjs",
+        "installed_sha256": "63ed3e2149d20a3c86773aeb6ecc22606abccf1707443823ed147946f055c1b9",
+        "source_path": "/tmp/review-squad-032-probe-install-ms2xzc5h-60ed357905-OYPUYn/marketplace/plugins/review-squad-032-probe-ms2xzc5h-60ed357905/scripts/runtime/review-runtime.mjs",
+        "source_sha256": "63ed3e2149d20a3c86773aeb6ecc22606abccf1707443823ed147946f055c1b9"
+      },
+      "tests/fixtures/reports/v2/regulars-clean.json": {
+        "installed_path": "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905/tests/fixtures/reports/v2/regulars-clean.json",
+        "installed_sha256": "3e6777d4984a22a508bc1a85816c9d496264cc5de5dc4ba5064398ce682f6873",
+        "source_path": "/tmp/review-squad-032-probe-install-ms2xzc5h-60ed357905-OYPUYn/marketplace/plugins/review-squad-032-probe-ms2xzc5h-60ed357905/tests/fixtures/reports/v2/regulars-clean.json",
+        "source_sha256": "3e6777d4984a22a508bc1a85816c9d496264cc5de5dc4ba5064398ce682f6873"
+      }
+    },
+    "runtime_fixture_validation": {
+      "status": "passed",
+      "stdout": "Report valid: schema 2.0 (/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905/tests/fixtures/reports/v2/regulars-clean.json)\n"
+    }
+  },
+  "machine_skill_locators": [
+    "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905/skills/review-squad/SKILL.md",
+    "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905/skills/experts/SKILL.md",
+    "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905/skills/normies/SKILL.md",
+    "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905/skills/regulars/SKILL.md",
+    "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905/skills/well-actually/SKILL.md"
+  ],
+  "session": {
+    "argv": [
+      "codex",
+      "exec",
+      "--ephemeral",
+      "--json",
+      "--ignore-rules",
+      "--skip-git-repo-check",
+      "--profile",
+      "rs-032-probe-ms2xzc5h-60ed357905",
+      "-m",
+      "gpt-5.6-sol",
+      "-c",
+      "model_reasoning_effort=\"high\"",
+      "-c",
+      "approval_policy=\"on-request\"",
+      "-c",
+      "approvals_reviewer=\"auto_review\"",
+      "-c",
+      "plugins.\"review-squad@codex-review-squad\".enabled=false",
+      "-c",
+      "plugins.\"review-squad@codex-review-squad\".mcp_servers.playwright.enabled=false",
+      "-c",
+      "plugins.\"review-squad-032-probe-ms2xzc5h-60ed357905@rs-032-probe-ms2xzc5h-60ed357905\".enabled=true",
+      "-c",
+      "plugins.\"review-squad-032-probe-ms2xzc5h-60ed357905@rs-032-probe-ms2xzc5h-60ed357905\".mcp_servers.playwright.enabled=true",
+      "-s",
+      "workspace-write",
+      "-C",
+      "/home/runar/code/jpro/admin/internal-dev-platform",
+      "--add-dir",
+      "/tmp/review-squad-field-test-0.3.2/probe-ms2xzc5h-60ed357905",
+      "--output-schema",
+      "/tmp/review-squad-field-test-0.3.2/probe-ms2xzc5h-60ed357905/evidence/session-output.schema.json",
+      "-o",
+      "/tmp/review-squad-field-test-0.3.2/probe-ms2xzc5h-60ed357905/evidence/session-final.json",
+      "$review-squad-032-probe-ms2xzc5h-60ed357905:normies Kjør bare en minimal installert v0.3.2 browser-probe. Ikke start normies-panelet eller andre Review Squad-modi.\n\nBruk systemets Available Skills-inventory til å bekrefte kandidatnamespace review-squad-032-probe-ms2xzc5h-60ed357905: nøyaktig fem Review Squad-skills og ingen ambient review-squad@codex-review-squad. Rapporter keys og lokatorer, men ikke bruk modellrapporterte paths som filesystem-autoritet.\n\nDispatch nøyaktig én fersk delegert persona med gpt-5.6-sol/high. Personaen får bare denne sekvensen, URL, output-path og sikkerhetsregler; ingen kildekode, repository-filer eller tidligere funn. Effektiv policy er approval_policy=on-request og approvals_reviewer=auto_review og skal observeres/rapporteres før browserhandling.\n\nSekvens: (1) browser_get_config og krev isolated=true, serviceWorkers=block, ingen persistent user-data-dir/storage-state input; (2) les den absolutte outputDir/REVIEW_SQUAD_MCP_OUTPUT_ROOT fra config; den skal ligge under /tmp/review-squad-field-test-0.3.2/probe-ms2xzc5h-60ed357905; (3) naviger til http://localhost:5893/public/radars/1; (4) browser_take_screenshot med eksakt absolutt filename <rapportert-MCP-output-root>/delegated-probe.png; aldri relativ filename eller den bredere artifact-basen direkte; (5) bekreft screenshot-resultat; (6) browser_snapshot uten filename; (7) utfør én åpenbart read-only browser_click som åpner synlig radardetalj uten skjema, vote, dismiss, oppretting, redigering eller ekstern navigasjon; (8) inspiser observert nettverk read-only og stopp dersom POST/PUT/PATCH/DELETE er observert; (9) browser_close og krev vellykket tool-resultat.\n\nKallene er bounded. Ikke retry et uavklart action-kall. Ved timeout: BROWSER_MCP_TOOL_TIMEOUT med tool, ventetid, siste vellykkede kall, approval/reviewer, MCP-begin og cleanup; ikke kall browser_close før det hengende kallet er terminalt/kansellert. browser_run_code_unsafe og alle storage mutation/state-file tools er forbudt. Ingen credentials, devAdmin, impersonering, server-, database- eller målrepo-mutasjon. REVIEW_SQUAD_MCP_OUTPUT_ROOT må rapporteres og ligge utenfor /home/runar/code/jpro/admin/internal-dev-platform.\n\nReturner bare output-schemaet. status=passed krever full sekvens, null cancellations/timeouts, eksakt screenshot-path, inline snapshot, read-only click, null mutating requests og vellykket close."
+    ],
+    "approval_policy": "on-request",
+    "approvals_reviewer": "auto_review",
+    "profile_sha256": "d6deac7b7acdc522775614aaf27ba0969d5911d0340f5aa104d6d043560a489a",
+    "started_at": "2026-07-27T08:05:25.475Z",
+    "process_exit": {
+      "pid": 4165453,
+      "pgid": 4165453,
+      "code": 0
+    },
+    "completed_at": "2026-07-27T08:07:43.404Z",
+    "jsonl_sha256": "14009f2545c2774c46bb17c295184f9d3941136194649924b16358c6b29455a2",
+    "stderr_sha256": "b972e2b3df61b74e21709597d508348ec49344d4921f43b22863f3ba9ae77e57",
+    "turn_completed": 1,
+    "usage": {
+      "input_tokens": 241650,
+      "cached_input_tokens": 208896,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 2730,
+      "reasoning_output_tokens": 1051
+    },
+    "final": {
+      "status": "passed",
+      "plugin_namespace": "review-squad-032-probe-ms2xzc5h-60ed357905",
+      "loaded_review_squad_skills": [
+        {
+          "skill_key": "review-squad-032-probe-ms2xzc5h-60ed357905:experts",
+          "source_locator": "r3/experts/SKILL.md"
+        },
+        {
+          "skill_key": "review-squad-032-probe-ms2xzc5h-60ed357905:normies",
+          "source_locator": "r3/normies/SKILL.md"
+        },
+        {
+          "skill_key": "review-squad-032-probe-ms2xzc5h-60ed357905:regulars",
+          "source_locator": "r3/regulars/SKILL.md"
+        },
+        {
+          "skill_key": "review-squad-032-probe-ms2xzc5h-60ed357905:review-squad",
+          "source_locator": "r3/review-squad/SKILL.md"
+        },
+        {
+          "skill_key": "review-squad-032-probe-ms2xzc5h-60ed357905:well-actually",
+          "source_locator": "r3/well-actually/SKILL.md"
+        }
+      ],
+      "ambient_review_squad_skills": [],
+      "approval": {
+        "approval_policy": "on-request",
+        "approvals_reviewer": "auto_review",
+        "delegate_observed": true,
+        "cancellations": 0,
+        "timeouts": 0
+      },
+      "probe": {
+        "delegation_identity": "/root/delegated_browser_probe",
+        "config_valid": true,
+        "config_evidence": "browser_get_config reported isolated=true and serviceWorkers=block, with no persistent user-data-dir or storage-state input.",
+        "mcp_output_root": "/tmp/review-squad-field-test-0.3.2/probe-ms2xzc5h-60ed357905/review-squad-playwright-PEl0YY",
+        "navigate_succeeded": true,
+        "screenshot_filename": "/tmp/review-squad-field-test-0.3.2/probe-ms2xzc5h-60ed357905/review-squad-playwright-PEl0YY/delegated-probe.png",
+        "screenshot_succeeded": true,
+        "snapshot_filename_omitted": true,
+        "snapshot_succeeded": true,
+        "click_description": "Exactly one click on the visible “ADR discipline” radar entry opened its detail.",
+        "click_read_only": true,
+        "click_succeeded": true,
+        "mutating_requests_observed": false,
+        "browser_close_succeeded": true,
+        "browser_close_result": "succeeded",
+        "unsafe_tools_used": [],
+        "failure": null
+      },
+      "diagnostics": [
+        "Available Skills inventory contained exactly five skills in the candidate namespace.",
+        "No ambient review-squad@codex-review-squad skill was present.",
+        "Observed network requests used GET only; no POST, PUT, PATCH, or DELETE was observed.",
+        "Completed: 2026-07-27 10:07 CEST"
+      ]
+    },
+    "final_sha256": "19fc8e23ab7257e8dc21a4508e8ff1007be3dd7c591c5df4066d47770d93a943",
+    "mcp_output_roots": [
+      "/tmp/review-squad-field-test-0.3.2/probe-ms2xzc5h-60ed357905/review-squad-playwright-PEl0YY"
+    ]
+  },
+  "target_post_state": {
+    "status_base64": "IE0gLmlkZWEvanVuaWUueG1sACBNIC5pZGVhL21pc2MueG1sAEQgIC5pZGVhL21vZHVsZXMueG1sACBNIC5zZXJlbmEvcHJvamVjdC55bWwAPz8gLmNvZGV4AD8/IGJhY2tlbmQvc3JjL21haW4vcmVzb3VyY2VzL2RiL21pZ3JhdGlvbi9WMjAyNjAzMjZfMV9fYWRkX3RpbWVzdGFtcF9kZWZhdWx0c19iYWRnZV9ib251c19wYXlvdXQuc3FsAD8/IGJhY2tsb2cvdGFza3MvaWRwLTAxMiAtIENvZGlmeS1wcm9kLWluZnJhLWFzLWNvZGUtdG8tbWF0Y2gtdGhlLXJlYWwtcG9kbWFuLVBvc3RncmVTUUwtZGVwbG95bWVudC5tZAA/PyBkb2NzL3BsYW5zLzIwMjYtMDctMTctY2VydGlmaWNhdGlvbi1pbXBvcnRlci1wYXJpdHktYW5kLXNjLWFzc2Vzc21lbnQubWQA",
+    "status_sha256": "6f3b26e4e2b223c8f08c2e3bc973bb3f5a4589cda2e0569e90edcef3d54413d5",
+    "manifest_sha256": "832f7513ed10f13f7d72f9aeb851c10763fbbfcb52f23484cc2c56e03022e87a",
+    "browser_artifacts_after": [
+      {
+        "path": ".playwright-mcp/console-2026-03-23T15-55-15-816Z.log",
+        "type": "file",
+        "sha256": "e88e7ee89063d143c5ae3d3b09704e8866e4ddb9bdf748afa6d14e7a8a248f88"
+      },
+      {
+        "path": ".playwright-mcp/console-2026-03-23T15-55-30-653Z.log",
+        "type": "file",
+        "sha256": "3482ce041953b228d29822ce4688d6540834b4b6e5355009f05b4379d0a45597"
+      },
+      {
+        "path": ".worktrees/a11y-fixes/frontend/node_modules/@mateothegreat/svelte5-router/logo.png",
+        "type": "file",
+        "sha256": "e82d017f0ec621a48e3fefb5288c35bdee4e90de836aa2a720ed209f602513d7"
+      },
+      {
+        "path": ".worktrees/a11y-fixes/frontend/node_modules/highlight.js/styles/brown-papersq.png",
+        "type": "file",
+        "sha256": "68003b5dbe5c47c0309a193f57aeefad0186559e176a60b76a0636470ece9f5b"
+      },
+      {
+        "path": ".worktrees/a11y-fixes/frontend/node_modules/highlight.js/styles/pojoaque.jpg",
+        "type": "file",
+        "sha256": "499141b14881b3c0e369666fa11cfc38afb7c05d7ced6e1b25fb0c61b5f386ed"
+      },
+      {
+        "path": "frontend/node_modules/@mateothegreat/svelte5-router/logo.png",
+        "type": "file",
+        "sha256": "e82d017f0ec621a48e3fefb5288c35bdee4e90de836aa2a720ed209f602513d7"
+      },
+      {
+        "path": "frontend/node_modules/highlight.js/styles/brown-papersq.png",
+        "type": "file",
+        "sha256": "68003b5dbe5c47c0309a193f57aeefad0186559e176a60b76a0636470ece9f5b"
+      },
+      {
+        "path": "frontend/node_modules/highlight.js/styles/pojoaque.jpg",
+        "type": "file",
+        "sha256": "499141b14881b3c0e369666fa11cfc38afb7c05d7ced6e1b25fb0c61b5f386ed"
+      },
+      {
+        "path": "tools/browser-mcp/node_modules/playwright-core/lib/server/chromium/appIcon.png",
+        "type": "file",
+        "sha256": "6ba994f05c5cf18e22d9b6bef9898fbdec6ad4d4d77f5187d0609cb42d72d01e"
+      },
+      {
+        "path": "tools/browser-mcp/node_modules/zod-to-json-schema/.github/CR_logotype-full-color.png",
+        "type": "file",
+        "sha256": "fbff840670352c4c480ff6b686bca9c33e3946752aee15b9c3495550f7d6d965"
+      }
+    ],
+    "status_identical": true,
+    "manifest_identical": true,
+    "browser_artifacts_identical": true
+  },
+  "cleanup": {
+    "attempts": [
+      {
+        "step": "profile_remove",
+        "status": "passed",
+        "path": "/home/runar/.codex/rs-032-probe-ms2xzc5h-60ed357905.config.toml"
+      },
+      {
+        "step": "plugin_remove",
+        "status": "passed",
+        "command": [
+          "codex",
+          "plugin",
+          "remove",
+          "review-squad-032-probe-ms2xzc5h-60ed357905@rs-032-probe-ms2xzc5h-60ed357905",
+          "--json"
+        ],
+        "code": 0,
+        "stderr": ""
+      },
+      {
+        "step": "marketplace_remove",
+        "status": "passed",
+        "command": [
+          "codex",
+          "plugin",
+          "marketplace",
+          "remove",
+          "rs-032-probe-ms2xzc5h-60ed357905",
+          "--json"
+        ],
+        "code": 0,
+        "stderr": ""
+      },
+      {
+        "step": "scratch_remove",
+        "status": "passed",
+        "path": "/tmp/review-squad-032-probe-install-ms2xzc5h-60ed357905-OYPUYn"
+      }
+    ],
+    "post_state": {
+      "temporary_plugin_absent": true,
+      "temporary_marketplace_absent": true,
+      "stable_0_3_1_unchanged": true,
+      "repository_manifest_unchanged": true,
+      "repository_manifest_version": "0.3.2",
+      "profile_absent": true,
+      "target_status_unchanged": true,
+      "target_manifest_unchanged": true
+    },
+    "nonempty_mcp_roots_retained": [
+      "/tmp/review-squad-field-test-0.3.2/probe-ms2xzc5h-60ed357905/review-squad-playwright-PEl0YY"
+    ]
+  },
+  "commands": [
+    {
+      "label": "approval_policy_preflight",
+      "command": [
+        "codex",
+        "--strict-config",
+        "-c",
+        "approval_policy=\"on-request\"",
+        "-c",
+        "approvals_reviewer=\"auto_review\"",
+        "exec",
+        "--ignore-user-config",
+        "--help"
+      ],
+      "code": 0,
+      "stderr": ""
+    },
+    {
+      "label": "target_preflight",
+      "command": [
+        "curl",
+        "--noproxy",
+        "*",
+        "-6",
+        "-sS",
+        "-o",
+        "/dev/null",
+        "-w",
+        "%{http_code}",
+        "--max-time",
+        "5",
+        "http://[::1]:5893/public/radars/1"
+      ],
+      "code": 0,
+      "stderr": ""
+    },
+    {
+      "label": "pre_plugin_list",
+      "command": [
+        "codex",
+        "plugin",
+        "list",
+        "--json"
+      ],
+      "code": 0,
+      "stderr": ""
+    },
+    {
+      "label": "pre_marketplace_list",
+      "command": [
+        "codex",
+        "plugin",
+        "marketplace",
+        "list",
+        "--json"
+      ],
+      "code": 0,
+      "stderr": ""
+    },
+    {
+      "label": "pre_mcp_list",
+      "command": [
+        "codex",
+        "mcp",
+        "list",
+        "--json"
+      ],
+      "code": 0,
+      "stderr": ""
+    },
+    {
+      "label": "cachebuster_helper",
+      "command": [
+        "python3",
+        "/home/runar/.codex/skills/.system/plugin-creator/scripts/update_plugin_cachebuster.py",
+        "/tmp/review-squad-032-probe-install-ms2xzc5h-60ed357905-OYPUYn/marketplace/plugins/review-squad-032-probe-ms2xzc5h-60ed357905",
+        "--cachebuster",
+        "probe-ms2xzc5h-60ed357905"
+      ],
+      "code": 0,
+      "stderr": ""
+    },
+    {
+      "label": "marketplace_add",
+      "command": [
+        "codex",
+        "plugin",
+        "marketplace",
+        "add",
+        "/tmp/review-squad-032-probe-install-ms2xzc5h-60ed357905-OYPUYn/marketplace",
+        "--json"
+      ],
+      "code": 0,
+      "stderr": ""
+    },
+    {
+      "label": "plugin_add",
+      "command": [
+        "codex",
+        "plugin",
+        "add",
+        "review-squad-032-probe-ms2xzc5h-60ed357905@rs-032-probe-ms2xzc5h-60ed357905",
+        "--json"
+      ],
+      "code": 0,
+      "stderr": ""
+    },
+    {
+      "label": "candidate_plugin_list",
+      "command": [
+        "codex",
+        "plugin",
+        "list",
+        "--marketplace",
+        "rs-032-probe-ms2xzc5h-60ed357905",
+        "--json"
+      ],
+      "code": 0,
+      "stderr": ""
+    },
+    {
+      "label": "installed_runtime_fixture_validation",
+      "command": [
+        "/nix/store/9vrhqlr0hmzsksxmm3534dwg5ma9w552-nodejs-slim-22.23.1/bin/node",
+        "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905/scripts/runtime/review-runtime.mjs",
+        "validate",
+        "/home/runar/.codex/plugins/cache/rs-032-probe-ms2xzc5h-60ed357905/review-squad-032-probe-ms2xzc5h-60ed357905/0.3.2+codex.probe-ms2xzc5h-60ed357905/tests/fixtures/reports/v2/regulars-clean.json"
+      ],
+      "code": 0,
+      "stderr": ""
+    },
+    {
+      "label": "delegated_probe",
+      "command": [
+        "codex",
+        "exec",
+        "--ephemeral",
+        "--json",
+        "--ignore-rules",
+        "--skip-git-repo-check",
+        "--profile",
+        "rs-032-probe-ms2xzc5h-60ed357905",
+        "-m",
+        "gpt-5.6-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "-c",
+        "approval_policy=\"on-request\"",
+        "-c",
+        "approvals_reviewer=\"auto_review\"",
+        "-c",
+        "plugins.\"review-squad@codex-review-squad\".enabled=false",
+        "-c",
+        "plugins.\"review-squad@codex-review-squad\".mcp_servers.playwright.enabled=false",
+        "-c",
+        "plugins.\"review-squad-032-probe-ms2xzc5h-60ed357905@rs-032-probe-ms2xzc5h-60ed357905\".enabled=true",
+        "-c",
+        "plugins.\"review-squad-032-probe-ms2xzc5h-60ed357905@rs-032-probe-ms2xzc5h-60ed357905\".mcp_servers.playwright.enabled=true",
+        "-s",
+        "workspace-write",
+        "-C",
+        "/home/runar/code/jpro/admin/internal-dev-platform",
+        "--add-dir",
+        "/tmp/review-squad-field-test-0.3.2/probe-ms2xzc5h-60ed357905",
+        "--output-schema",
+        "/tmp/review-squad-field-test-0.3.2/probe-ms2xzc5h-60ed357905/evidence/session-output.schema.json",
+        "-o",
+        "/tmp/review-squad-field-test-0.3.2/probe-ms2xzc5h-60ed357905/evidence/session-final.json",
+        "$review-squad-032-probe-ms2xzc5h-60ed357905:normies Kjør bare en minimal installert v0.3.2 browser-probe. Ikke start normies-panelet eller andre Review Squad-modi.\n\nBruk systemets Available Skills-inventory til å bekrefte kandidatnamespace review-squad-032-probe-ms2xzc5h-60ed357905: nøyaktig fem Review Squad-skills og ingen ambient review-squad@codex-review-squad. Rapporter keys og lokatorer, men ikke bruk modellrapporterte paths som filesystem-autoritet.\n\nDispatch nøyaktig én fersk delegert persona med gpt-5.6-sol/high. Personaen får bare denne sekvensen, URL, output-path og sikkerhetsregler; ingen kildekode, repository-filer eller tidligere funn. Effektiv policy er approval_policy=on-request og approvals_reviewer=auto_review og skal observeres/rapporteres før browserhandling.\n\nSekvens: (1) browser_get_config og krev isolated=true, serviceWorkers=block, ingen persistent user-data-dir/storage-state input; (2) les den absolutte outputDir/REVIEW_SQUAD_MCP_OUTPUT_ROOT fra config; den skal ligge under /tmp/review-squad-field-test-0.3.2/probe-ms2xzc5h-60ed357905; (3) naviger til http://localhost:5893/public/radars/1; (4) browser_take_screenshot med eksakt absolutt filename <rapportert-MCP-output-root>/delegated-probe.png; aldri relativ filename eller den bredere artifact-basen direkte; (5) bekreft screenshot-resultat; (6) browser_snapshot uten filename; (7) utfør én åpenbart read-only browser_click som åpner synlig radardetalj uten skjema, vote, dismiss, oppretting, redigering eller ekstern navigasjon; (8) inspiser observert nettverk read-only og stopp dersom POST/PUT/PATCH/DELETE er observert; (9) browser_close og krev vellykket tool-resultat.\n\nKallene er bounded. Ikke retry et uavklart action-kall. Ved timeout: BROWSER_MCP_TOOL_TIMEOUT med tool, ventetid, siste vellykkede kall, approval/reviewer, MCP-begin og cleanup; ikke kall browser_close før det hengende kallet er terminalt/kansellert. browser_run_code_unsafe og alle storage mutation/state-file tools er forbudt. Ingen credentials, devAdmin, impersonering, server-, database- eller målrepo-mutasjon. REVIEW_SQUAD_MCP_OUTPUT_ROOT må rapporteres og ligge utenfor /home/runar/code/jpro/admin/internal-dev-platform.\n\nReturner bare output-schemaet. status=passed krever full sekvens, null cancellations/timeouts, eksakt screenshot-path, inline snapshot, read-only click, null mutating requests og vellykket close."
+      ],
+      "code": 0,
+      "stderr": "Reading additional input from stdin...\n2026-07-27T08:06:07.796535Z ERROR codex_core::tools::router: error=timeout_ms must be at least 10000\n"
+    }
+  ],
+  "screenshot": {
+    "path": "/tmp/review-squad-field-test-0.3.2/probe-ms2xzc5h-60ed357905/review-squad-playwright-PEl0YY/delegated-probe.png",
+    "sha256": "3320bbe521def6ceedb2248c8735b497dbfe7f8c38406b0f2806c20ec0be0ed3",
+    "size": 297194
+  },
+  "completed_at": "2026-07-27T08:07:44.321Z"
+}

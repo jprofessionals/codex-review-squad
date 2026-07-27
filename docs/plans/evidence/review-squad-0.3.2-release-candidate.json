@@ -1,0 +1,92 @@
+{
+  "schema_version": "1.0",
+  "release": "0.3.2",
+  "completed_at": "2026-07-27T11:32:52+02:00",
+  "release_candidate_ready": "conditional",
+  "release_basis": "The installed minimum browser probe is the release basis for the 0.3.2 browser approval and artifact-confinement correction.",
+  "candidate_executions_started": 3,
+  "probe": {
+    "verdict": "pass",
+    "classification": "passed",
+    "canonical_evidence": "docs/plans/evidence/review-squad-0.3.2-browser-probe.json",
+    "canonical_evidence_sha256": "2dde1b4a90a23e0df2ec25b7e0f6ba7df0deb4e761767ac95ad7b2833f100236",
+    "raw_session_jsonl_sha256": "14009f2545c2774c46bb17c295184f9d3941136194649924b16358c6b29455a2",
+    "raw_session_final_sha256": "19fc8e23ab7257e8dc21a4508e8ff1007be3dd7c591c5df4066d47770d93a943",
+    "screenshot_sha256": "3320bbe521def6ceedb2248c8735b497dbfe7f8c38406b0f2806c20ec0be0ed3",
+    "approval_policy": "on-request",
+    "approvals_reviewer": "auto_review",
+    "installed_provenance": "codex plugin add --json installedPath cross-checked against the unique 0.3.2 cachebuster manifest, five installed skills, bundled runtime, and fixture",
+    "target_status_identical": true,
+    "target_manifest_identical": true,
+    "target_browser_artifacts_identical": true,
+    "mutating_http_methods_observed": false,
+    "browser_close_succeeded": true,
+    "cleanup_passed": true
+  },
+  "preceding_probe_attempts": [
+    {
+      "verdict": "failed",
+      "classification": "candidate_plugin_defect",
+      "result_sha256": "8a7935bbc4241945325aabb722cdd759d1d504fd08bfc1daf2ffc5466a5774ea",
+      "finding": "The approved artifact base was not used by the installed MCP launcher, so the pinned MCP rejected the explicit screenshot path. No target mutation occurred and cleanup passed."
+    },
+    {
+      "verdict": "failed",
+      "classification": "candidate_plugin_defect",
+      "result_sha256": "997361265457b0f2eb2a5fa09a0636930139b874e7d2ee1d8bc2964b8c81c971",
+      "finding": "The parent environment variable was not forwarded to the plugin MCP. Adding the documented MCP env_vars allow-forward contract resolved the defect. No target mutation occurred and cleanup passed."
+    }
+  ],
+  "full_normies_smoke": {
+    "status": "not_verified",
+    "classification": "codex_or_environment_failure",
+    "guarded_execution_started": false,
+    "model_calls_started": 0,
+    "browser_sessions_started": 0,
+    "start_attempts": 2,
+    "diagnostic": "The outer managed approval review timed out before CreateProcess on both the initial start and the one permitted approval-timeout retry.",
+    "accepted_post_release_field_test_risk": true,
+    "candidate_defect_observed": false,
+    "target_mutation_observed": false,
+    "cleanup_required": false
+  },
+  "accepted_post_release_field_test_risks": [
+    {
+      "id": "full_normies_smoke",
+      "status": "not_verified",
+      "reason": "The outer managed approval service timed out before CreateProcess, so no full-smoke model, browser, or plugin process started.",
+      "candidate_defect_observed": false,
+      "target_mutation_observed": false,
+      "follow_up": "Run the full DECIDE to VERIFY to ADOPT smoke as post-release field testing."
+    },
+    {
+      "id": "operator_selected_artifact_root_symlink",
+      "status": "not_verified",
+      "scope": "An explicitly operator-selected REVIEW_SQUAD_BROWSER_ARTIFACT_ROOT that is itself a symlink into the target repository is not separately realpath-verified by the MCP launcher.",
+      "verified_boundary": "Normal absolute /tmp roots and explicit browser output paths were verified.",
+      "release_blocking": false,
+      "follow_up": "Retain as a narrow 0.3.x field-test risk; do not change the 0.3.2 implementation."
+    }
+  ],
+  "assurance_boundary": {
+    "verified": [
+      "installed 0.3.2 candidate provenance and five skill files",
+      "delegated on-request plus auto_review browser probe",
+      "isolated browser configuration and blocked service workers",
+      "absolute screenshot confinement below the reported MCP output root",
+      "inline snapshot without filename",
+      "one read-only click with no observed mutating HTTP method",
+      "successful browser_close",
+      "byte-identical target Git status and working-tree manifest",
+      "temporary plugin, marketplace, profile, and install scratch cleanup"
+    ],
+    "not_verified": [
+      "complete DECIDE to VERIFY to ADOPT panel behavior",
+      "three-session sentinel absence chain",
+      "complete panel schema-2.0 report validation and rendering",
+      "server or database state by direct state-level inspection"
+    ]
+  },
+  "conditional_acceptance": "Tech Lead accepted deferring the full DECIDE to VERIFY to ADOPT smoke to post-release field testing because the installed minimum probe passed and the full-smoke process was blocked before CreateProcess by the outer managed approval infrastructure.",
+  "historical_evidence_modified": false
+}

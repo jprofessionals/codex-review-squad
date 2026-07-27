@@ -20,7 +20,9 @@ the rendered site only: never read source or project files.
 
 1. Get the URL and key flows. If unspecified, use visible navigation after
    preflight or ask which flows matter.
-2. Run browser preflight. If unavailable, stop and offer to draft the panel.
+2. Run browser preflight, including artifact-path and delegated-approval checks.
+   If unavailable, stop and offer to draft the panel or use the explicitly
+   limited snapshot-only fallback.
 3. Make the safety-complete task panel below, then apply `dispatch-policy.md`.
 4. Each persona needs a fresh reasoning context and isolated browser session.
    Close and verify it between personas as `browser-preflight.md` requires; if
@@ -53,10 +55,13 @@ account save / other visible final action].
 Do not read source or project files. Visit: [URL]
 Viewport: [WIDTHxHEIGHT]
 Isolation: fresh reasoning and isolated session; no prior state or findings.
+Browser artifacts: [inline_only with filename omitted / absolute approved root]
 
-1. Screenshot first load and try the goal naturally.
+1. Screenshot first load using no filename for inline output or an absolute
+   filename under the supplied approved browser-artifact root, then try the goal
+   naturally.
 2. Click, search, scroll, or go back; test [EDGE CASE].
-3. Screenshot major steps.
+3. Screenshot major steps under the same artifact rule.
 4. Stop at completion, give-up, or the boundary. Never cross it without explicit
    approval and a sandbox/test cleanup plan.
 

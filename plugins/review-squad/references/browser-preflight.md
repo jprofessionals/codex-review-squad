@@ -14,6 +14,14 @@ reports it as `REVIEW_SQUAD_MCP_OUTPUT_ROOT`, and passes it through the MCP
 boundary. Empty output roots are removed after a successful exit; non-empty or
 failed-session roots are retained at the reported path for diagnostics.
 
+An explicitly authorized harness may set the absolute
+`REVIEW_SQUAD_BROWSER_ARTIFACT_ROOT`. The launcher then creates each unique MCP
+session root beneath that directory, still rejects any base inside the target
+working directory, and reports the exact child root. Explicit browser output
+filenames must be placed beneath that reported child root; the broader base is
+not itself an MCP file-access root. The plugin MCP configuration explicitly
+allow-forwards only this named variable from the parent Codex session.
+
 The launcher uses `npx -y` so npm cannot prompt to install the exact pin,
 `--isolated` for an in-memory profile, and `--block-service-workers` to avoid
 service-worker state. Node 18+ is required by the package; this plugin requires
@@ -89,8 +97,39 @@ stop the browser workflow, close it, confirm process cleanup, emit
    probes. A successful MCP start does not prove that the target is reachable.
 5. Resolve and display the artifact mode before dispatch: writable target
    repository first, then an explicit user-approved output directory, otherwise
-   `inline_only` with null paths. URL-only work never writes to the current
+   `inline_only` with null report paths. Also report
+   `REVIEW_SQUAD_MCP_OUTPUT_ROOT`. URL-only work never writes to the current
    directory by default.
+6. Report the effective `approval_policy` and `approvals_reviewer` before
+   persona dispatch when the runtime exposes them. If delegated personas need
+   `browser_click` or another approval-requiring tool, do not auto-dispatch an
+   unattended run with `approval_policy=on-request` and
+   `approvals_reviewer=user`. Tell the operator to start a new session with
+   `approval_policy=on-request` and `approvals_reviewer=auto_review`, or obtain
+   explicit agreement to a limited snapshot-only fallback.
+
+## Browser artifact paths
+
+Never pass a relative output `filename` or output path to a browser tool when
+the target working directory is a repository. Before every typed browser call
+that supports output (`browser_console_messages`, `browser_network_request`,
+`browser_network_requests`, `browser_snapshot`, `browser_storage_state`, and
+`browser_take_screenshot`), apply these rules:
+
+- In `written` mode, every explicit output path must be absolute and contained
+  by either the approved report/artifact root or the reported
+  `REVIEW_SQUAD_MCP_OUTPUT_ROOT`.
+- In `inline_only` mode, omit `filename` for tools that return inline output.
+  If a tool cannot return inline output, either omit the path and let the pinned
+  MCP confine its generated artifact under its reported output root, or use an
+  absolute path beneath that root.
+- Reject a relative path, a path outside both approved roots, or a call with no
+  usable approved root as `BROWSER_ARTIFACT_PATH_UNSAFE`. Do not make the tool
+  call. Preserve the reported MCP output root when it contains diagnostics.
+
+`browser_set_storage_state` and file-upload paths are inputs, not output
+artifacts; their separate mutation restrictions still apply. An explicit
+browser output path must never be resolved relative to the target cwd.
 
 Stop before persona dispatch with the applicable diagnostic:
 
@@ -102,6 +141,9 @@ Stop before persona dispatch with the applicable diagnostic:
 | MCP exits or cannot initialize | `BROWSER_MCP_STARTUP_FAILED` | Preserve stderr; check Node, pin, and binary. |
 | Target navigation fails | `BROWSER_TARGET_UNREACHABLE` | Start/fix the target URL. |
 | Isolation cannot be proven | `BROWSER_ISOLATION_UNVERIFIED` | Stop, or label the result as shared-session rather than cold/independent. |
+| Browser artifact path is relative or escapes its approved roots | `BROWSER_ARTIFACT_PATH_UNSAFE` | Do not call the tool; choose an absolute approved path or inline output. |
+| Delegated action would wait for a user approval reviewer | `BROWSER_DELEGATED_APPROVAL_UNATTENDED_UNSUPPORTED` | Start a new `on-request` + `auto_review` session, or explicitly limit the run to snapshot-only. |
+| Browser tool has no terminal result within its bound | `BROWSER_MCP_TOOL_TIMEOUT` | Record the structured timeout fields; do not retry an unresolved action or call `browser_close` before terminal cancellation/exit. |
 | Unsafe MCP code execution requested or invoked | `BROWSER_UNSAFE_TOOL_FORBIDDEN` | Stop; close and confirm cleanup; mark affected evidence `not_verified`. |
 
 ## Persona isolation contract
@@ -143,6 +185,14 @@ successful close result, new session, resolved config, or state-absence check
 cannot be verified, do not dispatch another independent cold persona. Stop and
 mark the undispatched persona `not_verified`. Run cold modes before
 source-aware modes in combined work.
+
+Bound every browser tool call. A `BROWSER_MCP_TOOL_TIMEOUT` diagnostic must
+include the tool name, elapsed wait, last successful call, effective approval
+policy/reviewer, whether MCP-begin was observed, and cleanup status. Never retry
+an unresolved action call: repeated clicks or other actions may create state
+even when no result was observed. Do not call `browser_close` until the pending
+call is confirmed completed, failed, cancelled, or terminated with the MCP
+session; then close/clean up within the normal bounded lifecycle.
 
 ## Mutation boundary
 

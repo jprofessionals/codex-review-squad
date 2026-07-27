@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
+import {assessDelegatedBrowserApproval} from "../scripts/browser-contract.mjs";
 import {loadCatalogState, validateCatalogState} from "../scripts/lib/catalog-validation.mjs";
 import {buildLaneBriefs, createDossier, planExpertDispatch, reviewCatalog, routeReviewRequest} from "../scripts/lib/dispatch.mjs";
 import {detectProjects, matchesGlob} from "../scripts/lib/detection.mjs";
@@ -84,6 +85,20 @@ test("routing and approval fixtures reach expected decisions", () => {
     const actual = plan.approval.required ? "approval_required" : "auto_approved";
     assert.equal(actual, fixture.expected, fixture.id);
   }
+});
+
+test("unattended browser dispatch rejects a visible user approval reviewer", () => {
+  const result = assessDelegatedBrowserApproval({
+    approvalPolicy: "on-request",
+    approvalsReviewer: "user",
+    approvalRequiredTools: ["browser_click"]
+  });
+  assert.equal(result.supported_unattended, false);
+  assert.equal(result.action, "stop_before_persona_dispatch");
+  assert.equal(result.diagnostic.code, "BROWSER_DELEGATED_APPROVAL_UNATTENDED_UNSUPPORTED");
+  assert.match(result.diagnostic.message, /approval_policy=on-request/);
+  assert.match(result.diagnostic.message, /approvals_reviewer=auto_review/);
+  assert(result.alternatives.includes("explicit_snapshot_only_fallback"));
 });
 
 test("catalog is consistent and negative mutations fail", () => {

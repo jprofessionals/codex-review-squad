@@ -103,6 +103,27 @@ are read-only by default and stop before signup, checkout, contact,
 subscription, upload, account changes, or another externally visible final
 action unless the user explicitly approves a safe test/sandbox mutation.
 
+Typed browser tools never receive relative output filenames. In written mode,
+explicit screenshot, snapshot, console, network, or storage-state output paths
+must be absolute and remain below the approved report/artifact root or the
+session's reported MCP output root. Inline-capable tools omit `filename` in
+`inline_only` mode. Unsafe paths stop before the tool call with
+`BROWSER_ARTIFACT_PATH_UNSAFE`.
+
+Authorized harnesses can set an absolute
+`REVIEW_SQUAD_BROWSER_ARTIFACT_ROOT`; every MCP process then creates and reports
+its own unique output directory below that base. Explicit browser filenames use
+the reported child directory, which is the actual MCP file-access boundary.
+
+Browser preflight reports the effective approval policy and reviewer when the
+runtime exposes them. An unattended delegated persona that needs `browser_click`
+or another approval-requiring action is not dispatched under `on-request` with
+a `user` reviewer. Start a new `on-request` + `auto_review` session, or
+explicitly choose a snapshot-only fallback. A stalled tool reports
+`BROWSER_MCP_TOOL_TIMEOUT` with approval and MCP-begin context; unresolved
+action calls are never retried, and `browser_close` waits for a terminal result
+or confirmed cancellation.
+
 If browser MCP is unavailable, the browser/persona skills stop cleanly with a
 specific package, registry, binary, MCP-startup, target-URL, or isolation
 diagnostic instead of pretending to browse. URL-only reviews with no approved
