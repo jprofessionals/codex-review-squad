@@ -1,55 +1,190 @@
 # Codex Review Squad
 
-A Codex plugin that adapts the original Review Squad plugin created by
-[2389 Research, Inc.](https://2389.ai).
+Multi-perspective project, product, and UX reviews for Codex.
 
-This is a Codex port of 2389 Research's MIT-licensed Claude Code plugin:
+Review Squad gives Codex a small team of focused reviewers instead of asking one
+agent to notice everything. Use it for launch audits, first-impression testing,
+realistic task flows, or a final opinionated polish pass.
 
-- Codex port repository: https://github.com/jprofessionals/codex-review-squad
-- Original Review Squad repository: https://github.com/2389-research/review-squad
-- Original plugin page: https://skills.2389.ai/plugins/review-squad/
+## What It Is
+
+This repository is an independent Codex adaptation of the original
+[Review Squad](https://github.com/2389-research/review-squad) plugin created by
+[2389 Research, Inc.](https://2389.ai). The upstream Claude Code plugin is
+MIT-licensed; this port preserves the core Review Squad idea and adapts it to
+Codex skills, plugins, subagents, structured reports, and Playwright MCP.
+
+- Codex port: [jprofessionals/codex-review-squad](https://github.com/jprofessionals/codex-review-squad)
+- Original repository: [2389-research/review-squad](https://github.com/2389-research/review-squad)
+- Original plugin page: [skills.2389.ai/plugins/review-squad](https://skills.2389.ai/plugins/review-squad/)
 - Original copyright: Copyright (c) 2026 2389 Research, Inc.
-- Original license: MIT
+- License: MIT
 
-This repository keeps their core Review Squad concept and adapts it for Codex
-skills, Codex plugin manifests, Codex subagents, and Playwright MCP.
+Review Squad is standalone and does not require another Codex plugin. Browser
+modes use the pinned Playwright MCP integration bundled by this plugin.
 
-Review Squad is standalone. It does not require any other Codex plugin. The
-browser-oriented modes use Playwright MCP when available and degrade clearly
-when it is not available.
+## Why Use It
 
-It provides these skills:
+A broad request such as "review this before launch" mixes several kinds of
+judgment. Review Squad separates them into explicit lanes or personas, gives
+each reviewer a bounded job, and consolidates the evidence afterward. This
+helps you get:
 
-- `review-squad:experts`
-- `review-squad:normies`
-- `review-squad:regulars`
-- `review-squad:well-actually`
+- broader coverage without one oversized prompt;
+- independent first impressions instead of personas contaminating each other;
+- fewer duplicate findings through explicit ownership;
+- severity-ranked findings with evidence and source attribution;
+- clear `not_verified` results when a check could not be completed;
+- one canonical schema-2.0 JSON report and a deterministic Markdown view.
 
-Use it when you want several focused reviewers to inspect the same project from
-different perspectives: expert audit, first-time visitor impressions, real user
-task flows, or last-mile polish.
+Choose a mode directly or let the router choose:
 
-Every completed Review Squad run authors one canonical schema-2.0 JSON report.
-After validation, deterministic tooling renders its Markdown view:
+| Skill | Use it for |
+| --- | --- |
+| `review-squad:review-squad` | Choosing the appropriate mode when you are unsure |
+| `review-squad:experts` | Launch readiness, architecture, security, reliability, accessibility, SEO, performance, and project health |
+| `review-squad:normies` | Whether first-time visitors understand a rendered product or page |
+| `review-squad:regulars` | Whether realistic users can complete named browser flows |
+| `review-squad:well-actually` | Last-mile polish, copy, typography, standards, and opinionated nitpicks |
 
-```text
-.review-squad/reports/<timestamp>-<mode>[-<label>...].md
-.review-squad/reports/<timestamp>-<mode>[-<label>...].json
+## Install
+
+### Recommended: install directly from GitHub
+
+No clone, local checkout, `npm install`, or manual marketplace file is needed:
+
+```bash
+codex plugin marketplace add jprofessionals/codex-review-squad
+codex plugin add review-squad@codex-review-squad
+codex plugin list --json
 ```
 
-When an explicit target repository or approved output directory is writable,
-both files use the same stem. For URL-only work without an approved writable
-root, the report uses `inline_only` with null paths and returns validated JSON
-plus rendered Markdown in chat. JSON is always the source of truth; Markdown is
-never authored independently.
+The first command adds this Git repository as a Codex marketplace. The second
+installs Review Squad from that marketplace. In the final output, confirm that
+`review-squad@codex-review-squad` is installed, enabled, and reports the expected
+version.
+
+Start a new Codex thread after installation so the thread loads the new skills
+and MCP configuration. Do not resume an older thread for the first verification.
+
+### Upgrade an existing installation
+
+Refresh the Git-backed marketplace and reinstall the plugin from its new
+snapshot:
+
+```bash
+codex plugin marketplace upgrade codex-review-squad
+codex plugin add review-squad@codex-review-squad
+codex plugin list --json
+```
+
+Then start a new Codex thread. Existing threads retain the plugin and skill set
+they started with.
+
+### Pin a specific release
+
+For a reproducible first installation, pin the marketplace to a release tag:
+
+```bash
+codex plugin marketplace add jprofessionals/codex-review-squad --ref vX.Y.Z
+codex plugin add review-squad@codex-review-squad
+```
+
+Replace `vX.Y.Z` with a tag from
+[Releases](https://github.com/jprofessionals/codex-review-squad/releases). A
+pinned marketplace stays on that ref until its marketplace configuration is
+changed.
+
+## Quick Start
+
+Run commands from the project you want reviewed, then name the skill in your
+prompt.
+
+If you are unsure which mode fits:
+
+```text
+Use review-squad:review-squad to choose the best review mode for this project.
+Show me the proposed panel before dispatch.
+```
+
+For a codebase or launch audit:
+
+```text
+Use review-squad:experts to review this repository before launch. Focus on
+security, reliability, architecture, tests, and developer experience. Review
+only; do not change files.
+```
+
+For first-time visitor feedback:
+
+```text
+Run review-squad:normies on http://localhost:3000. Tell me what first-time
+visitors understand, where they hesitate, and what they would try next.
+```
+
+For realistic task completion:
+
+```text
+Use review-squad:regulars on http://localhost:3000. Test signup, pricing, docs
+search, and contact sales. Stop before any externally visible final action.
+```
+
+For a final polish pass:
+
+```text
+Run review-squad:well-actually on http://localhost:3000 before I publish it.
+Return a prioritized practical fixlist.
+```
+
+## Use It Well
+
+- Give the squad a concrete goal, target, scope, and anything it must not do.
+- Use `experts` for source-aware technical risk; use `normies` for product
+  clarity, not as a substitute for a technical audit.
+- Give browser modes a specific URL and start the development server yourself
+  before the review. Review Squad does not start or restart it implicitly.
+- Give `regulars` named flows, environment details, and test credentials only
+  when those flows genuinely require them. It stops before externally visible
+  final actions by default.
+- Let ordinary expert reviews start with three risk-selected lanes. Add more
+  only when the proposed panel identifies a real coverage gap or escalation
+  trigger.
+- Keep cold browser personas independent. Run `normies` before source-aware
+  reviews when combining modes.
+- Review first, decide what matters, then implement fixes in a separate step.
+  Asking reviewers to edit while they inspect weakens the evidence trail.
+- Treat `not_verified` as useful output: it names uncertainty instead of
+  turning an incomplete check into a confident finding.
+
+All modes show their proposed panel before dispatch. Auto-approved panels
+continue immediately; approval-required panels explain why they paused.
+Decisions that need a Product Owner or another human remain explicit rather
+than being silently resolved by the squad.
+
+## Reports
+
+Every completed run authors one canonical schema-2.0 JSON report. After it
+validates, the bundled runtime deterministically renders the Markdown view:
+
+```text
+.review-squad/reports/<timestamp>-<mode>[-<label>...].json
+.review-squad/reports/<timestamp>-<mode>[-<label>...].md
+```
+
+When the target repository or another approved output directory is writable,
+both files use the same stem. URL-only work without an approved writable root
+uses `inline_only` and returns validated JSON plus rendered Markdown in chat.
+JSON is always the source of truth; Markdown is never authored independently.
 
 ## Requirements
 
 - Codex CLI with plugin marketplace support.
-- Node.js 22+ for validation and Playwright MCP startup.
-- For browser-based modes, a running site URL such as `http://localhost:3000`.
-- For browser-based modes, a browser binary and Playwright MCP must be
-  available. This plugin pins Playwright MCP and cannot prompt for installation:
+- Node.js 22+ for the bundled validation runtime and Playwright MCP startup.
+- Browser modes need a running target URL and an available browser binary.
+- Installing from GitHub needs Git access to
+  `jprofessionals/codex-review-squad`.
+
+## Browser Safety and Isolation
 
 The shipped `.mcp.json` uses a small inline Node launcher. For every session it
 creates an OS-temporary output root outside the reviewed repository, reports
@@ -66,13 +201,13 @@ falling back to the reviewed repository.
 
 The shipped optional capabilities are deliberately narrow. Playwright MCP
 `--caps` is additive, so `storage,config` adds optional tools rather than
-forming an allowlist for base tools. `storage` lets a
-review inspect cookies (including state hidden from page JavaScript), local
-storage, and session storage between cold personas, and `config` exposes the
-effective isolation configuration. The exact v0.0.78 documentation is
-internally inconsistent: its argument table omits these two capability names,
-while its generated tool catalog includes them. Release verification therefore
-asserts the actual pinned tool list and calls the required tools. The base
+forming an allowlist for base tools. `storage` lets a review inspect cookies
+(including state hidden from page JavaScript), local storage, and session
+storage between cold personas, and `config` exposes the effective isolation
+configuration. The exact v0.0.78 documentation is internally inconsistent: its
+argument table omits these two capability names, while its generated tool
+catalog includes them. Release verification therefore asserts the actual
+pinned tool list and calls the required tools. The base
 `browser_network_request` and `browser_network_requests` tools only inspect
 already observed traffic and are read-only. Optional network mutation tools
 `browser_network_state_set`, `browser_route`, and `browser_unroute` were not
@@ -130,17 +265,52 @@ diagnostic instead of pretending to browse. URL-only reviews with no approved
 writable root render validated JSON and Markdown inline rather than writing in
 an unrelated current directory.
 
-## Marketplace File
+## Advanced Installation Options
 
-Codex discovers this plugin through a marketplace root. A marketplace root is a
-directory containing:
+The recommended GitHub installation above is enough for normal use. The
+following options are for contributors, vendoring, or custom marketplaces.
+
+### Install from a local clone
+
+```bash
+git clone https://github.com/jprofessionals/codex-review-squad.git
+cd codex-review-squad
+node plugins/review-squad/scripts/validate-plugin.mjs
+codex plugin marketplace add "$PWD"
+codex plugin add review-squad@codex-review-squad
+```
+
+### Vendor the plugin into one project
+
+From this repository:
+
+```bash
+TARGET=/path/to/your/project
+
+mkdir -p "$TARGET/.agents/plugins" "$TARGET/plugins"
+cp -R plugins/review-squad "$TARGET/plugins/review-squad"
+```
+
+Create `$TARGET/.agents/plugins/marketplace.json` using the marketplace JSON
+below, then register and install it:
+
+```bash
+cd "$TARGET"
+node plugins/review-squad/scripts/validate-plugin.mjs
+codex plugin marketplace add "$TARGET"
+codex plugin add review-squad@codex-review-squad
+```
+
+### Marketplace layout
+
+A local marketplace root contains:
 
 ```text
 .agents/plugins/marketplace.json
 plugins/review-squad/
 ```
 
-The marketplace file should contain:
+Its `.agents/plugins/marketplace.json` is:
 
 ```json
 {
@@ -165,95 +335,8 @@ The marketplace file should contain:
 }
 ```
 
-In some Codex sandbox sessions, `.agents` may be mounted read-only. If that
-happens, create the marketplace file from a normal shell checkout, or use the
-global install option below.
-
-## Local Install For One Project
-
-Use this when you want the plugin vendored into one target project.
-
-From this repository:
-
-```bash
-TARGET=/path/to/your/project
-
-mkdir -p "$TARGET/.agents/plugins" "$TARGET/plugins"
-cp -R plugins/review-squad "$TARGET/plugins/review-squad"
-```
-
-Create `$TARGET/.agents/plugins/marketplace.json` with the marketplace JSON from
-the previous section.
-
-Validate the copied plugin:
-
-```bash
-cd "$TARGET"
-node plugins/review-squad/scripts/validate-plugin.mjs
-```
-
-Register that project as a local Codex marketplace:
-
-```bash
-codex plugin marketplace add "$TARGET"
-```
-
-Then start a new Codex session in the target project:
-
-```bash
-cd "$TARGET"
-codex
-```
-
-Do not use `codex resume` for the first test after adding or upgrading the
-marketplace. Resumed sessions keep the skill/plugin list they were started with.
-
-Invoke the skills by name in your prompt, for example:
-
-```text
-Use review-squad:experts to audit this repo before launch.
-```
-
-## Global Install
-
-Use this when you want Review Squad available from any project.
-
-Option A: register this marketplace repository directly.
-
-```bash
-cd /path/to/codex-review-squad
-node plugins/review-squad/scripts/validate-plugin.mjs
-codex plugin marketplace add "$PWD"
-```
-
-Option B: keep a user-level marketplace root.
-
-```bash
-mkdir -p "$HOME/codex-marketplaces/review-squad/.agents/plugins"
-mkdir -p "$HOME/codex-marketplaces/review-squad/plugins"
-cp -R /path/to/codex-review-squad/plugins/review-squad \
-  "$HOME/codex-marketplaces/review-squad/plugins/review-squad"
-```
-
-Create:
-
-```text
-$HOME/codex-marketplaces/review-squad/.agents/plugins/marketplace.json
-```
-
-using the marketplace JSON above, then run:
-
-```bash
-codex plugin marketplace add "$HOME/codex-marketplaces/review-squad"
-```
-
-If you publish this repository, Codex also supports marketplace sources such as
-GitHub owner/repo names and Git URLs:
-
-```bash
-codex plugin marketplace add owner/codex-review-squad
-codex plugin marketplace add https://github.com/owner/codex-review-squad.git
-```
+Start a new Codex thread after adding or updating any marketplace. Resumed
+threads retain the plugin list they started with.
 
 ## Standalone Runtime Dependencies
 
@@ -482,7 +565,7 @@ lifecycle command, relevant config change, or generated artifact. Generic
 reports contain no BMAD placeholders or sections; active meaningful data uses
 `extensions.bmad` schema `1.0`.
 
-## Best Use
+## Reviewer Selection and Cost Control
 
 Start with `review-squad:experts` for launch readiness or codebase risk. It
 detects multiple project labels with evidence, creates one compact dossier, and
@@ -511,52 +594,6 @@ cards, dispatch waves, progress updates, and a final squad scorecard. Final
 reports avoid wide Markdown tables because long file paths wrap poorly in
 Codex's terminal layout. Expert panels group lanes by priority first, then show
 subagent reasoning effort inside each lane card.
-
-Use the browser modes only when a running URL is available:
-
-| Skill | Best for | How it runs |
-| --- | --- | --- |
-| `review-squad:experts` | Launch audits, SEO, accessibility, security, performance, project health | Parallel read-only expert review |
-| `review-squad:normies` | "Do first-time visitors understand this?" | Independent cold browser personas |
-| `review-squad:regulars` | "Can real users complete key flows?" | Isolated browser task attempts |
-| `review-squad:well-actually` | Polish, nitpicks, typography, grammar, standards, HN-style feedback | Sequential browser/source pedants |
-
-Good prompts:
-
-```text
-Use review-squad:experts to review this repo before launch.
-```
-
-```text
-Run review-squad:normies on http://localhost:3000. Tell me where first-time
-visitors get confused.
-```
-
-```text
-Use review-squad:regulars on http://localhost:3000. Key flows are signup,
-pricing, docs search, and contact sales.
-```
-
-```text
-Run review-squad:well-actually on http://localhost:3000 before I post this.
-```
-
-For best results:
-
-- Let ordinary expert panels start with the three catalog-selected lanes; add a
-  fourth or fifth only for an explicit escalation trigger.
-- Start first-impression work with the three job-based `DECIDE`, `VERIFY`, and
-  `ADOPT` profiles; add profiles only for audience evidence or uncovered risk.
-- Customize the proposed panel for your actual audience and stack.
-- Use requested model tiers as policy, and treat the live subagent tool schema as
-  authoritative for actual model/effort fields.
-- Give browser modes a specific URL and make sure the dev server is already up.
-- Give `regulars` explicit flows, environment, and test credentials if you know
-  which ones matter; it stops before externally visible final actions by default.
-- Treat `normies` as product clarity feedback, not a technical audit.
-- Treat `well-actually` as a polish pass, then use the practical fixlist.
-- Do not ask review agents to fix code during review. Review first, plan second,
-  implement third.
 
 ## Attribution
 

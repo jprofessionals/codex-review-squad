@@ -3,7 +3,7 @@
   "report_id": "normies-partial-panel",
   "mode": "normies",
   "generated_at": "2026-07-24T15:43:56Z",
-  "generator": {"name": "codex-review-squad", "version": "0.3.2", "skill": "review-squad:normies"},
+  "generator": {"name": "codex-review-squad", "version": "0.3.3", "skill": "review-squad:normies"},
   "target": {"kind": "site", "path": null, "url": "https://internal.example.test", "name": "Internal developer platform"},
   "review_context": {"labels": [], "branch": null, "base_branch": null, "pull_request": null, "story": null, "commit": null, "working_tree_dirty": null},
   "summary": {"headline": "DECIDE completed; the remaining panel was not verified.", "overall_status": "needs_attention", "critical_count": 0, "important_count": 1, "minor_count": 0, "not_verified_count": 2, "recommended_next_move": "Rerun VERIFY and ADOPT in fresh isolated sessions."},

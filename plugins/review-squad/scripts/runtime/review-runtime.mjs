@@ -15342,7 +15342,7 @@ function migrateReport(input) {
     report_id: input.report_id,
     mode: input.mode,
     generated_at: input.generated_at,
-    generator: { ...input.generator, version: "0.3.2" },
+    generator: { ...input.generator, version: "0.3.3" },
     target: { kind: input.target.kind, path: input.target.path ?? null, url: input.target.url ?? null, name: input.target.name ?? null },
     review_context: input.review_context,
     summary: input.summary,

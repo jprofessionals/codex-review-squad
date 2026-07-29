@@ -181,7 +181,7 @@ async function initialize(client) {
   const initialized = await client.request("initialize", {
     protocolVersion: "2024-11-05",
     capabilities: {},
-    clientInfo: {name: "review-squad-release-verifier", version: "0.3.2"}
+    clientInfo: {name: "review-squad-release-verifier", version: "0.3.3"}
   });
   client.notify("notifications/initialized");
   const listed = await client.request("tools/list");

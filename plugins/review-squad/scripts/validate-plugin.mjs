@@ -120,8 +120,8 @@ if (manifest) {
   if (manifest.name !== "review-squad") {
     errors.push(`plugin manifest name must be "review-squad", got "${manifest.name}"`);
   }
-  if (manifest.version !== "0.3.2") {
-    errors.push(`plugin manifest version must be exactly "0.3.2", got "${manifest.version}"`);
+  if (manifest.version !== "0.3.3") {
+    errors.push(`plugin manifest version must be exactly "0.3.3", got "${manifest.version}"`);
   }
   if (manifest.skills !== "./skills/") {
     errors.push('plugin manifest must reference skills as "./skills/"');
