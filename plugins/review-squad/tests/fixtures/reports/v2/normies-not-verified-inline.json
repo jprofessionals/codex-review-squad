@@ -3,7 +3,7 @@
   "report_id": "normies-not-verified-inline",
   "mode": "normies",
   "generated_at": "2026-07-22T00:00:00Z",
-  "generator": {"name": "codex-review-squad", "version": "0.3.3", "skill": "review-squad:normies"},
+  "generator": {"name": "codex-review-squad", "version": "0.4.0", "skill": "review-squad:normies"},
   "target": {"kind": "site", "path": null, "url": "https://example.com", "name": "Example"},
   "review_context": {"labels": [], "branch": null, "base_branch": null, "pull_request": null, "story": null, "commit": null, "working_tree_dirty": null},
   "summary": {"headline": "The browser was unavailable.", "overall_status": "blocked", "critical_count": 0, "important_count": 0, "minor_count": 0, "not_verified_count": 1, "recommended_next_move": "Restore browser access and rerun."},

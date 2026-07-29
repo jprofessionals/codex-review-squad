@@ -192,3 +192,19 @@ test("all skills use the shared report workflow with less duplicated prose", () 
     assert(words < previousWords || skill === "review-squad", `${skill} did not get shorter (${words} >= ${previousWords})`);
   }
 });
+
+test("shared report workflow exposes prompt-scoped storage controls without duplicate chat output", () => {
+  const reference = fs.readFileSync(path.join(testsRoot, "..", "references", "report-formats.md"), "utf8");
+  for (const expected of [
+    "Report artifacts: inline_only",
+    "Report artifacts: written",
+    "Report artifact directory: /absolute/approved/path",
+    "always wins",
+    "SHA-256 hashes",
+    "Do not repeat either full report in chat",
+    "unique OS-temporary scratch directory",
+    "not deleted automatically"
+  ]) assert(reference.includes(expected), `report workflow missing ${expected}`);
+  assert(reference.indexOf("explicit `inline_only`") < reference.indexOf("explicitly approved absolute report directory"));
+  assert.match(reference, /Do not treat approval of report output as\s+approval for browser artifacts/);
+});

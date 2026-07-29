@@ -28,23 +28,24 @@ Load only what applies:
 1. Inspect the requested scope with fast read-only commands. Detect zero or more
    project labels with confidence and concrete file evidence. Disclose a generic
    fallback when evidence is insufficient.
-2. Produce one compact parent dossier: scope, labels, stack/change context, risk
+2. Resolve and display the report artifact policy from `report-formats.md`.
+3. Produce one compact parent dossier: scope, labels, stack/change context, risk
    signals, important files, test commands, exclusions, and explicit risk
    ownership for each selected lane. Do not make every reviewer rediscover the
    repository.
-3. Select exactly three initial lanes from catalog evidence and the user goal.
+4. Select exactly three initial lanes from catalog evidence and the user goal.
    Prefer independent risk coverage over overlapping titles.
-4. Show the panel and approval decision. Continue only when
+5. Show the panel and approval decision. Continue only when
    `dispatch-policy.md` permits automatic dispatch.
-5. Dispatch isolated, read-only lane prompts containing only the relevant
+6. Dispatch isolated, read-only lane prompts containing only the relevant
    dossier slice. Withhold other reviewers' findings until consolidation.
-6. Escalate only for high risk, ambiguous scope, high-risk `not_verified`,
+7. Escalate only for high risk, ambiguous scope, high-risk `not_verified`,
    material conflicts, newly exposed risk, or explicit high-assurance scope.
    Automatic escalation stops at five well-justified read-only lanes.
-7. Consolidate without manufacturing consensus. Merge duplicate root causes,
+8. Consolidate without manufacturing consensus. Merge duplicate root causes,
    preserve material disagreement/confidence, and keep unverified claims out of
    verified findings.
-8. Follow `report-formats.md`: author and validate schema-2.0 JSON, then render
+9. Follow `report-formats.md`: author and validate schema-2.0 JSON, then render
    Markdown deterministically. Respect `written` and `inline_only` artifacts.
 
 ## Panel proposal
@@ -57,6 +58,7 @@ Target: [project]
 Detected labels: [label (confidence, evidence)]
 Scope: [bounded scope]
 Artifact mode: [written / inline_only]
+Artifact directory: [absolute path / none]
 
 ### Initial lanes
 

@@ -3,7 +3,7 @@
   "report_id": "experts-decision-bmad",
   "mode": "experts",
   "generated_at": "2026-07-22T00:00:00Z",
-  "generator": {"name": "codex-review-squad", "version": "0.3.3", "skill": "review-squad:experts"},
+  "generator": {"name": "codex-review-squad", "version": "0.4.0", "skill": "review-squad:experts"},
   "target": {"kind": "repository", "path": "/tmp/example", "url": null, "name": "example"},
   "review_context": {"labels": [], "branch": "main", "base_branch": null, "pull_request": null, "story": "1.2", "commit": null, "working_tree_dirty": false},
   "summary": {"headline": "One decision needs an owner.", "overall_status": "needs_attention", "critical_count": 0, "important_count": 1, "minor_count": 0, "not_verified_count": 0, "recommended_next_move": "Resolve the compatibility decision."},

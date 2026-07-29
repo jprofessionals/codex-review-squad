@@ -390,23 +390,58 @@ test("mutation boundaries stop all externally visible actions without approval",
   assert.equal(decideMutation({action: "final_signup_submit", approval: true, environment: "production"}).decision, "approval_requires_safe_environment");
 });
 
-test("artifact root resolution only writes to a target repository or explicit approved directory", () => {
+test("report artifact policy honors explicit overrides before safe defaults", () => {
   const targetRepository = "/workspace/target";
   assert.deepEqual(resolveArtifactRoot({targetRepository, targetRepositoryWritable: true}), {
     status: "written",
     root: "/workspace/target/.review-squad/reports",
     reason: "writable_target_repository"
   });
+  assert.deepEqual(resolveArtifactRoot({
+    targetRepository,
+    targetRepositoryWritable: true,
+    approvedReportDirectory: "/tmp/exact-review-reports"
+  }), {
+    status: "written",
+    root: "/tmp/exact-review-reports",
+    reason: "explicit_user_approved_report_directory"
+  });
   assert.deepEqual(resolveArtifactRoot({approvedOutputDirectory: "/tmp/review-output"}), {
     status: "written",
     root: "/tmp/review-output/.review-squad/reports",
     reason: "explicit_user_approved_output_directory"
+  });
+  assert.deepEqual(resolveArtifactRoot({
+    artifactMode: "inline_only",
+    targetRepository,
+    targetRepositoryWritable: true,
+    approvedReportDirectory: "/tmp/must-not-be-used"
+  }), {
+    status: "inline_only",
+    root: null,
+    reason: "explicit_user_disabled_report_storage"
   });
   assert.deepEqual(resolveArtifactRoot({targetRepositoryWritable: false}), {
     status: "inline_only",
     root: null,
     reason: "no_approved_writable_artifact_root"
   });
+  assert.throws(
+    () => resolveArtifactRoot({approvedReportDirectory: "relative/reports"}),
+    (error) => error.code === "REPORT_ARTIFACT_PATH_UNSAFE"
+  );
+  assert.throws(
+    () => resolveArtifactRoot({targetRepository: "relative/target", targetRepositoryWritable: true}),
+    (error) => error.code === "REPORT_ARTIFACT_PATH_UNSAFE"
+  );
+  assert.throws(
+    () => resolveArtifactRoot({artifactMode: "written", targetRepositoryWritable: false}),
+    (error) => error.code === "REPORT_ARTIFACT_ROOT_REQUIRED"
+  );
+  assert.throws(
+    () => resolveArtifactRoot({artifactMode: "somewhere"}),
+    (error) => error.code === "REPORT_ARTIFACT_MODE_INVALID"
+  );
 });
 
 test("policy matrix covers expected decisions without claiming browser execution", () => {

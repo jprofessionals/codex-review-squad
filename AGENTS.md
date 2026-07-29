@@ -11,6 +11,11 @@
 - Author one JSON report, validate schema plus semantic invariants, then render
   Markdown deterministically. JSON is the source of truth; do not independently
   author or retain derived Markdown as evidence.
+- Preserve the prompt-scoped report artifact policy: explicit `inline_only`
+  wins; an explicitly approved absolute report directory overrides the default
+  target `/.review-squad/reports/`; otherwise fall back to `inline_only` when no
+  appropriate writable target exists. Never auto-edit a reviewed target's
+  `.gitignore`.
 - Invoke installed runtime only through absolute paths resolved from the loaded
   plugin skill/reference location. Never execute a same-named script from the
   reviewed target. Commit reproducible standalone bundles under

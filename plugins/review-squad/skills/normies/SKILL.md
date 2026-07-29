@@ -20,7 +20,8 @@ project files.
 ## Workflow
 
 1. Get the target URL; ask for it or offer the in-scope local server if absent.
-2. Run browser preflight, including artifact-path and delegated-approval checks.
+2. Resolve and display the report artifact policy from `report-formats.md`, then
+   run browser preflight, including browser-artifact-path and delegated-approval checks.
    If it fails, stop and offer only user-provided screenshots, a browser
    transcript, or the explicitly limited snapshot-only fallback.
 3. Start with `DECIDE`, `VERIFY`, and `ADOPT` from `panels.md`; add a profile

@@ -12,15 +12,15 @@ const pluginRoot = path.resolve(testsRoot, "..");
 const repoRoot = path.resolve(pluginRoot, "..", "..");
 const readJson = (file) => JSON.parse(fs.readFileSync(file, "utf8"));
 
-test("release and generator versions are exactly 0.3.3 without a cachebuster", () => {
+test("release and generator versions are exactly 0.4.0 without a cachebuster", () => {
   const manifest = readJson(path.join(pluginRoot, ".codex-plugin", "plugin.json"));
   const packageJson = readJson(path.join(repoRoot, "package.json"));
-  assert.equal(manifest.version, "0.3.3");
-  assert.equal(packageJson.version, "0.3.3");
+  assert.equal(manifest.version, "0.4.0");
+  assert.equal(packageJson.version, "0.4.0");
   assert(!manifest.version.includes("+"));
   for (const file of fs.readdirSync(path.join(testsRoot, "fixtures", "reports", "v2"))) {
     const report = readJson(path.join(testsRoot, "fixtures", "reports", "v2", file));
-    assert.equal(report.generator.version, "0.3.3", file);
+    assert.equal(report.generator.version, "0.4.0", file);
   }
 });
 
@@ -92,6 +92,10 @@ test("README matches the released report, dispatch, BMAD, browser, and artifact 
     "fresh reasoning context",
     "externally visible final action",
     "inline_only",
+    "Report artifact directory: /absolute/path",
+    "does not repeat the full",
+    "/.review-squad/",
+    "does not delete old reports automatically",
     "codex plugin list",
     "Git-backed marketplace",
     "codex plugin add --json",
@@ -147,7 +151,7 @@ test("installed-plugin verifier guards identity, evidence, and cleanup", () => {
   ].map((file) => fs.readFileSync(file, "utf8")).join("\n");
   for (const expected of [
     "crypto.randomBytes",
-    "0.3.3+codex.rg07-",
+    "0.4.0+codex.rg07-",
     "plugin\", \"list\", \"--json",
     "marketplace\", \"list\", \"--json",
     "--ephemeral", "--json", "turn.completed",

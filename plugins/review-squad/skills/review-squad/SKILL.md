@@ -25,7 +25,8 @@ directly from this plugin's skill and reference files.
 Every mode follows `../../references/report-formats.md`: author and validate one
 schema-2.0 JSON report, then generate Markdown from it. Use written artifacts
 only in an explicit writable root; otherwise return validated JSON and rendered
-Markdown as `inline_only`.
+Markdown as `inline_only`. Resolve explicit report storage overrides before
+dispatch; an explicit `inline_only` request always wins.
 
 ## Routing
 

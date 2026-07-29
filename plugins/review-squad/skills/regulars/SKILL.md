@@ -20,7 +20,8 @@ the rendered site only: never read source or project files.
 
 1. Get the URL and key flows. If unspecified, use visible navigation after
    preflight or ask which flows matter.
-2. Run browser preflight, including artifact-path and delegated-approval checks.
+2. Resolve and display the report artifact policy from `report-formats.md`, then
+   run browser preflight, including browser-artifact-path and delegated-approval checks.
    If unavailable, stop and offer to draft the panel or use the explicitly
    limited snapshot-only fallback.
 3. Make the safety-complete task panel below, then apply `dispatch-policy.md`.

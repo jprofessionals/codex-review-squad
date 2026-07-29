@@ -167,14 +167,29 @@ Every completed run authors one canonical schema-2.0 JSON report. After it
 validates, the bundled runtime deterministically renders the Markdown view:
 
 ```text
-.review-squad/reports/<timestamp>-<mode>[-<label>...].json
-.review-squad/reports/<timestamp>-<mode>[-<label>...].md
+<target>/.review-squad/reports/<timestamp>-<mode>[-<label>...].json
+<target>/.review-squad/reports/<timestamp>-<mode>[-<label>...].md
 ```
 
-When the target repository or another approved output directory is writable,
-both files use the same stem. URL-only work without an approved writable root
-uses `inline_only` and returns validated JSON plus rendered Markdown in chat.
-JSON is always the source of truth; Markdown is never authored independently.
+The default is to persist both files under a writable target repository. You
+can disable persistence for one run:
+
+```text
+Report artifacts: inline_only
+```
+
+Or write the pair directly to another explicitly approved absolute directory:
+
+```text
+Report artifacts: written
+Report artifact directory: /tmp/my-review-reports
+```
+
+Explicit choices win over the default. URL-only work without an approved
+writable root also uses `inline_only` and returns validated JSON plus rendered
+Markdown in chat. JSON is always the source of truth; Markdown is never authored
+independently. See [Report Artifacts](#report-artifacts) for reuse, automation,
+retention, and optional `.gitignore` handling.
 
 ## Requirements
 
@@ -496,11 +511,24 @@ codex debug prompt-input "use review-squad:experts to review this repo" \
 
 ## Report Artifacts
 
-Review Squad writes reports only when the target repository or an explicitly
-approved output directory is writable:
+Review Squad resolves report storage before dispatch and displays the selected
+mode and directory. The policy is intentionally prompt-scoped:
+
+| Prompt choice | Result |
+| --- | --- |
+| Omitted | Write to `<target>/.review-squad/reports/` when the target is explicitly writable; otherwise use `inline_only` |
+| `Report artifacts: inline_only` | Write no report files, even when the target is writable |
+| `Report artifacts: written` plus `Report artifact directory: /absolute/path` | Write the JSON/Markdown pair directly to the approved directory |
+
+An alternative report directory must be absolute, writable, and explicitly
+approved. Review Squad does not silently fall back to a different directory.
+Report-output approval does not authorize browser artifacts or other project
+writes.
+
+The default repository location is:
 
 ```text
-.review-squad/reports/
+<target>/.review-squad/reports/
 ```
 
 Each written run creates JSON and generated Markdown with the same stem:
@@ -527,6 +555,62 @@ origin-main
 
 Labels are sanitized to `A-Z`, `a-z`, `0-9`, `.`, `_`, and `-`. If Review Squad
 cannot determine a label confidently, it omits the label instead of guessing.
+
+### Use reports after the review
+
+The Markdown file is the human-readable handoff. The JSON file is canonical and
+is suitable for agents, scripts, comparisons, and CI checks. Common follow-up
+uses include:
+
+- Give the JSON report to a separate fix job so it can triage or implement
+  accepted findings without rerunning the expensive review.
+- Convert selected `critical` and `important` findings into an implementation
+  plan, issues, or acceptance checks while preserving evidence and
+  `not_verified` items.
+- Validate stored reports before an automated workflow consumes them:
+
+  ```bash
+  node "<installed-plugin-root>/scripts/runtime/review-runtime.mjs" \
+    validate /absolute/path/to/report.json
+  ```
+
+- Re-render Markdown at any time from canonical JSON:
+
+  ```bash
+  node "<installed-plugin-root>/scripts/runtime/review-runtime.mjs" \
+    render /absolute/path/to/report.json --output /absolute/path/to/report.md
+  ```
+
+A concise fix-job prompt can be as simple as:
+
+```text
+Use /absolute/path/to/report.json as the canonical Review Squad input. Do not
+rerun the review. Verify the relevant evidence, propose a dependency-ordered
+fix plan, and implement only the findings I approve.
+```
+
+In `written` mode the chat response stays compact: verdict, counts, recommended
+next move, absolute report paths, and SHA-256 hashes. It does not repeat the full
+JSON or Markdown unless you ask. In `inline_only` mode both validated
+representations are returned in chat because no persistent report files exist;
+temporary validation scratch stays outside the target and is removed afterward.
+
+### Git and retention
+
+Reports are local artifacts by default, but Review Squad never edits the
+reviewed repository's `.gitignore`. If your team does not want root-level
+reports in version control, add this optional repository-relative rule:
+
+```gitignore
+/.review-squad/
+```
+
+Leave the directory tracked when review reports are intentional audit evidence
+or shared handoffs. Review Squad does not delete old reports automatically;
+archive, compare, or remove timestamped runs according to your own retention
+policy.
+
+### Canonical JSON contents
 
 The canonical JSON report always includes:
 

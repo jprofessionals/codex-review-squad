@@ -19,8 +19,9 @@ the in-character notes useful with a practical fixlist.
 
 ## Workflow
 
-1. Identify the target and URL; run browser preflight, artifact-path checks, and
-   delegated-approval checks for visual personas.
+1. Identify the target and URL; resolve and display the report artifact policy
+   from `report-formats.md`, then run browser preflight, browser-artifact-path
+   checks, and delegated-approval checks for visual personas.
 2. Present the default `panels.md` pedants and justified additions, then apply
    `dispatch-policy.md`.
 3. Each browser persona needs a fresh reasoning context and isolated browser

@@ -268,20 +268,51 @@ export function decideMutation({action, approval = false, environment = "unknown
   return {decision: "approval_requires_safe_environment", cleanup_required: false};
 }
 
-export function resolveArtifactRoot({targetRepository, targetRepositoryWritable = false, approvedOutputDirectory}) {
-  if (targetRepository && targetRepositoryWritable) {
+export function resolveArtifactRoot({
+  artifactMode = "default",
+  targetRepository,
+  targetRepositoryWritable = false,
+  approvedReportDirectory,
+  approvedOutputDirectory
+}) {
+  if (!new Set(["default", "written", "inline_only"]).has(artifactMode)) {
+    const error = new Error(`Unsupported report artifact mode: ${artifactMode}`);
+    error.code = "REPORT_ARTIFACT_MODE_INVALID";
+    throw error;
+  }
+  if (artifactMode === "inline_only") {
+    return {status: "inline_only", root: null, reason: "explicit_user_disabled_report_storage"};
+  }
+
+  const explicitRoot = approvedReportDirectory ?? (approvedOutputDirectory ? path.join(approvedOutputDirectory, ".review-squad", "reports") : null);
+  if (explicitRoot) {
+    if (!path.isAbsolute(explicitRoot)) {
+      const error = new Error("Approved report artifact directory must be absolute");
+      error.code = "REPORT_ARTIFACT_PATH_UNSAFE";
+      throw error;
+    }
     return {
       status: "written",
-      root: `${targetRepository}/.review-squad/reports`,
+      root: path.resolve(explicitRoot),
+      reason: approvedReportDirectory ? "explicit_user_approved_report_directory" : "explicit_user_approved_output_directory"
+    };
+  }
+  if (targetRepository && targetRepositoryWritable) {
+    if (!path.isAbsolute(targetRepository)) {
+      const error = new Error("Writable target repository must be an absolute path before resolving report artifacts");
+      error.code = "REPORT_ARTIFACT_PATH_UNSAFE";
+      throw error;
+    }
+    return {
+      status: "written",
+      root: path.join(targetRepository, ".review-squad", "reports"),
       reason: "writable_target_repository"
     };
   }
-  if (approvedOutputDirectory) {
-    return {
-      status: "written",
-      root: `${approvedOutputDirectory}/.review-squad/reports`,
-      reason: "explicit_user_approved_output_directory"
-    };
+  if (artifactMode === "written") {
+    const error = new Error("Written report artifacts require a writable target repository or an explicitly approved absolute report directory");
+    error.code = "REPORT_ARTIFACT_ROOT_REQUIRED";
+    throw error;
   }
   return {status: "inline_only", root: null, reason: "no_approved_writable_artifact_root"};
 }

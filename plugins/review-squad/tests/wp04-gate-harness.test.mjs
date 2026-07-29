@@ -34,7 +34,7 @@ function installationFixture() {
   const source = path.join(root, "marketplace-source");
   const installed = path.join(root, "installed-cache");
   const name = "review-squad-rg07-fixture";
-  const version = "0.3.3+codex.rg07-fixture";
+  const version = "0.4.0+codex.rg07-fixture";
   const write = (base, relative, content) => {
     const file = path.join(base, relative);
     fs.mkdirSync(path.dirname(file), {recursive: true});

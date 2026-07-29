@@ -3,7 +3,7 @@
   "report_id": "regulars-clean",
   "mode": "regulars",
   "generated_at": "2026-07-22T00:00:00Z",
-  "generator": {"name": "codex-review-squad", "version": "0.3.3", "skill": "review-squad:regulars"},
+  "generator": {"name": "codex-review-squad", "version": "0.4.0", "skill": "review-squad:regulars"},
   "target": {"kind": "site", "path": "/tmp/example", "url": "http://127.0.0.1:3000", "name": "Example"},
   "review_context": {"labels": [], "branch": null, "base_branch": null, "pull_request": null, "story": null, "commit": null, "working_tree_dirty": null},
   "summary": {"headline": "The task completed without observed friction.", "overall_status": "pass", "critical_count": 0, "important_count": 0, "minor_count": 0, "not_verified_count": 0, "recommended_next_move": "Retain the current flow."},

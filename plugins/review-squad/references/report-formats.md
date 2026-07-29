@@ -2,13 +2,38 @@
 
 Author one schema-2.0 JSON report. Never author Markdown independently.
 
-## Artifact mode
+## Artifact policy
 
-Resolve artifact handling before review:
+Resolve and display report artifact handling before review or persona dispatch.
+Use this precedence:
 
-1. Use `written` for an explicit writable target repository or an output directory the user approved.
-2. Use `inline_only` for URL-only work without an appropriate writable root. Set both artifact paths to `null`.
-3. Display the selected mode during preflight. Never use an unrelated current directory implicitly.
+1. An explicit `inline_only` request, including "do not save/write report
+   files", always wins. Write no report files and set both artifact paths to
+   `null`, even when the target is writable.
+2. An explicitly approved absolute report directory uses `written` and writes
+   the report pair directly there. Do not treat approval of report output as
+   approval for browser artifacts or any other write.
+3. Otherwise, an explicit writable target repository uses `written` under
+   `<target>/.review-squad/reports/`.
+4. Otherwise use `inline_only`. Never write into an unrelated current
+   directory or infer approval from the working directory.
+
+The user-facing prompt controls are:
+
+```text
+Report artifacts: inline_only
+```
+
+or:
+
+```text
+Report artifacts: written
+Report artifact directory: /absolute/approved/path
+```
+
+Omitting both keeps the default behavior above. A relative, unavailable, or
+unapproved requested directory is an artifact-policy error: explain it and ask
+for a valid choice instead of silently falling back or writing elsewhere.
 
 For written artifacts, use one stem for both files:
 
@@ -39,7 +64,19 @@ node "$PLUGIN_ROOT/scripts/runtime/review-runtime.mjs" validate <report.json>
 node "$PLUGIN_ROOT/scripts/runtime/review-runtime.mjs" render <report.json> --output <report.md>
 ```
 
-For `inline_only`, run the same validation and rendering steps with temporary/local working data, then return both representations inline without inventing paths.
+For `inline_only`, use a unique OS-temporary scratch directory outside the
+reviewed target, run the same validation and rendering steps, return both
+representations inline without inventing artifact paths, and remove the scratch
+files afterward. If cleanup fails, report the retained path explicitly.
+
+In `written` mode, keep the final chat response compact: summarize the verdict,
+counts, and next move, then report the absolute JSON and Markdown paths plus
+their SHA-256 hashes. Do not repeat either full report in chat unless the user
+asks. Subagents return evidence to the parent; only the parent authors the
+canonical report pair.
+
+Written reports are not deleted automatically. Teams may archive, compare,
+version, or delete them according to their own retention policy.
 
 ## Core boundaries
 
